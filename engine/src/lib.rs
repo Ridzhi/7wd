@@ -79,7 +79,7 @@ pub enum DiscountContext {
 }
 
 pub trait Unit {
-    fn effects(&self) -> Vec<Effect>;
+    fn effects(&self) -> &Vec<Effect>;
 
     fn construct(&self, s: &mut State) {
         for effect in self.effects() {
