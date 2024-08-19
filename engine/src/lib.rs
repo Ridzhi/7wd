@@ -1,6 +1,12 @@
 mod effect;
 mod state;
 mod resource;
+mod player;
+
+pub use self::{
+    state::{State},
+    player::{Nickname},
+};
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
