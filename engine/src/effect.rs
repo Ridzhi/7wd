@@ -1,21 +1,52 @@
 use std::cmp::max;
 use crate::{
+    Bonus,
     state::{State, City},
+    building
 };
 
-enum Effect {
-    ChangeCoins{coins: i8},
+pub enum Effect {
+    Chain {
+        building: building::Id,
+    },
+    Coins {
+        count: i8
+    },
+    CoinsFor {
+        count: u8,
+        bonus: Bonus,
+    },
+    DestructBuilding{
+        group: building::Group
+    },
 }
 
 impl Effect {
     pub fn apply(&self, s: &mut State) {
         match *self {
-            Effect::ChangeCoins { coins } => {
-                let next = s.me().treas.coins as i8 + coins;
+            Effect::Chain { building } => {
+                s.me().chains.push(building);
+            },
+
+            Effect::Coins { count } => {
+                let next = s.me().treas.coins as i8 + count;
                 // treasure can't be negative
                 s.me().treas.coins = max(next, 0) as u8;
+            },
+
+            Effect::CoinsFor { count, bonus } => {
+
             }
+            Effect::DestructBuilding { .. } => {}
         }
+    }
+
+    pub fn discard(&self, _s: &mut State) {
+        ()
+    }
+
+    pub fn points(&self, _s: &State) -> u8 {
+        0
     }
 }
 
@@ -35,7 +66,7 @@ mod tests {
         };
 
         let effects = vec![
-            Effect::ChangeCoins {coins: 3}
+            Effect::Coins { count: 3}
         ];
 
         effects.iter().for_each(|eff| eff.apply(&mut s));
@@ -55,7 +86,7 @@ mod tests {
         };
 
         let effects = vec![
-            Effect::ChangeCoins {coins: -3}
+            Effect::Coins { count: -3}
         ];
 
         effects.iter().for_each(|eff| eff.apply(&mut s));
