@@ -29,9 +29,9 @@ impl Effect {
             },
 
             Effect::Coins { count } => {
-                let next = s.me().treas.coins as i8 + count;
+                let next = s.me().coins as i8 + count;
                 // treasure can't be negative
-                s.me().treas.coins = max(next, 0) as u8;
+                s.me().coins = max(next, 0) as u8;
             },
 
             Effect::CoinsFor { count, bonus } => {
@@ -71,8 +71,8 @@ mod tests {
 
         effects.iter().for_each(|eff| eff.apply(&mut s));
 
-        assert_eq!(s.me().treas.coins, 3);
-        assert_eq!(s.enemy().treas.coins, 0);
+        assert_eq!(s.me().coins, 3);
+        assert_eq!(s.enemy().coins, 0);
     }
 
     #[test]
@@ -91,7 +91,7 @@ mod tests {
 
         effects.iter().for_each(|eff| eff.apply(&mut s));
 
-        assert_eq!(s.me().treas.coins, 0);
-        assert_eq!(s.enemy().treas.coins, 0);
+        assert_eq!(s.me().coins, 0);
+        assert_eq!(s.enemy().coins, 0);
     }
 }

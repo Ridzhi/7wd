@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[derive(Eq, PartialEq, Hash, Debug)]
 pub enum Resource {
     Clay = 1,
     Wood,

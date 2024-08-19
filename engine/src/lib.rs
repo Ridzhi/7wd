@@ -3,13 +3,17 @@ mod state;
 mod resource;
 mod player;
 mod building;
+mod wonder;
+mod token;
 
 pub use self::{
     state::{State},
-    resource::{Store},
+    resource::{Store, Resource},
     player::{Nickname},
     effect::{Effect}
 };
+
+pub const COINS_PER_POINT: u8 = 3;
 
 #[derive(Debug, Default, Copy, Clone)]
 pub enum Age {

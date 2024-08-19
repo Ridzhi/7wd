@@ -2,8 +2,11 @@ use std::collections::HashMap;
 use crate::{
     Nickname,
     Bonus,
+    COINS_PER_POINT,
     resource::{Store},
     building,
+    wonder,
+    token,
 };
 
 pub struct State {
@@ -29,37 +32,34 @@ impl State {
 
 #[derive(Default)]
 pub struct City {
+    pub coins: u8,
+    pub resources: Store,
     pub score: Score,
-    pub treas: Treas,
-    pub chains: Vec<building::Id>
+    pub buildings: Vec<building::Id>,
+    pub wonders: Vec<(wonder::Id, Option<building::Id>)>,
+    pub tokens: Vec<token::Id>,
+    pub chains: Vec<building::Id>,
 }
 
 impl City {
-    // pub fn bonus_rate(&self, b: Bonus) -> u8 {
-    //     match b {
-    //         Bonus::Resources => self.bonus_rate(Bonus::RawMaterials) + self.bonus_rate(Bonus::ManufacturedGoods),
-    //         Bonus::RawMaterials => by_group(&self.buildings, BGroup::RawMaterials).len() as u8,
-    //         Bonus::ManufacturedGoods => by_group(&self.buildings, BGroup::ManufacturedGoods).len() as u8,
-    //         Bonus::Military => by_group(&self.buildings, BGroup::Military).len() as u8,
-    //         Bonus::Commercial => by_group(&self.buildings, BGroup::Commercial).len() as u8,
-    //         Bonus::Civilian => by_group(&self.buildings, BGroup::Civilian).len() as u8,
-    //         Bonus::Science => by_group(&self.buildings, BGroup::Scientific).len() as u8,
-    //         Bonus::Wonder => {
-    //             self.wonders
-    //                 .iter()
-    //                 .filter(|(_, bid)| bid.is_some())
-    //                 .count() as u8
-    //         }
-    //         Bonus::Coin => self.coins / COINS_PER_POINT,
-    //     }
-    // }
-}
-
-
-#[derive(Default)]
-pub struct Treas {
-    pub coins: u8,
-    pub resources: Store,
+    pub fn bonus_rate(&self, b: Bonus) -> u8 {
+        match b {
+            Bonus::Resources => self.bonus_rate(Bonus::RawMaterials) + self.bonus_rate(Bonus::ManufacturedGoods),
+            Bonus::RawMaterials => building::count_by_kind(&self.buildings, building::Kind::RawMaterials),
+            Bonus::ManufacturedGoods => building::count_by_kind(&self.buildings, building::Kind::ManufacturedGoods),
+            Bonus::Military => building::count_by_kind(&self.buildings, building::Kind::Military),
+            Bonus::Commercial => building::count_by_kind(&self.buildings, building::Kind::Commercial),
+            Bonus::Civilian => building::count_by_kind(&self.buildings, building::Kind::Civilian),
+            Bonus::Science => building::count_by_kind(&self.buildings, building::Kind::Scientific),
+            Bonus::Wonder => {
+                self.wonders
+                    .iter()
+                    .filter(|(_, building)| building.is_some())
+                    .count() as u8
+            }
+            Bonus::Coin => self.coins / COINS_PER_POINT,
+        }
+    }
 }
 
 #[derive(Debug, Default)]

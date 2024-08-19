@@ -115,7 +115,7 @@ impl BaseUnit for Unit {
     }
 }
 
-pub fn filter_by_kind(source: &Vec<Id>, kind: Kind) -> Vec<Id> {
+pub fn count_by_kind(source: &Vec<Id>, kind: Kind) -> u8 {
     source
         .iter()
         .filter(
@@ -125,7 +125,7 @@ pub fn filter_by_kind(source: &Vec<Id>, kind: Kind) -> Vec<Id> {
                 .unwrap().kind == kind
         )
         .map(|&id| id)
-        .collect()
+        .collect::<Vec<_>>().len() as u8
 }
 
 pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
