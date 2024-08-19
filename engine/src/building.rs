@@ -90,6 +90,7 @@ pub enum Id {
     TacticiansGuild,
 }
 
+#[derive(Ord, PartialOrd, Eq, PartialEq)]
 pub enum Kind {
     RawMaterials = 1,
     ManufacturedGoods,
@@ -112,6 +113,19 @@ impl BaseUnit for Unit {
     fn effects(&self) -> &Vec<Effect> {
         &self.effects
     }
+}
+
+pub fn filter_by_kind(source: &Vec<Id>, kind: Kind) -> Vec<Id> {
+    source
+        .iter()
+        .filter(
+            |id|
+            REGISTRY
+                .get(id)
+                .unwrap().kind == kind
+        )
+        .map(|&id| id)
+        .collect()
 }
 
 pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
