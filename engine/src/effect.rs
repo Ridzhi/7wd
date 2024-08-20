@@ -17,7 +17,7 @@ pub enum Effect {
         bonus: Bonus,
     },
     DestructBuilding{
-        group: building::Kind
+        kind: building::Kind
     },
 }
 

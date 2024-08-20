@@ -26,6 +26,21 @@ pub struct Unit {
     pub effects: Vec<Effect>,
 }
 
+impl Unit {
+    const THE_APPIAN: Self = Self {
+        id: Id::TheAppianWay,
+        cost: Cost {
+            coins: 0,
+            resources: HashMap::from([
+                (Resource::Papyrus, 1),
+                (Resource::Clay, 2),
+                (Resource::Stone, 2),
+            ]),
+        },
+        effects: vec![],
+    };
+}
+
 impl BaseUnit for Unit {
     fn effects(&self) -> &Vec<Effect> {
         &self.effects
@@ -48,6 +63,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
 
             ]
         },
+        Unit::THE_APPIAN,
     ]
         .into_iter()
         .map(|unit| (unit.id, unit))
