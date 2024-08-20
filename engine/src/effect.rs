@@ -35,9 +35,18 @@ impl Effect {
             },
 
             Effect::CoinsFor { count, bonus } => {
-
+                let next = s.me().coins + (s.me().bonus_rate(bonus) * count);
+                s.me().coins = next;
             }
-            Effect::DestructBuilding { .. } => {}
+            Effect::DestructBuilding { kind } => {
+                let buildings = building::filter_by_kind(&s.enemy().buildings, kind);
+
+                if buildings.is_empty() {
+                    return;
+                }
+
+                // push dialog
+            }
         }
     }
 

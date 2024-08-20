@@ -90,7 +90,7 @@ pub enum Id {
     TacticiansGuild,
 }
 
-#[derive(Ord, PartialOrd, Eq, PartialEq)]
+#[derive(Ord, PartialOrd, Eq, PartialEq, Copy, Clone)]
 pub enum Kind {
     RawMaterials = 1,
     ManufacturedGoods,
@@ -115,17 +115,21 @@ impl BaseUnit for Unit {
     }
 }
 
-pub fn count_by_kind(source: &Vec<Id>, kind: Kind) -> u8 {
+pub fn filter_by_kind(source: &Vec<Id>, kind: Kind) ->Vec<Id> {
     source
         .iter()
         .filter(
             |id|
-            REGISTRY
-                .get(id)
-                .unwrap().kind == kind
+                REGISTRY
+                    .get(id)
+                    .unwrap().kind == kind
         )
         .map(|&id| id)
-        .collect::<Vec<_>>().len() as u8
+        .collect::<Vec<_>>()
+}
+
+pub fn count_by_kind(source: &Vec<Id>, kind: Kind) -> u8 {
+    filter_by_kind(source, kind).len() as u8
 }
 
 pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
