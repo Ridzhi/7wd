@@ -1,4 +1,7 @@
-type Mutator = fn(s: &mut State);
+use std::collections::HashMap;
+use std::sync::LazyLock;
+
+type Mutator = Box<dyn Fn(&mut State) + Send + Sync>;
 
 #[derive(Default, Debug)]
 struct State {
@@ -7,11 +10,15 @@ struct State {
 }
 
 fn add_x(count: u8) -> Mutator {
-    |s| s.x += count
+    fn inc(x: u8) -> u8 {
+        x + 1
+    }
+
+    Box::new(move |s| s.x += inc(count))
 }
 
 fn add_y(count: u8) -> Mutator {
-    |s| s.y += count
+    Box::new(move |s| s.y += count)
 }
 
 struct Unit {
@@ -23,6 +30,17 @@ impl Unit {
         self.effects.iter().map(|e| e(s)).collect()
     }
 }
+
+static REGISTRY: LazyLock<HashMap<String, Unit>> = LazyLock::new(|| {
+    HashMap::from([
+        ("forum".to_string(), Unit {
+            effects: vec![
+                add_x(1),
+                add_y(2),
+            ],
+        })
+    ])
+});
 
 fn main() {
     let forum = Unit {
