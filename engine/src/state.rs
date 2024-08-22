@@ -11,15 +11,15 @@ use crate::{
     effect,
 };
 
-pub struct State {
+pub struct State<'a> {
     pub phase: Phase,
     pub turn: Nickname,
     pub cities: HashMap<Nickname, City>,
-    pub interactive_effects: Vec<effect::InteractiveEffect>,
-    pub interactive_units: Units,
+    pub interactive_effects: Vec<effect::InteractiveEffect<'a>>,
+    pub interactive_units: Units<'a>,
 }
 
-impl State {
+impl State<'_> {
     pub fn me(&mut self) -> &mut City {
         self.cities.get_mut(&self.turn).unwrap()
     }
@@ -96,8 +96,8 @@ pub struct Score {
 }
 
 #[derive(Default)]
-pub struct Units {
-    pub wonders: Vec<wonder::Id>,
-    pub buildings: Vec<building::Id>,
-    pub tokens: Vec<token::Id>,
+pub struct Units<'a> {
+    pub wonders: Option<&'a [wonder::Id]>,
+    pub buildings: Option<&'a [building::Id]>,
+    pub tokens: Option<&'a [token::Id]>,
 }

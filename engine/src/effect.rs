@@ -5,6 +5,12 @@ use crate::{
     building
 };
 
+pub enum Eff {
+    Mutator,
+    Point,
+
+}
+
 pub enum Effect {
     Chain {
         building: building::Id,
@@ -22,7 +28,7 @@ pub enum Effect {
 }
 
 impl Effect {
-    pub fn apply(&self, s: &mut State) {
+    pub fn mutate<'a>(&self, s: &'a mut State<'a>) {
         match *self {
             Effect::Chain { building } => {
                 s.me().chains.push(building);
@@ -46,7 +52,7 @@ impl Effect {
                 }
 
                 s.interactive_effects.push(InteractiveEffect::DestructBuilding {
-                    player: "".to_string(),
+                    player: &s.turn,
                     buildings,
                 })
 
@@ -55,7 +61,7 @@ impl Effect {
         }
     }
 
-    pub fn discard(&self, _s: &mut State) {
+    pub fn rollback(&self, _s: &mut State) {
         ()
     }
 
@@ -64,20 +70,20 @@ impl Effect {
     }
 }
 
-pub enum InteractiveEffect {
+pub enum InteractiveEffect<'a> {
     DestructBuilding {
-        player: Nickname,
+        player: &'a Nickname,
         buildings: Vec<building::Id>,
     }
 }
 
-impl InteractiveEffect {
-    pub fn apply(self, s: &mut State) {
+impl <'a> InteractiveEffect<'a> {
+    pub fn mutate(&self, s: &'a mut State) {
         match self {
             InteractiveEffect::DestructBuilding{player, buildings} => {
                 s.phase = Phase::DestructBuildingSelection;
-                s.set_turn(&player);
-                s.interactive_units.buildings = buildings;
+                s.set_turn(player);
+                s.interactive_units.buildings = Some(buildings);
             }
         }
     }
@@ -105,7 +111,7 @@ mod tests {
             Effect::Coins { count: 3}
         ];
 
-        effects.iter().for_each(|eff| eff.apply(&mut s));
+        effects.iter().for_each(|eff| eff.mutate(&mut s));
 
         assert_eq!(s.me().coins, 3);
         assert_eq!(s.enemy().coins, 0);
@@ -128,7 +134,7 @@ mod tests {
             Effect::Coins { count: -3}
         ];
 
-        effects.iter().for_each(|eff| eff.apply(&mut s));
+        effects.iter().for_each(|eff| eff.mutate(&mut s));
 
         assert_eq!(s.me().coins, 0);
         assert_eq!(s.enemy().coins, 0);

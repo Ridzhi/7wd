@@ -87,13 +87,13 @@ pub trait Unit {
 
     fn construct(&self, s: &mut State) {
         for effect in self.effects() {
-            effect.apply(s)
+            effect.mutate(s)
         }
     }
 
     fn destruct(&self, s: &mut State) {
         for effect in self.effects() {
-            effect.discard(s)
+            effect.rollback(s)
         }
     }
 
