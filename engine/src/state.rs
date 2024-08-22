@@ -2,16 +2,21 @@ use std::collections::HashMap;
 use crate::{
     Nickname,
     Bonus,
+    Phase,
     COINS_PER_POINT,
     resource::{Store},
     building,
     wonder,
     token,
+    effect,
 };
 
 pub struct State {
+    pub phase: Phase,
     pub turn: Nickname,
     pub cities: HashMap<Nickname, City>,
+    pub interactive_effects: Vec<effect::InteractiveEffect>,
+    pub interactive_units: Units,
 }
 
 impl State {
@@ -20,13 +25,28 @@ impl State {
     }
 
     pub fn enemy(&mut self) -> &mut City {
-        let enemy_key = self.cities
+        let enemy = self.get_next_turn();
+
+        self.cities.get_mut(&enemy).unwrap()
+    }
+
+    pub fn set_turn(&mut self, player: &Nickname) {
+        if self.turn != *player {
+            self.next_turn()
+        }
+    }
+
+    pub fn next_turn(&mut self) {
+        let enemy = self.get_next_turn();
+        self.turn = enemy;
+    }
+
+    fn get_next_turn(&self) -> Nickname {
+        self.cities
             .keys()
             .find(|&k| !k.eq(&self.turn))
             .unwrap()
-            .clone();
-
-        self.cities.get_mut(&enemy_key).unwrap()
+            .clone()
     }
 }
 
@@ -75,3 +95,9 @@ pub struct Score {
     total: u8,
 }
 
+#[derive(Default)]
+pub struct Units {
+    pub wonders: Vec<wonder::Id>,
+    pub buildings: Vec<building::Id>,
+    pub tokens: Vec<token::Id>,
+}

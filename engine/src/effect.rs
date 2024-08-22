@@ -1,7 +1,7 @@
 use std::cmp::max;
 use crate::{
-    Bonus,
-    state::{State, City},
+    *,
+    state::{State, City, Units},
     building
 };
 
@@ -45,6 +45,11 @@ impl Effect {
                     return;
                 }
 
+                s.interactive_effects.push(InteractiveEffect::DestructBuilding {
+                    player: "".to_string(),
+                    buildings,
+                })
+
                 // push dialog
             }
         }
@@ -59,6 +64,25 @@ impl Effect {
     }
 }
 
+pub enum InteractiveEffect {
+    DestructBuilding {
+        player: Nickname,
+        buildings: Vec<building::Id>,
+    }
+}
+
+impl InteractiveEffect {
+    pub fn apply(self, s: &mut State) {
+        match self {
+            InteractiveEffect::DestructBuilding{player, buildings} => {
+                s.phase = Phase::DestructBuildingSelection;
+                s.set_turn(&player);
+                s.interactive_units.buildings = buildings;
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
@@ -67,11 +91,14 @@ mod tests {
     #[test]
     fn test_change_coins() {
         let mut s = State {
+            phase: Phase::WondersSelection,
             turn: "user1".to_string(),
             cities: HashMap::from([
                 ("user1".to_string(), City::default()),
                 ("user2".to_string(), City::default()),
             ]),
+            interactive_effects: Vec::new(),
+            interactive_units: Units::default(),
         };
 
         let effects = vec![
@@ -87,11 +114,14 @@ mod tests {
     #[test]
     fn test_change_coins_negative() {
         let mut s = State {
+            phase: Phase::WondersSelection,
             turn: "user1".to_string(),
             cities: HashMap::from([
                 ("user1".to_string(), City::default()),
                 ("user2".to_string(), City::default()),
             ]),
+            interactive_effects: Vec::new(),
+            interactive_units: Units::default(),
         };
 
         let effects = vec![
