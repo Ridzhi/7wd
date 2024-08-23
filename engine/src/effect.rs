@@ -4,7 +4,7 @@ use crate::{
     state::{City, State, Units},
     *,
 };
-use crate::economy::PayScope;
+use crate::economy::{Discount, PayScope};
 
 pub trait Effect {
     fn apply(&self, s: &mut State) {
@@ -97,7 +97,11 @@ pub struct Discounter {
 
 impl Effect for Discounter {
     fn apply(&self, s: &mut State) {
-        todo!()
+        s.me().bank.discounts.push(Discount{
+            scope: self.scope,
+            resources: self.resources.clone(),
+            count: self.count,
+        })
     }
 }
 

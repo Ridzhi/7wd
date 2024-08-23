@@ -1,4 +1,3 @@
-use std::cmp::max;
 use std::collections::HashMap;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
