@@ -47,14 +47,15 @@ pub enum Resource {
     Papyrus,
 }
 
-pub type Store<T> = HashMap<T, u8>;
-pub type PriceList<T> = Store<T>;
+pub type Coins = u8;
 
-pub type Resources = Store<Resource>;
+pub type PriceList<T> = HashMap<T, Coins>;
+
+pub type Resources = HashMap<Resource, u8>;
 
 #[derive(Default)]
 pub struct Cost {
-    pub coins: u8,
+    pub coins: Coins,
     pub resources: Resources,
 }
 

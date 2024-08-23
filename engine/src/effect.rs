@@ -1,10 +1,10 @@
-use std::cmp::max;
+use std::cmp::{max, min};
 use crate::{
     building,
     state::{City, State, Units},
     *,
 };
-use crate::economy::{Discount, PayScope};
+use crate::economy::{Coins, Discount, PayScope};
 
 pub trait Effect {
     fn apply(&self, s: &mut State) {
@@ -36,24 +36,24 @@ impl Effect for Chain {
     }
 }
 
-pub struct Coins {
-    count: u8,
+pub struct Reward {
+    coins: Coins,
 }
 
-impl Effect for Coins {
+impl Effect for Reward {
     fn apply(&self, s: &mut State) {
-        s.me().coins += self.count;
+        s.me().coins += self.coins;
     }
 }
 
-pub struct CoinsFor {
-    pub count: u8,
+pub struct RewardFor {
+    pub coins: Coins,
     pub bonus: Bonus,
 }
 
-impl Effect for CoinsFor {
+impl Effect for RewardFor {
     fn apply(&self, s: &mut State) {
-        let next = s.me().coins + (s.me().bonus_rate(self.bonus) * self.count);
+        let next = s.me().coins + (s.me().bonus_rate(self.bonus) * self.coins);
         s.me().coins = next;
     }
 }
@@ -76,6 +76,16 @@ impl Effect for DestructBuilding {
                 buildings,
             }
         ));
+    }
+}
+
+pub struct Fine {
+    pub coins: Coins,
+}
+
+impl Effect for Fine {
+    fn apply(&self, s: &mut State) {
+        s.enemy().coins -= min(self.coins, s.enemy().coins);
     }
 }
 
@@ -173,7 +183,7 @@ mod tests {
         };
 
         let effects = vec![
-            Coins { count: 3 }
+            Reward { coins: 3 }
         ];
 
         effects.iter().for_each(|eff| eff.apply(&mut s));
@@ -196,7 +206,7 @@ mod tests {
         };
 
         let effects = vec![
-            Coins { count: -3 }
+            Reward { coins: -3 }
         ];
 
         effects.iter().for_each(|eff| eff.apply(&mut s));
