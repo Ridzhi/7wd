@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::sync::LazyLock;
-use crate::{Cost, Store, Effect, Unit as BaseUnit, Resource};
+use crate::{Cost, Store, Unit as BaseUnit, Resource, Effects};
 
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]
 pub enum Id {
@@ -23,11 +23,11 @@ pub enum Id {
 pub struct Unit {
     pub id: Id,
     pub cost: Cost,
-    pub effects: Vec<Effect>,
+    pub effects: Effects,
 }
 
 impl BaseUnit for Unit {
-    fn effects(&self) -> &Vec<Effect> {
+    fn effects(&self) -> &Effects {
         &self.effects
     }
 }

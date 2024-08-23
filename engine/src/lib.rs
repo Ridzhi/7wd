@@ -5,12 +5,13 @@ mod player;
 mod building;
 mod wonder;
 mod token;
+mod discount;
 
 pub use self::{
-    state::{State},
-    resource::{Store, Resource},
-    player::{Nickname},
-    effect::{Effect}
+    effect::{Effect, PostEffect, Effects},
+    player::Nickname,
+    resource::{Resource, Store},
+    state::State
 };
 
 pub const COINS_PER_POINT: u8 = 3;
@@ -76,18 +77,12 @@ pub struct Cost {
     pub resources: Store,
 }
 
-pub enum DiscountContext {
-    Global,
-    Civilian,
-    Wonders,
-}
-
 pub trait Unit {
-    fn effects(&self) -> &Vec<Effect>;
+    fn effects(&self) -> &Effects;
 
     fn construct(&self, s: &mut State) {
         for effect in self.effects() {
-            effect.mutate(s)
+            effect.apply(s)
         }
     }
 
@@ -101,7 +96,7 @@ pub trait Unit {
         let mut sum: u8 = 0;
 
         for effect in self.effects() {
-            sum += effect.points(s)
+            sum += effect.get_points(s)
         }
 
         sum

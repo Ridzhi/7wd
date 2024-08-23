@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 use crate::{Nickname, Bonus, Phase, COINS_PER_POINT, resource::{Store}, building, wonder, token, effect, resource, Resource};
+use crate::discount::Discount;
 
 pub struct State {
     pub phase: Phase,
     pub turn: Nickname,
     pub cities: HashMap<Nickname, City>,
-    pub interactive_effects: Vec<effect::InteractiveEffect>,
+    pub post_effects: Vec<Box<dyn effect::PostEffect>>,
     pub interactive_units: Units,
 }
 
@@ -50,6 +51,7 @@ pub struct City {
     pub tokens: Vec<token::Id>,
     pub chains: Vec<building::Id>,
     pub bank: Bank,
+    pub discounter: Discounter,
 }
 
 impl City {
@@ -88,9 +90,9 @@ pub struct Score {
 
 #[derive(Default)]
 pub struct Units {
-    pub wonders: Option<Vec<wonder::Id>>,
-    pub buildings: Option<Vec<building::Id>>,
-    pub tokens: Option<Vec<token::Id>>,
+    pub wonders: Vec<wonder::Id>,
+    pub buildings: Vec<building::Id>,
+    pub tokens: Vec<token::Id>,
 }
 
 type PriceList<T> = HashMap<T, u8>;
@@ -101,4 +103,9 @@ pub struct Bank {
     pub building_price: PriceList<building::Id>,
     pub wonder_price: PriceList<wonder::Id>,
     pub resource_price: PriceList<Resource>,
+}
+
+#[derive(Default, Debug)]
+pub struct Discounter {
+    pub discounts: Vec<Discount>,
 }

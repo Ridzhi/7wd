@@ -1,14 +1,8 @@
 use std::collections::HashMap;
 use std::iter::{IntoIterator, Iterator};
-use std::sync::{LazyLock, OnceLock};
-use crate::{
-    Age,
-    Cost,
-    Effect,
-    Store,
-    Unit as BaseUnit,
-};
-
+use std::sync::{LazyLock};
+use crate::{Age, Cost, Effects, Store, Unit as BaseUnit};
+use crate::effect::Effect;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Id {
@@ -106,11 +100,11 @@ pub struct Unit {
     pub age: Age,
     pub kind: Kind,
     pub cost: Cost,
-    pub effects: Vec<Effect>,
+    pub effects: Effects,
 }
 
 impl BaseUnit for Unit {
-    fn effects(&self) -> &Vec<Effect> {
+    fn effects(&self) -> &Effects {
         &self.effects
     }
 }

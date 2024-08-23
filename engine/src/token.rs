@@ -1,4 +1,5 @@
-use crate::{Effect, Unit as BaseUnit};
+use crate::{Effects, Unit as BaseUnit};
+use crate::effect::Effect;
 
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]
 pub enum Id {
@@ -16,11 +17,11 @@ pub enum Id {
 
 pub struct Unit {
     pub id: Id,
-    pub effects: Vec<Effect>,
+    pub effects: Effects,
 }
 
 impl BaseUnit for Unit {
-    fn effects(&self) -> &Vec<Effect> {
+    fn effects(&self) -> &Effects {
         &self.effects
     }
 }
