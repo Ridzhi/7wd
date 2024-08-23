@@ -46,7 +46,7 @@ impl Effect {
                 }
 
                 s.interactive_effects.push(InteractiveEffect::DestructBuilding {
-                    player: &s.turn,
+                    player: s.turn.clone(),
                     buildings,
                 })
 
@@ -72,7 +72,7 @@ pub enum InteractiveEffect {
 }
 
 impl InteractiveEffect {
-    pub fn mutate(&self, s: &mut State) {
+    pub fn mutate(self, s: &mut State) {
         match self {
             InteractiveEffect::DestructBuilding{player, buildings} => {
                 s.phase = Phase::DestructBuildingSelection;

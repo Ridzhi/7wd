@@ -30,8 +30,8 @@ impl State {
         self.cities.get_mut(&enemy).unwrap()
     }
 
-    pub fn set_turn(&mut self, player: &Nickname) {
-        if self.turn != *player {
+    pub fn set_turn(&mut self, player: Nickname) {
+        if self.turn != player {
             self.next_turn()
         }
     }
