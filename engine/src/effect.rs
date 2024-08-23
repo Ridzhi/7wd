@@ -19,6 +19,22 @@ pub enum Effect {
     DestructBuilding{
         kind: building::Kind
     },
+    DiscardRewardAdjuster,
+    // Discounter { context: DiscountContext, resource: Resources, count: u8 },
+    // Fine { count: u8 },
+    // FixedCost { resources: Resources },
+    // Guild { bonus: Bonus, points: u8, coins: u8 },
+    // Mathematics {},
+    // Military { power: u8, strategy_disabled: bool },
+    // PickBoardToken {},
+    // PickDiscardedCard {},
+    // PickRandomToken {},
+    // PickReturnedCards {},
+    // PickTopLineCard {},
+    // PlayAgain {},
+    // Points { count: u8 },
+    // Resource { resource: RId, count: u8 },
+    // Science { symbol: ScientificSymbol },
 }
 
 impl Effect {
@@ -37,7 +53,8 @@ impl Effect {
             Effect::CoinsFor { count, bonus } => {
                 let next = s.me().coins + (s.me().bonus_rate(bonus) * count);
                 s.me().coins = next;
-            }
+            },
+
             Effect::DestructBuilding { kind } => {
                 let buildings = building::filter_by_kind(&s.enemy().buildings, kind);
 
@@ -48,9 +65,11 @@ impl Effect {
                 s.interactive_effects.push(InteractiveEffect::DestructBuilding {
                     player: s.turn.clone(),
                     buildings,
-                })
+                });
+            },
 
-                // push dialog
+            Effect::DiscardRewardAdjuster => {
+                s.me().bank.discard_reward += 1;
             }
         }
     }
