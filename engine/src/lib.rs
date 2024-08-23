@@ -10,12 +10,12 @@ pub use economy::Resource;
 pub use economy::Resources;
 pub use self::{
     effect::{Effect, Effects, PostEffect},
-    player::Nickname
-    ,
+    player::Nickname,
     state::State
 };
 
 pub const COINS_PER_POINT: u8 = 3;
+pub const FIXED_RESOURCE_PRICE: u8 = 1;
 
 #[derive(Debug, Default, Copy, Clone)]
 pub enum Age {

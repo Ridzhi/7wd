@@ -53,8 +53,7 @@ pub struct RewardFor {
 
 impl Effect for RewardFor {
     fn apply(&self, s: &mut State) {
-        let next = s.me().coins + (s.me().bonus_rate(self.bonus) * self.coins);
-        s.me().coins = next;
+        s.me().coins += s.me().bonus_rate(self.bonus) * self.coins;
     }
 }
 
@@ -79,16 +78,6 @@ impl Effect for DestructBuilding {
     }
 }
 
-pub struct Fine {
-    pub coins: Coins,
-}
-
-impl Effect for Fine {
-    fn apply(&self, s: &mut State) {
-        s.enemy().coins -= min(self.coins, s.enemy().coins);
-    }
-}
-
 pub struct DiscardRewardAdjuster;
 
 impl Effect for DiscardRewardAdjuster {
@@ -110,6 +99,29 @@ impl Effect for Discounter {
             resources: self.resources.clone(),
             count: self.count,
         })
+    }
+}
+
+pub struct Fine {
+    pub coins: Coins,
+}
+
+impl Effect for Fine {
+    fn apply(&self, s: &mut State) {
+        s.enemy().coins -= min(self.coins, s.enemy().coins);
+    }
+}
+
+pub struct FixedPrice {
+    pub resources: Vec<Resource>,
+}
+
+impl Effect for FixedPrice {
+    fn apply(&self, s: &mut State) {
+        self.resources.iter()
+            .for_each(|resource| {
+                *s.me().bank.resource_price.get_mut(resource).unwrap() = FIXED_RESOURCE_PRICE;
+            })
     }
 }
 
