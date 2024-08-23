@@ -1,6 +1,14 @@
 use std::collections::HashMap;
-use crate::{building, economy, effect, token, wonder, Bonus, Nickname, Phase, COINS_PER_POINT};
-use crate::economy::{PriceList, Resource, Resources};
+use std::thread::Scope;
+use crate::{
+    building,
+    economy::{Discount, PriceList, Resource, Resources, Cost},
+    effect,
+    token,
+    wonder,
+    Bonus, Nickname, Phase, COINS_PER_POINT
+};
+use crate::economy::PayScope;
 
 pub struct State {
     pub phase: Phase,
@@ -51,7 +59,6 @@ pub struct City {
     pub tokens: Vec<token::Id>,
     pub chains: Vec<building::Id>,
     pub bank: Bank,
-    pub discounter: economy::Discounter,
 }
 
 impl City {
@@ -101,4 +108,28 @@ pub struct Bank {
     pub building_price: PriceList<building::Id>,
     pub wonder_price: PriceList<wonder::Id>,
     pub resource_price: PriceList<Resource>,
+    pub discounts: Vec<Discount>,
+}
+
+impl Bank {
+    pub fn get_price(&self, scope: PayScope, cost: Cost) -> u8 {
+        0
+    }
+
+    fn get_resources_ordered_by_price(&self) -> Vec<Resource> {
+        let mut items = self.resource_price.iter().collect::<Vec<_>>();
+        items.sort_by(|&a, &b| b.1.cmp(a.1));
+
+        items.iter().map(|item| *item.0).collect()
+    }
+
+    fn discount(&self, scope: PayScope, cost: &mut Cost) {
+        let priority = self.get_resources_ordered_by_price();
+
+        self.discounts.iter()
+            .filter(|&item| item.scope == PayScope::Global  || item.scope == scope)
+            .for_each(|discount| {
+                discount.apply(cost, &priority);
+            });
+    }
 }
