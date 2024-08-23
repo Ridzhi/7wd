@@ -4,7 +4,7 @@ use crate::{
     state::{City, State, Units},
     *,
 };
-use crate::discount::Scope;
+use crate::economy::DiscountScope;
 
 pub trait Effect {
     fn apply(&self, s: &mut State) {
@@ -90,7 +90,7 @@ impl Effect for DiscardRewardAdjuster {
 }
 
 pub struct Discounter {
-    scope: Scope,
+    scope: DiscountScope,
     resources: Vec<Resource>,
     count: u8,
 }
@@ -130,7 +130,7 @@ pub enum Effectv2 {
     },
     DiscardRewardAdjuster,
     Discounter {
-        scope: Scope,
+        scope: DiscountScope,
         resources: Vec<Resource>,
         count: u8,
     },

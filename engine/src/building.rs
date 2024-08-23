@@ -1,9 +1,8 @@
 use std::collections::HashMap;
 use std::iter::{IntoIterator, Iterator};
-use std::sync::{LazyLock};
-use crate::{Age, Cost, Effects, Store, Unit as BaseUnit};
-use crate::effect::Effect;
-
+use std::sync::LazyLock;
+use crate::{Age, Effects, Unit as BaseUnit};
+use crate::economy::{Cost, Resources};
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Id {
     LumberYard = 100,
@@ -134,7 +133,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
             kind: Kind::RawMaterials,
             cost: Cost {
                 coins: 0,
-                resources: Store::new(),
+                resources: Resources::new(),
             },
             effects: vec![],
         }

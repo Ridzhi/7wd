@@ -1,16 +1,17 @@
 mod effect;
 mod state;
-mod resource;
 mod player;
 mod building;
 mod wonder;
 mod token;
-mod discount;
+mod economy;
 
+pub use economy::Resource;
+pub use economy::Resources;
 pub use self::{
-    effect::{Effect, PostEffect, Effects},
-    player::Nickname,
-    resource::{Resource, Store},
+    effect::{Effect, Effects, PostEffect},
+    player::Nickname
+    ,
     state::State
 };
 
@@ -70,11 +71,6 @@ pub enum Victory {
     ScienceSupremacy,
     Resign,
     Timeout,
-}
-
-pub struct Cost {
-    pub coins: u8,
-    pub resources: Store,
 }
 
 pub trait Unit {

@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::sync::LazyLock;
-use crate::{Cost, Store, Unit as BaseUnit, Resource, Effects};
+use crate::{Effects, Unit as BaseUnit};
+use crate::economy::{Cost, Resource};
 
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]
 pub enum Id {
