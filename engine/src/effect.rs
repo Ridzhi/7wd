@@ -5,12 +5,6 @@ use crate::{
     building
 };
 
-pub enum Eff {
-    Mutator,
-    Point,
-
-}
-
 pub enum Effect {
     Chain {
         building: building::Id,
@@ -28,7 +22,7 @@ pub enum Effect {
 }
 
 impl Effect {
-    pub fn mutate<'a>(&self, s: &'a mut State<'a>) {
+    pub fn mutate(&self, s: & mut State) {
         match *self {
             Effect::Chain { building } => {
                 s.me().chains.push(building);
@@ -70,15 +64,15 @@ impl Effect {
     }
 }
 
-pub enum InteractiveEffect<'a> {
+pub enum InteractiveEffect {
     DestructBuilding {
-        player: &'a Nickname,
+        player: Nickname,
         buildings: Vec<building::Id>,
     }
 }
 
-impl <'a> InteractiveEffect<'a> {
-    pub fn mutate(&self, s: &'a mut State) {
+impl InteractiveEffect {
+    pub fn mutate(&self, s: &mut State) {
         match self {
             InteractiveEffect::DestructBuilding{player, buildings} => {
                 s.phase = Phase::DestructBuildingSelection;
