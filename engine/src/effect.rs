@@ -37,14 +37,12 @@ impl Effect for Chain {
 }
 
 pub struct Coins {
-    count: i8,
+    count: u8,
 }
 
 impl Effect for Coins {
     fn apply(&self, s: &mut State) {
-        let next = s.me().coins as i8 + self.count;
-        // treasure can't be negative
-        s.me().coins = max(next, 0) as u8;
+        s.me().coins += self.count;
     }
 }
 
