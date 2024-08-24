@@ -94,7 +94,7 @@ pub struct Discounter {
 
 impl Effect for Discounter {
     fn apply(&self, s: &mut State) {
-        s.me().bank.discounts.push(Discount{
+        s.me().bank.discounts.push(Discount {
             scope: self.scope,
             resources: self.resources.clone(),
             count: self.count,
@@ -147,6 +147,47 @@ impl Effect for Guild {
     }
 }
 
+pub struct Mathematics;
+
+impl Effect for Mathematics {
+    fn get_points(&self, s: &mut State) -> u8 {
+        s.me().tokens.len() as u8 * 3
+    }
+}
+
+pub struct Military {
+    pub power: u8,
+    pub apply_strategy_token: bool,
+}
+
+impl Military {
+    pub fn for_building(power: u8) -> Self {
+        Self {
+            power,
+            apply_strategy_token: true,
+        }
+    }
+
+    pub fn for_wonder(power: u8) -> Self {
+        Self {
+            power,
+            apply_strategy_token: false,
+        }
+    }
+}
+
+impl Effect for Military {
+    fn apply(&self, s: &mut State) {
+        let power = self.power + {
+          if self.apply_strategy_token && s.me().tokens.contains(&token::Id::Strategy) {
+              1
+          } else {
+              0
+          }
+        };
+    }
+}
+
 pub struct PostDestructBuilding {
     player: Nickname,
     buildings: Vec<building::Id>,
@@ -193,7 +234,6 @@ pub enum Effectv2 {
     // Resource { resource: RId, count: u8 },
     // Science { symbol: ScientificSymbol },
 }
-
 
 
 #[cfg(test)]
