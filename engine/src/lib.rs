@@ -88,7 +88,7 @@ pub trait Unit {
         }
     }
 
-    fn points(&self, s: &State) -> u8 {
+    fn points(&self, s: &mut State) -> u8 {
         let mut sum: u8 = 0;
 
         for effect in self.effects() {

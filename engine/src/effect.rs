@@ -1,4 +1,4 @@
-use std::cmp::{min};
+use std::cmp::{max, min};
 use crate::{
     building,
     state::{City, State, Units},
@@ -15,7 +15,7 @@ pub trait Effect {
         ()
     }
 
-    fn get_points(&self, s: &State) -> u8 {
+    fn get_points(&self, s: &mut State) -> u8 {
         0
     }
 }
@@ -125,6 +125,28 @@ impl Effect for FixedPrice {
     }
 }
 
+pub struct Guild {
+    pub bonus: Bonus,
+    pub points: u8,
+    pub coins: Coins,
+}
+
+impl Guild {
+    fn rate(&self, s: &mut State) -> u8 {
+        max(s.me().bonus_rate(self.bonus), s.enemy().bonus_rate(self.bonus))
+    }
+}
+
+impl Effect for Guild {
+    fn apply(&self, s: &mut State) {
+        s.me().coins += self.rate(s) * self.coins;
+    }
+
+    fn get_points(&self, s: &mut State) -> u8 {
+        self.rate(s) * self.points
+    }
+}
+
 pub struct PostDestructBuilding {
     player: Nickname,
     buildings: Vec<building::Id>,
@@ -158,8 +180,6 @@ pub enum Effectv2 {
         resources: Vec<Resource>,
         count: u8,
     },
-    // Fine { count: u8 },
-    // FixedCost { resources: Resources },
     // Guild { bonus: Bonus, points: u8, coins: u8 },
     // Mathematics {},
     // Military { power: u8, strategy_disabled: bool },
