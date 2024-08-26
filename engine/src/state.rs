@@ -1,14 +1,13 @@
 use std::collections::HashMap;
-use std::thread::Scope;
 use crate::{
     building,
-    economy::{Discount, PriceList, Resource, Resources, Cost},
+    economy::{Discount, PriceList, Resource, Resources, Cost, PayScope},
     effect,
     token,
     wonder,
+    military::{Track},
     Bonus, Nickname, Phase, COINS_PER_POINT
 };
-use crate::economy::PayScope;
 
 pub struct State {
     pub phase: Phase,
@@ -59,6 +58,7 @@ pub struct City {
     pub tokens: Vec<token::Id>,
     pub chains: Vec<building::Id>,
     pub bank: Bank,
+    pub track: Track,
 }
 
 impl City {

@@ -5,10 +5,10 @@ mod building;
 mod wonder;
 mod token;
 mod economy;
+mod military;
 
-pub use economy::Resource;
-pub use economy::Resources;
 pub use self::{
+    economy::{Resource, Resources, Coins},
     effect::{Effect, Effects, PostEffect},
     player::Nickname,
     state::State
@@ -98,3 +98,5 @@ pub trait Unit {
         sum
     }
 }
+
+pub type Points = u8;
