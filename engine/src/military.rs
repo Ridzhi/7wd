@@ -24,10 +24,13 @@ impl Track {
         Zone(6, 10, 5),
     ];
 
-    pub fn move_conflict_pawn(&mut self, s: &mut State, power: u8) {
+    pub fn move_conflict_pawn(&mut self, s: &mut State, power: u8) -> (Coins, bool) {
+        let mut fine: Coins = 0;
+        let mut supremacy = false;
+
         if s.enemy().track.pos >= power {
             s.enemy().track.pos -= power;
-            return
+            return (fine, supremacy)
         }
 
         self.pos += (power - s.enemy().track.pos);
@@ -35,15 +38,17 @@ impl Track {
 
         if self.pos >= Self::CAPITAL_POS {
             self.pos = Self::CAPITAL_POS;
-            // set state supremacy
+            supremacy = true;
         }
 
         let zone_index = self.get_zone_index();
 
         if zone_index > self.max_zone {
             self.max_zone = zone_index;
-            // apple effects fine
+            fine = Self::ZONES[zone_index].2;
         }
+
+        (fine, supremacy)
     }
 
     fn get_zone_index(&self) -> usize {
