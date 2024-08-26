@@ -51,6 +51,10 @@ impl Track {
         (fine, supremacy)
     }
 
+    pub fn get_points(&self) -> u8 {
+        Self::ZONES[self.get_zone_index()].1
+    }
+
     fn get_zone_index(&self) -> usize {
         let ind = [3,2,1].iter().find(|&&ind| {
             self.pos >= Self::ZONES[ind].0
