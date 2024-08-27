@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins};
+use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE};
 
 pub struct State {
     pub phase: Phase,
@@ -12,6 +12,7 @@ pub struct State {
     pub random_units: RandomUnits,
     pub interactive_units: Units,
     pub post_effects: Vec<Box<dyn effect::PostEffect>>,
+    pub play_again: bool,
     pub result: Option<Result>,
 }
 
@@ -178,6 +179,10 @@ pub struct Bank {
 impl Bank {
     pub fn get_price(&self, scope: PayScope, cost: Cost) -> u8 {
         0
+    }
+
+    pub fn has_fixed_resource_price(&self, r: &Resource) -> bool {
+        self.resource_price[r] == FIXED_RESOURCE_PRICE
     }
 
     fn get_resources_ordered_by_price(&self) -> Vec<Resource> {

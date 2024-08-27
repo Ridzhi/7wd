@@ -1,5 +1,5 @@
 use std::cmp::{max, min};
-use std::fmt::{Debug, Formatter};
+use std::fmt::{Debug};
 use crate::{
     building,
     economy::{Coins, Discount, PayScope},
@@ -333,6 +333,83 @@ impl PostEffect for PostPickReturnedBuildings {
         s.phase = Phase::ReturnedBuildingSelection;
         s.players.set_turn(self.actor);
         s.interactive_units.buildings = self.buildings;
+    }
+}
+
+pub struct PickTopLineBuilding;
+
+impl Effect for PickTopLineBuilding {
+    fn apply(&self, s: &mut State) {
+        let top_line_buildings = s.deck.get_top_line_buildings();
+
+        if !top_line_buildings.is_empty() {
+            s.post_effects.push(Box::new(PostPickTopLineBuilding {
+                actor: s.players.me.clone(),
+                buildings: top_line_buildings,
+            }));
+        }
+    }
+}
+pub struct PostPickTopLineBuilding {
+    pub actor: Nickname,
+    pub buildings: Vec<building::Id>,
+}
+
+impl PostEffect for PostPickTopLineBuilding {
+    fn apply(self, s: &mut State) {
+        s.phase = Phase::TopLineBuildingSelection;
+        s.players.set_turn(self.actor);
+        s.interactive_units.buildings = self.buildings;
+    }
+}
+
+pub struct PlayAgain;
+
+impl Effect for PlayAgain {
+    fn apply(&self, s: &mut State) {
+        s.play_again = true;
+    }
+}
+
+pub struct Points {
+    pub count: u8,
+}
+
+impl Points {
+    pub fn new(count: u8) -> Self {
+        Self {
+            count
+        }
+    }
+}
+
+impl Effect for Points {
+    fn get_points(&self, s: &mut State) -> u8 {
+        self.count
+    }
+}
+
+pub struct ProduceResource {
+    pub kind: Resource,
+    pub count: u8,
+}
+
+impl ProduceResource {
+    pub fn new(kind: Resource, count: u8) -> Self {
+        Self {
+            kind,
+            count,
+        }
+    }
+}
+
+impl Effect for ProduceResource {
+    fn apply(&self, s: &mut State) {
+        *s.me_mut().resources.get_mut(&self.kind).unwrap() += self.count;
+
+        if !s.me().bank.has_fixed_resource_price(&self.kind) {
+            *s.me_mut().bank.resource_price.get_mut(&self.kind).unwrap() = DEFAULT_RESOURCE_PRICE * s.enemy().resources[&self.kind];
+        }
     }
 }
 

@@ -17,6 +17,7 @@ pub use self::{
 };
 
 pub const COINS_PER_POINT: u8 = 3;
+pub const DEFAULT_RESOURCE_PRICE: u8 = 2;
 pub const FIXED_RESOURCE_PRICE: u8 = 1;
 
 #[derive(Debug, Default, Copy, Clone)]
