@@ -401,16 +401,33 @@ impl ProduceResource {
             count,
         }
     }
+
+    fn update_price(&self, s: &mut State) {
+        if !s.me().bank.has_fixed_resource_price(&self.kind) {
+            *s.me_mut().bank.resource_price.get_mut(&self.kind).unwrap() = DEFAULT_RESOURCE_PRICE * s.enemy().resources[&self.kind];
+        }
+    }
 }
 
 impl Effect for ProduceResource {
     fn apply(&self, s: &mut State) {
         *s.me_mut().resources.get_mut(&self.kind).unwrap() += self.count;
-
-        if !s.me().bank.has_fixed_resource_price(&self.kind) {
-            *s.me_mut().bank.resource_price.get_mut(&self.kind).unwrap() = DEFAULT_RESOURCE_PRICE * s.enemy().resources[&self.kind];
-        }
+        self.update_price(s);
     }
+
+    fn rollback(&self, s: &mut State) {
+        let current = s.me().resources[&self.kind];
+        *s.me_mut().resources.get_mut(&self.kind).unwrap() = min(current - self.count, 0);
+        self.update_price(s);
+    }
+}
+
+pub struct Science {
+    pub symbol: ScientificSymbol,
+}
+
+impl Effect for Science {
+
 }
 
 // pub struct PostDestructBuilding {
