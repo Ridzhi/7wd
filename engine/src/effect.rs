@@ -1,10 +1,11 @@
 use std::cmp::{max, min};
+use std::fmt::{Debug, Formatter};
 use crate::{
     building,
+    economy::{Coins, Discount, PayScope},
     state::{City, State, Units},
     *,
 };
-use crate::economy::{Coins, Discount, PayScope};
 
 pub trait Effect {
     fn apply(&self, s: &mut State) {
@@ -26,6 +27,7 @@ pub trait PostEffect {
     fn apply(self, s: &mut State);
 }
 
+#[derive(Debug)]
 pub struct Chain {
     pub building: building::Id,
 }
@@ -36,6 +38,7 @@ impl Effect for Chain {
     }
 }
 
+#[derive(Debug)]
 pub struct Reward {
     coins: Coins,
 }
@@ -46,6 +49,7 @@ impl Effect for Reward {
     }
 }
 
+#[derive(Debug)]
 pub struct RewardFor {
     pub coins: Coins,
     pub bonus: Bonus,
@@ -57,6 +61,7 @@ impl Effect for RewardFor {
     }
 }
 
+#[derive(Debug)]
 pub struct DestructBuilding {
     pub kind: building::Kind,
 }
@@ -71,13 +76,28 @@ impl Effect for DestructBuilding {
 
         s.post_effects.push(Box::new(
             PostDestructBuilding {
-                player: s.players.me.clone(),
+                actor: s.players.me.clone(),
                 buildings,
             }
         ));
     }
 }
 
+#[derive(Debug)]
+pub struct PostDestructBuilding {
+    pub actor: Nickname,
+    pub buildings: Vec<building::Id>,
+}
+
+impl PostEffect for PostDestructBuilding {
+    fn apply(self, s: &mut State) {
+        s.phase = Phase::DestructBuildingSelection;
+        s.players.set_turn(self.actor);
+        s.interactive_units.buildings = self.buildings;
+    }
+}
+
+#[derive(Debug)]
 pub struct DiscardRewardAdjuster;
 
 impl Effect for DiscardRewardAdjuster {
@@ -86,6 +106,7 @@ impl Effect for DiscardRewardAdjuster {
     }
 }
 
+#[derive(Debug)]
 pub struct Discounter {
     scope: PayScope,
     resources: Vec<Resource>,
@@ -102,6 +123,7 @@ impl Effect for Discounter {
     }
 }
 
+#[derive(Debug)]
 pub struct Fine {
     pub coins: Coins,
 }
@@ -112,6 +134,7 @@ impl Effect for Fine {
     }
 }
 
+#[derive(Debug)]
 pub struct FixedPrice {
     pub resources: Vec<Resource>,
 }
@@ -125,6 +148,7 @@ impl Effect for FixedPrice {
     }
 }
 
+#[derive(Debug)]
 pub struct Guild {
     pub bonus: Bonus,
     pub points: u8,
@@ -147,6 +171,7 @@ impl Effect for Guild {
     }
 }
 
+#[derive(Debug)]
 pub struct Mathematics;
 
 impl Effect for Mathematics {
@@ -155,6 +180,7 @@ impl Effect for Mathematics {
     }
 }
 
+#[derive(Debug)]
 pub struct Military {
     pub power: u8,
     pub apply_strategy_token: bool,
@@ -179,11 +205,11 @@ impl Military {
 impl Effect for Military {
     fn apply(&self, s: &mut State) {
         let power = self.power + {
-          if self.apply_strategy_token && s.me().tokens.contains(&token::Id::Strategy) {
-              1
-          } else {
-              0
-          }
+            if self.apply_strategy_token && s.me().tokens.contains(&token::Id::Strategy) {
+                1
+            } else {
+                0
+            }
         };
 
         let (fine, supremacy) = s.move_conflict_pawn(power);
@@ -198,18 +224,130 @@ impl Effect for Military {
     }
 }
 
-pub struct PostDestructBuilding {
-    player: Nickname,
-    buildings: Vec<building::Id>,
+#[derive(Debug)]
+pub struct PickBoardToken;
+
+impl Effect for PickBoardToken {
+    fn apply(&self, s: &mut State) {
+        // чек не пустые
+
+        s.post_effects.push(Box::new(PostPickBoardToken {
+            actor: s.players.me.clone(),
+        }));
+    }
 }
 
-impl PostEffect for PostDestructBuilding {
+#[derive(Debug)]
+pub struct PostPickBoardToken {
+    pub actor: Nickname,
+}
+
+impl PostEffect for PostPickBoardToken {
     fn apply(self, s: &mut State) {
-        s.phase = Phase::DestructBuildingSelection;
-        s.players.set_turn(self.player);
+        s.phase = Phase::BoardTokenSelection;
+        s.players.set_turn(self.actor);
+        s.interactive_units.tokens = s.progress_tokens.clone();
+    }
+}
+
+#[derive(Debug)]
+pub struct PickDiscardedBuilding;
+
+impl Effect for PickDiscardedBuilding {
+    fn apply(&self, s: &mut State) {
+        if !s.buildings.discarded.is_empty() {
+            s.post_effects.push(Box::new(PostPickDiscardedBuilding {
+                actor: s.players.me.clone(),
+                buildings: s.buildings.discarded.clone(),
+            }));
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct PostPickDiscardedBuilding {
+    pub actor: Nickname,
+    pub buildings: Vec<building::Id>,
+}
+
+impl PostEffect for PostPickDiscardedBuilding {
+    fn apply(self, s: &mut State) {
+        s.phase = Phase::DiscardedBuildingSelection;
+        s.players.set_turn(self.actor);
         s.interactive_units.buildings = self.buildings;
     }
 }
+
+#[derive(Debug)]
+pub struct PickRandomToken;
+
+impl Effect for PickRandomToken {
+    fn apply(&self, s: &mut State) {
+        if !s.random_units.tokens.is_empty() {
+            s.post_effects.push(Box::new(PostPickRandomToken {
+                actor: s.players.me.clone(),
+                tokens: s.random_units.tokens.clone(),
+            }));
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct PostPickRandomToken {
+    pub actor: Nickname,
+    pub tokens: Vec<token::Id>,
+}
+
+impl PostEffect for PostPickRandomToken {
+    fn apply(self, s: &mut State) {
+        s.phase = Phase::RandomTokenSelection;
+        s.players.set_turn(self.actor);
+        s.interactive_units.tokens = self.tokens;
+    }
+}
+
+#[derive(Debug)]
+pub struct PickReturnedBuildings;
+
+impl Effect for PickReturnedBuildings {
+    fn apply(&self, s: &mut State) {
+        let returned_buildings = s.deck.get_returned_buildings();
+
+        if !returned_buildings.is_empty() {
+            s.post_effects.push(Box::new(PostPickReturnedBuildings {
+                actor: s.players.me.clone(),
+                buildings: returned_buildings,
+            }));
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct PostPickReturnedBuildings {
+    pub actor: Nickname,
+    pub buildings: Vec<building::Id>,
+}
+
+impl PostEffect for PostPickReturnedBuildings {
+    fn apply(self, s: &mut State) {
+        s.phase = Phase::ReturnedBuildingSelection;
+        s.players.set_turn(self.actor);
+        s.interactive_units.buildings = self.buildings;
+    }
+}
+
+// pub struct PostDestructBuilding {
+//     player: Nickname,
+//     buildings: Vec<building::Id>,
+// }
+//
+// impl PostEffect for crate::effect::PostDestructBuilding {
+//     fn apply(self, s: &mut State) {
+//         s.phase = Phase::DestructBuildingSelection;
+//         s.players.set_turn(self.player);
+//         s.interactive_units.buildings = self.buildings;
+//     }
+// }
 
 pub enum Effectv2 {
     Chain {

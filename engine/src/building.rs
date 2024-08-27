@@ -83,7 +83,7 @@ pub enum Id {
     TacticiansGuild,
 }
 
-#[derive(Ord, PartialOrd, Eq, PartialEq, Copy, Clone)]
+#[derive(Debug, Ord, PartialOrd, Eq, PartialEq, Copy, Clone)]
 pub enum Kind {
     RawMaterials = 1,
     ManufacturedGoods,

@@ -1,5 +1,5 @@
+use derivative::Derivative;
 use crate::{Effects, Unit as BaseUnit};
-use crate::effect::Effect;
 
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]
 pub enum Id {
@@ -15,8 +15,11 @@ pub enum Id {
     Urbanism,
 }
 
+#[derive(Derivative)]
+#[derivative(Debug)]
 pub struct Unit {
     pub id: Id,
+    #[derivative(Debug="ignore")]
     pub effects: Effects,
 }
 

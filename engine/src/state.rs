@@ -1,13 +1,18 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use crate::{building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins};
+use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins};
 
 pub struct State {
     pub phase: Phase,
     pub players: Players,
+    pub deck: Deck,
     pub cities: HashMap<Nickname, City>,
-    pub post_effects: Vec<Box<dyn effect::PostEffect>>,
+    pub progress_tokens: Vec<token::Id>,
+    pub buildings: Buildings,
+    pub random_units: RandomUnits,
     pub interactive_units: Units,
+    pub post_effects: Vec<Box<dyn effect::PostEffect>>,
+
     pub result: Option<Result>,
 }
 
@@ -158,6 +163,10 @@ pub struct Units {
     pub tokens: Vec<token::Id>,
 }
 
+pub struct RandomUnits {
+    pub tokens: Vec<token::Id>,
+}
+
 #[derive(Debug, Default)]
 pub struct Bank {
     pub discard_reward: u8,
@@ -212,4 +221,8 @@ impl Players {
             self.next_turn();
         }
     }
+}
+
+pub struct Buildings {
+    pub discarded: Vec<building::Id>,
 }

@@ -6,12 +6,14 @@ mod wonder;
 mod token;
 mod economy;
 mod military;
+mod deck;
 
 pub use self::{
     economy::{Resource, Resources, Coins},
     effect::{Effect, Effects, PostEffect},
     player::Nickname,
-    state::State
+    state::State,
+    deck::Deck,
 };
 
 pub const COINS_PER_POINT: u8 = 3;
