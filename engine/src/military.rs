@@ -1,6 +1,6 @@
 use crate::{*};
 
-type Pos = u8;
+pub type Pos = u8;
 
 #[derive(Default)]
 pub struct Track {
@@ -27,7 +27,7 @@ impl Track {
     pub fn move_conflict_pawn(&mut self, s: &mut State, power: u8) -> (Coins, bool) {
         let mut fine: Coins = 0;
         let mut supremacy = false;
-        let mut enemy_pos = &mut s.enemy().track.pos;
+        let mut enemy_pos = &mut s.enemy_mut().track.pos;
 
         if *enemy_pos >= power {
             *enemy_pos -= power;
@@ -70,4 +70,4 @@ impl Track {
     }
 }
 
-struct Zone(pub Pos, pub Points, pub Coins);
+pub struct Zone(pub Pos, pub Points, pub Coins);

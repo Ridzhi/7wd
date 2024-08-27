@@ -4,8 +4,7 @@ use crate::{building, economy::{Discount, PriceList, Resource, Resources, Cost, 
 
 pub struct State {
     pub phase: Phase,
-    pub first_turn: Nickname,
-    pub turn: Nickname,
+    pub players: Players,
     pub cities: HashMap<Nickname, City>,
     pub post_effects: Vec<Box<dyn effect::PostEffect>>,
     pub interactive_units: Units,
@@ -13,32 +12,26 @@ pub struct State {
 }
 
 impl State {
-    pub fn me(&mut self) -> &mut City {
-        self.cities.get_mut(&self.turn).unwrap()
+    pub fn me(&self) -> &City {
+        self.cities.get(&self.players.me).unwrap()
     }
 
-    pub fn enemy(&mut self) -> &mut City {
-        let enemy = self.get_next_turn();
-
-        self.cities.get_mut(&enemy).unwrap()
+    pub fn me_mut(&mut self) -> &mut City {
+        self.cities.get_mut(&self.players.me).unwrap()
     }
 
-    pub fn set_turn(&mut self, player: Nickname) {
-        if self.turn != player {
-            self.next_turn()
-        }
+    pub fn enemy(&self) -> &City {
+        self.cities.get(&self.players.enemy).unwrap()
     }
 
-    pub fn next_turn(&mut self) {
-        let enemy = self.get_next_turn();
-        self.turn = enemy;
+    pub fn enemy_mut(&mut self) -> &mut City {
+        self.cities.get_mut(&self.players.enemy).unwrap()
     }
 
     pub fn over(&mut self, victory: Victory, winner: Nickname) {
         if self.phase == Phase::Over {
             return;
         }
-
 
         self.phase = Phase::Over;
         self.result = Some(Result {
@@ -64,31 +57,31 @@ impl State {
         let mut fine: Coins = 0;
         let mut supremacy = false;
 
-        if self.enemy().track.pos >= power {
-            self.enemy().track.pos -= power;
+        if self.enemy_mut().track.pos >= power {
+            self.enemy_mut().track.pos -= power;
 
             return (fine, supremacy);
         }
 
-        self.me().track.pos += (power - self.enemy().track.pos);
-        self.enemy().track.pos = 0;
+        self.me_mut().track.pos += (power - self.enemy_mut().track.pos);
+        self.enemy_mut().track.pos = 0;
 
-        if self.me().track.pos >= Track::CAPITAL_POS {
-            self.me().track.pos = Track::CAPITAL_POS;
+        if self.me_mut().track.pos >= Track::CAPITAL_POS {
+            self.me_mut().track.pos = Track::CAPITAL_POS;
             supremacy = true;
         }
 
-        let zone_index = self.me().track.get_zone_index();
+        let zone_index = self.me_mut().track.get_zone_index();
 
-        if zone_index > self.me().track.max_zone {
-            self.me().track.max_zone = zone_index;
+        if zone_index > self.me_mut().track.max_zone {
+            self.me_mut().track.max_zone = zone_index;
             fine = Track::ZONES[zone_index].2;
         }
 
         (fine, supremacy)
     }
 
-    pub fn resolve_winner(&mut self) -> Nickname {
+    pub fn resolve_winner(&self) -> Nickname {
         let winner = match self.me().score.total.cmp(&self.enemy().score.total) {
             Ordering::Greater => &self.me().name,
             Ordering::Less => &self.enemy().name,
@@ -97,7 +90,7 @@ impl State {
                     Ordering::Greater => &self.me().name,
                     Ordering::Less => &self.enemy().name,
                     Ordering::Equal => {
-                        if self.me().name == self.first_turn {
+                        if self.me().name == self.players.starts {
                             &self.me().name
                         } else {
                             &self.enemy().name
@@ -108,14 +101,6 @@ impl State {
         };
 
         winner.clone()
-    }
-
-    fn get_next_turn(&self) -> Nickname {
-        self.cities
-            .keys()
-            .find(|&k| !k.eq(&self.turn))
-            .unwrap()
-            .clone()
     }
 }
 
@@ -209,4 +194,23 @@ impl Bank {
 struct Result {
     pub winner: Nickname,
     pub victory: Victory,
+}
+
+pub struct Players {
+    pub starts: Nickname,
+    pub me: Nickname,
+    pub enemy: Nickname,
+}
+
+impl Players {
+    pub fn next_turn(&mut self) {
+        std::mem::swap(&mut self.me, &mut self.enemy);
+    }
+
+    pub fn set_turn(&mut self, turn: Nickname) {
+        if self.me != turn {
+            assert_eq!(self.enemy, turn);
+            self.next_turn();
+        }
+    }
 }

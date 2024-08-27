@@ -32,7 +32,7 @@ pub struct Chain {
 
 impl Effect for Chain {
     fn apply(&self, s: &mut State) {
-        s.me().chains.push(self.building);
+        s.me_mut().chains.push(self.building);
     }
 }
 
@@ -42,7 +42,7 @@ pub struct Reward {
 
 impl Effect for Reward {
     fn apply(&self, s: &mut State) {
-        s.me().coins += self.coins;
+        s.me_mut().coins += self.coins;
     }
 }
 
@@ -53,7 +53,7 @@ pub struct RewardFor {
 
 impl Effect for RewardFor {
     fn apply(&self, s: &mut State) {
-        s.me().coins += s.me().bonus_rate(self.bonus) * self.coins;
+        s.me_mut().coins += s.me_mut().bonus_rate(self.bonus) * self.coins;
     }
 }
 
@@ -63,7 +63,7 @@ pub struct DestructBuilding {
 
 impl Effect for DestructBuilding {
     fn apply(&self, s: &mut State) {
-        let buildings = building::filter_by_kind(&s.enemy().buildings, self.kind);
+        let buildings = building::filter_by_kind(&s.enemy_mut().buildings, self.kind);
 
         if buildings.is_empty() {
             return;
@@ -71,7 +71,7 @@ impl Effect for DestructBuilding {
 
         s.post_effects.push(Box::new(
             PostDestructBuilding {
-                player: s.turn.clone(),
+                player: s.players.me.clone(),
                 buildings,
             }
         ));
@@ -82,7 +82,7 @@ pub struct DiscardRewardAdjuster;
 
 impl Effect for DiscardRewardAdjuster {
     fn apply(&self, s: &mut State) {
-        s.me().bank.discard_reward += 1;
+        s.me_mut().bank.discard_reward += 1;
     }
 }
 
@@ -94,7 +94,7 @@ pub struct Discounter {
 
 impl Effect for Discounter {
     fn apply(&self, s: &mut State) {
-        s.me().bank.discounts.push(Discount {
+        s.me_mut().bank.discounts.push(Discount {
             scope: self.scope,
             resources: self.resources.clone(),
             count: self.count,
@@ -108,7 +108,7 @@ pub struct Fine {
 
 impl Effect for Fine {
     fn apply(&self, s: &mut State) {
-        s.enemy().coins -= min(self.coins, s.enemy().coins);
+        s.enemy_mut().coins -= min(self.coins, s.enemy_mut().coins);
     }
 }
 
@@ -120,7 +120,7 @@ impl Effect for FixedPrice {
     fn apply(&self, s: &mut State) {
         self.resources.iter()
             .for_each(|resource| {
-                *s.me().bank.resource_price.get_mut(resource).unwrap() = FIXED_RESOURCE_PRICE;
+                *s.me_mut().bank.resource_price.get_mut(resource).unwrap() = FIXED_RESOURCE_PRICE;
             })
     }
 }
@@ -133,13 +133,13 @@ pub struct Guild {
 
 impl Guild {
     fn rate(&self, s: &mut State) -> u8 {
-        max(s.me().bonus_rate(self.bonus), s.enemy().bonus_rate(self.bonus))
+        max(s.me_mut().bonus_rate(self.bonus), s.enemy_mut().bonus_rate(self.bonus))
     }
 }
 
 impl Effect for Guild {
     fn apply(&self, s: &mut State) {
-        s.me().coins += self.rate(s) * self.coins;
+        s.me_mut().coins += self.rate(s) * self.coins;
     }
 
     fn get_points(&self, s: &mut State) -> u8 {
@@ -151,7 +151,7 @@ pub struct Mathematics;
 
 impl Effect for Mathematics {
     fn get_points(&self, s: &mut State) -> u8 {
-        s.me().tokens.len() as u8 * 3
+        s.me_mut().tokens.len() as u8 * 3
     }
 }
 
@@ -179,7 +179,7 @@ impl Military {
 impl Effect for Military {
     fn apply(&self, s: &mut State) {
         let power = self.power + {
-          if self.apply_strategy_token && s.me().tokens.contains(&token::Id::Strategy) {
+          if self.apply_strategy_token && s.me_mut().tokens.contains(&token::Id::Strategy) {
               1
           } else {
               0
@@ -192,7 +192,7 @@ impl Effect for Military {
         // let (fine, supremacy) = my_track.move_conflict_pawn(s, self.power);
 
         if fine > 0 {
-            s.enemy().coins -= min(fine, s.enemy().coins);
+            s.enemy_mut().coins -= min(fine, s.enemy_mut().coins);
         }
     }
 }
@@ -205,7 +205,7 @@ pub struct PostDestructBuilding {
 impl PostEffect for PostDestructBuilding {
     fn apply(self, s: &mut State) {
         s.phase = Phase::DestructBuildingSelection;
-        s.set_turn(self.player);
+        s.players.set_turn(self.player);
         s.interactive_units.buildings = self.buildings;
     }
 }
@@ -269,8 +269,8 @@ mod tests {
 
         effects.iter().for_each(|eff| eff.apply(&mut s));
 
-        assert_eq!(s.me().coins, 3);
-        assert_eq!(s.enemy().coins, 0);
+        assert_eq!(s.me_mut().coins, 3);
+        assert_eq!(s.enemy_mut().coins, 0);
     }
 
     #[test]
@@ -292,7 +292,7 @@ mod tests {
 
         effects.iter().for_each(|eff| eff.apply(&mut s));
 
-        assert_eq!(s.me().coins, 0);
-        assert_eq!(s.enemy().coins, 0);
+        assert_eq!(s.me_mut().coins, 0);
+        assert_eq!(s.enemy_mut().coins, 0);
     }
 }
