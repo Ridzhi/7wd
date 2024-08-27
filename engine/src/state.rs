@@ -12,7 +12,6 @@ pub struct State {
     pub random_units: RandomUnits,
     pub interactive_units: Units,
     pub post_effects: Vec<Box<dyn effect::PostEffect>>,
-
     pub result: Option<Result>,
 }
 
