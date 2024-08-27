@@ -83,17 +83,17 @@ impl State {
 
     pub fn resolve_winner(&self) -> Nickname {
         let winner = match self.me().score.total.cmp(&self.enemy().score.total) {
-            Ordering::Greater => &self.me().name,
-            Ordering::Less => &self.enemy().name,
+            Ordering::Greater => &self.players.me,
+            Ordering::Less => &self.players.enemy,
             Ordering::Equal => {
                 match self.me().score.civilian.cmp(&self.enemy().score.commercial) {
-                    Ordering::Greater => &self.me().name,
-                    Ordering::Less => &self.enemy().name,
+                    Ordering::Greater => &self.players.me,
+                    Ordering::Less => &self.players.enemy,
                     Ordering::Equal => {
-                        if self.me().name == self.players.starts {
-                            &self.me().name
+                        if self.players.me == self.players.starts {
+                            &self.players.me
                         } else {
-                            &self.enemy().name
+                            &self.players.enemy
                         }
                     }
                 }
@@ -106,7 +106,6 @@ impl State {
 
 #[derive(Default)]
 pub struct City {
-    pub name: Nickname,
     pub coins: u8,
     pub resources: Resources,
     pub score: Score,

@@ -179,20 +179,21 @@ impl Military {
 impl Effect for Military {
     fn apply(&self, s: &mut State) {
         let power = self.power + {
-          if self.apply_strategy_token && s.me_mut().tokens.contains(&token::Id::Strategy) {
+          if self.apply_strategy_token && s.me().tokens.contains(&token::Id::Strategy) {
               1
           } else {
               0
           }
         };
 
-        let (fine, supremacy) = s.move_conflict_pawn(self.power);
-
-        // let mut my_track = &mut s.me().track;
-        // let (fine, supremacy) = my_track.move_conflict_pawn(s, self.power);
+        let (fine, supremacy) = s.move_conflict_pawn(power);
 
         if fine > 0 {
             s.enemy_mut().coins -= min(fine, s.enemy_mut().coins);
+        }
+
+        if supremacy {
+            s.over(Victory::MilitarySupremacy, s.players.me.clone())
         }
     }
 }
