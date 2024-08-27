@@ -25,7 +25,7 @@ pub enum Age {
     III,
 }
 
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default,Eq, PartialEq, Copy, Clone)]
 pub enum Phase {
     Over = 1,
     #[default]

@@ -9,14 +9,14 @@ pub struct Track {
 }
 
 impl Track {
-    const CAPITAL_POS: u8 = 9;
+    pub const CAPITAL_POS: u8 = 9;
     // Токены штрафа это переменная которую можно выразить через эффекты,
     // в агоре например, нет штрафов, там токены влияния
     // Соответственно констуктор трека должен принимать токены зон, которые
     // состоят из эффектов
     // Либо есть трейт трека, с дефолтной реализацией, и в экстеншине идет
     // нужный оверрайд
-    const ZONES: [Zone; 4] = [
+    pub const ZONES: [Zone; 4] = [
         // start pos, points, coins
         Zone(0, 0, 0),
         Zone(1, 2, 0),
@@ -57,7 +57,7 @@ impl Track {
         Self::ZONES[self.get_zone_index()].1
     }
 
-    fn get_zone_index(&self) -> usize {
+    pub fn get_zone_index(&self) -> usize {
         let ind = [3,2,1].iter().find(|&&ind| {
             self.pos >= Self::ZONES[ind].0
         });
@@ -70,4 +70,4 @@ impl Track {
     }
 }
 
-struct Zone(Pos, Points, Coins);
+struct Zone(pub Pos, pub Points, pub Coins);

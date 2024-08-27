@@ -1,20 +1,15 @@
+use std::cmp::Ordering;
 use std::collections::HashMap;
-use crate::{
-    building,
-    economy::{Discount, PriceList, Resource, Resources, Cost, PayScope},
-    effect,
-    token,
-    wonder,
-    military::{Track},
-    Bonus, Nickname, Phase, COINS_PER_POINT
-};
+use crate::{building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins};
 
 pub struct State {
     pub phase: Phase,
+    pub first_turn: Nickname,
     pub turn: Nickname,
     pub cities: HashMap<Nickname, City>,
     pub post_effects: Vec<Box<dyn effect::PostEffect>>,
     pub interactive_units: Units,
+    pub result: Option<Result>,
 }
 
 impl State {
@@ -39,6 +34,82 @@ impl State {
         self.turn = enemy;
     }
 
+    pub fn over(&mut self, victory: Victory, winner: Nickname) {
+        if self.phase == Phase::Over {
+            return;
+        }
+
+
+        self.phase = Phase::Over;
+        self.result = Some(Result {
+            winner,
+            victory,
+        });
+        // if winner.is_none() {
+        //     if self.me().score.total != self.enemy().score.total {
+        //         winner = Some(
+        //             if self.me().score.total > self.enemy().score.civilian {
+        //                 self.me().name
+        //             } else {
+        //                 self.enemy().name
+        //             }
+        //         );
+        //     }
+        // }
+
+        // refresh cities
+    }
+
+    pub fn move_conflict_pawn(&mut self, power: u8) -> (Coins, bool) {
+        let mut fine: Coins = 0;
+        let mut supremacy = false;
+
+        if self.enemy().track.pos >= power {
+            self.enemy().track.pos -= power;
+
+            return (fine, supremacy);
+        }
+
+        self.me().track.pos += (power - self.enemy().track.pos);
+        self.enemy().track.pos = 0;
+
+        if self.me().track.pos >= Track::CAPITAL_POS {
+            self.me().track.pos = Track::CAPITAL_POS;
+            supremacy = true;
+        }
+
+        let zone_index = self.me().track.get_zone_index();
+
+        if zone_index > self.me().track.max_zone {
+            self.me().track.max_zone = zone_index;
+            fine = Track::ZONES[zone_index].2;
+        }
+
+        (fine, supremacy)
+    }
+
+    pub fn resolve_winner(&mut self) -> Nickname {
+        let winner = match self.me().score.total.cmp(&self.enemy().score.total) {
+            Ordering::Greater => &self.me().name,
+            Ordering::Less => &self.enemy().name,
+            Ordering::Equal => {
+                match self.me().score.civilian.cmp(&self.enemy().score.commercial) {
+                    Ordering::Greater => &self.me().name,
+                    Ordering::Less => &self.enemy().name,
+                    Ordering::Equal => {
+                        if self.me().name == self.first_turn {
+                            &self.me().name
+                        } else {
+                            &self.enemy().name
+                        }
+                    }
+                }
+            }
+        };
+
+        winner.clone()
+    }
+
     fn get_next_turn(&self) -> Nickname {
         self.cities
             .keys()
@@ -50,6 +121,7 @@ impl State {
 
 #[derive(Default)]
 pub struct City {
+    pub name: Nickname,
     pub coins: u8,
     pub resources: Resources,
     pub score: Score,
@@ -127,9 +199,14 @@ impl Bank {
         let priority = self.get_resources_ordered_by_price();
 
         self.discounts.iter()
-            .filter(|&item| item.scope == PayScope::Global  || item.scope == scope)
+            .filter(|&item| item.scope == PayScope::Global || item.scope == scope)
             .for_each(|discount| {
                 discount.apply(cost, &priority);
             });
     }
+}
+
+struct Result {
+    pub winner: Nickname,
+    pub victory: Victory,
 }

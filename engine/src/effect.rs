@@ -185,6 +185,15 @@ impl Effect for Military {
               0
           }
         };
+
+        let (fine, supremacy) = s.move_conflict_pawn(self.power);
+
+        // let mut my_track = &mut s.me().track;
+        // let (fine, supremacy) = my_track.move_conflict_pawn(s, self.power);
+
+        if fine > 0 {
+            s.enemy().coins -= min(fine, s.enemy().coins);
+        }
     }
 }
 
