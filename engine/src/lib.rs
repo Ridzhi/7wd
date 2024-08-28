@@ -16,9 +16,19 @@ pub use self::{
     deck::Deck,
 };
 
-pub const COINS_PER_POINT: u8 = 3;
 pub const DEFAULT_RESOURCE_PRICE: u8 = 2;
+pub const DEFAULT_DISCARD_REWARD: u8 = 2;
+pub const STARTING_CITY_COINS: u8 = 7;
+pub const STARTING_TOKENS_COUNT: u8 = 5;
+pub const RANDOM_TOKENS_COUNT: u8 = 5;
+pub const WONDER_SELECTION_POOL_SIZE: u8 = 4;
+pub const WONDERS_CONSTRUCT_LIMIT: u8 = 7;
+pub const DECK_LIMIT: u8 = 20;
+pub const GUILDS_LIMIT: u8 = 3;
+pub const COINS_PER_POINT: u8 = 3;
 pub const FIXED_RESOURCE_PRICE: u8 = 1;
+pub const SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN: u8 = 2;
+pub const DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY: u8 = 6;
 
 #[derive(Debug, Default, Copy, Clone)]
 pub enum Age {
@@ -56,7 +66,7 @@ pub enum Bonus {
     Coin,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum ScientificSymbol {
     Astrology = 1,
     Wheel,

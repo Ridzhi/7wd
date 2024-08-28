@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE};
+use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN, DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY};
 
 pub struct State {
     pub phase: Phase,
@@ -117,6 +117,7 @@ pub struct City {
     pub buildings: Vec<building::Id>,
     pub wonders: Vec<(wonder::Id, Option<building::Id>)>,
     pub tokens: Vec<token::Id>,
+    pub scientific_symbols: Vec<(ScientificSymbol, u8)>,
     pub chains: Vec<building::Id>,
     pub bank: Bank,
     pub track: Track,
@@ -229,4 +230,10 @@ impl Players {
 
 pub struct Buildings {
     pub discarded: Vec<building::Id>,
+}
+
+enum ScienceStatus {
+    Regular,
+    ProgressToken,
+    Supremacy,
 }

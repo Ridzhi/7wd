@@ -427,7 +427,28 @@ pub struct Science {
 }
 
 impl Effect for Science {
+    fn apply(&self, s: &mut State) {
+        let pos = s.me()
+            .scientific_symbols
+            .iter()
+            .position(|(s, _)| *s == self.symbol);
 
+        if let Some(v) = pos {
+            s.me_mut().scientific_symbols[v].1 += 1;
+
+            if s.me().scientific_symbols[v].1 == SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN {
+                s.post_effects.push(Box::new(PostPickBoardToken{
+                    actor: s.players.me.clone(),
+                }));
+            }
+        } else {
+            s.me_mut().scientific_symbols.push((self.symbol, 1));
+        }
+
+        if s.me().scientific_symbols.len() == DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY as usize {
+            s.over(Victory::ScienceSupremacy, s.players.me.clone());
+        }
+    }
 }
 
 // pub struct PostDestructBuilding {
