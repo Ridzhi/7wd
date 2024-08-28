@@ -45,6 +45,12 @@ pub struct Chain {
     pub building: building::Id,
 }
 
+impl Chain {
+    pub fn new(building: building::Id) -> Self {
+        Self{building}
+    }
+}
+
 impl Effect for Chain {
     fn apply(&self, s: &mut State) {
         s.me_mut().chains.push(self.building);
@@ -148,11 +154,11 @@ impl Effect for Fine {
 }
 
 #[derive(Debug)]
-pub struct FixedPrice {
+pub struct FixedResourcePrice {
     pub resources: Vec<Resource>,
 }
 
-impl Effect for FixedPrice {
+impl Effect for FixedResourcePrice {
     fn apply(&self, s: &mut State) {
         self.resources.iter()
             .for_each(|resource| {
@@ -437,6 +443,14 @@ impl Effect for ProduceResource {
 
 pub struct Science {
     pub symbol: ScientificSymbol,
+}
+
+impl Science {
+    pub fn new(symbol: ScientificSymbol) -> Self {
+        Self{
+            symbol,
+        }
+    }
 }
 
 impl Effect for Science {

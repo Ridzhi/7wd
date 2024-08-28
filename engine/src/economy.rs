@@ -53,6 +53,7 @@ pub type PriceList<T> = HashMap<T, Coins>;
 
 pub type Resources = HashMap<Resource, u8>;
 
+// @TODO macros cost![1c 3w] coins: 1, wood: 3
 #[derive(Default)]
 pub struct Cost {
     pub coins: Coins,
