@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::sync::LazyLock;
-use crate::{Effects, Unit as BaseUnit};
+use crate::{Effects, BaseUnit as BaseUnit};
 use crate::economy::{Cost, Resource};
 
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]

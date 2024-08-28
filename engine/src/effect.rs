@@ -7,6 +7,19 @@ use crate::{
     *,
 };
 
+#[macro_export]
+macro_rules! effects {
+    ($($e:expr),*) => {
+        {
+            let mut v: Effects = Default::default();
+            $(
+            v.push(Box::new($e));
+            )*
+            v
+        }
+    };
+}
+
 pub trait Effect {
     fn apply(&self, s: &mut State) {
         ()

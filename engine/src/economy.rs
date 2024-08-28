@@ -58,4 +58,3 @@ pub struct Cost {
     pub coins: Coins,
     pub resources: Resources,
 }
-

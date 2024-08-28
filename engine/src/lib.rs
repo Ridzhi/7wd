@@ -9,7 +9,7 @@ mod military;
 mod deck;
 
 pub use self::{
-    economy::{Resource, Resources, Coins},
+    economy::{Resource, Resources, Coins, Cost},
     effect::{Effect, Effects, PostEffect},
     player::Nickname,
     state::State,
@@ -86,7 +86,7 @@ pub enum Victory {
     Timeout,
 }
 
-pub trait Unit {
+pub trait BaseUnit {
     fn effects(&self) -> &Effects;
 
     fn construct(&self, s: &mut State) {

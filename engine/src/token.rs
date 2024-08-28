@@ -1,5 +1,5 @@
 use derivative::Derivative;
-use crate::{Effects, Unit as BaseUnit};
+use crate::{Effects, BaseUnit as BaseUnit};
 
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]
 pub enum Id {
