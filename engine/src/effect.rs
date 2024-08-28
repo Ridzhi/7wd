@@ -451,54 +451,6 @@ impl Effect for Science {
     }
 }
 
-// pub struct PostDestructBuilding {
-//     player: Nickname,
-//     buildings: Vec<building::Id>,
-// }
-//
-// impl PostEffect for crate::effect::PostDestructBuilding {
-//     fn apply(self, s: &mut State) {
-//         s.phase = Phase::DestructBuildingSelection;
-//         s.players.set_turn(self.player);
-//         s.interactive_units.buildings = self.buildings;
-//     }
-// }
-
-pub enum Effectv2 {
-    Chain {
-        building: building::Id,
-    },
-    Coins {
-        count: i8
-    },
-    CoinsFor {
-        count: u8,
-        bonus: Bonus,
-    },
-    DestructBuilding {
-        kind: building::Kind
-    },
-    DiscardRewardAdjuster,
-    Discounter {
-        scope: PayScope,
-        resources: Vec<Resource>,
-        count: u8,
-    },
-    // Guild { bonus: Bonus, points: u8, coins: u8 },
-    // Mathematics {},
-    // Military { power: u8, strategy_disabled: bool },
-    // PickBoardToken {},
-    // PickDiscardedCard {},
-    // PickRandomToken {},
-    // PickReturnedCards {},
-    // PickTopLineCard {},
-    // PlayAgain {},
-    // Points { count: u8 },
-    // Resource { resource: RId, count: u8 },
-    // Science { symbol: ScientificSymbol },
-}
-
-
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
