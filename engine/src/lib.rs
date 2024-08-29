@@ -10,7 +10,7 @@ mod deck;
 
 pub use self::{
     economy::{Resource, Resources, Coins, Cost},
-    effect::{Effect, Effects, PostEffect},
+    effect::{Effect, PostEffect},
     player::Nickname,
     state::State,
     deck::Deck,
@@ -87,7 +87,7 @@ pub enum Victory {
 }
 
 pub trait BaseUnit {
-    fn effects(&self) -> &Effects;
+    fn effects(&self) -> &Vec<Effect>;
 
     fn construct(&self, s: &mut State) {
         for effect in self.effects() {

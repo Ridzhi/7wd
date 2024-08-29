@@ -1,17 +1,18 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
 use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN, DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY};
+use crate::effect::PostEffect;
 
 pub struct State {
     pub phase: Phase,
     pub players: Players,
     pub deck: Deck,
     pub cities: HashMap<Nickname, City>,
-    pub progress_tokens: Vec<token::Id>,
+    pub progress_tokens: [Option<token::Id>; 5],
     pub buildings: Buildings,
     pub random_units: RandomUnits,
     pub interactive_units: Units,
-    pub post_effects: Vec<Box<dyn effect::PostEffect>>,
+    pub post_effects: Vec<PostEffect>,
     pub play_again: bool,
     pub result: Option<Result>,
 }

@@ -1,10 +1,8 @@
 use std::collections::HashMap;
 use std::iter::{IntoIterator, Iterator};
 use std::sync::LazyLock;
-use crate::{
-    effects,
-    *,
-};
+use std::vec;
+use crate::{*};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Id {
@@ -102,11 +100,11 @@ pub struct Unit {
     pub age: Age,
     pub kind: Kind,
     pub cost: Cost,
-    pub effects: Effects,
+    pub effects: Vec<Effect>,
 }
 
 impl BaseUnit for Unit {
-    fn effects(&self) -> &Effects {
+    fn effects(&self) -> &Vec<Effect> {
         &self.effects
     }
 }
@@ -129,8 +127,6 @@ pub fn count_by_kind(source: &Vec<Id>, kind: Kind) -> u8 {
 }
 
 pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
-    use crate::effect::*;
-
     vec![
         Unit {
             id: Id::LumberYard,
@@ -140,8 +136,8 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 0,
                 resources: Resources::new(),
             },
-            effects: effects![
-                ProduceResource::new(Resource::Wood, 1)
+            effects: vec![
+                Effect::ProduceResource(Resource::Wood, 1),
             ],
         },
         Unit {
@@ -152,8 +148,8 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 1,
                 resources: Resources::new(),
             },
-            effects: effects![
-                ProduceResource::new(Resource::Wood, 1)
+            effects: vec![
+                Effect::ProduceResource(Resource::Wood, 1),
             ],
         },
         Unit {
@@ -164,8 +160,8 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 0,
                 resources: Resources::new(),
             },
-            effects: effects![
-                ProduceResource::new(Resource::Clay, 1)
+            effects: vec![
+                Effect::ProduceResource(Resource::Clay, 1),
             ],
         },
         Unit {
@@ -176,8 +172,8 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 1,
                 resources: Resources::new(),
             },
-            effects: effects![
-                ProduceResource::new(Resource::Clay, 1)
+            effects: vec![
+                Effect::ProduceResource(Resource::Clay, 1),
             ],
         },
         Unit {
@@ -188,8 +184,8 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 0,
                 resources: Resources::new(),
             },
-            effects: effects![
-                ProduceResource::new(Resource::Stone, 1)
+            effects: vec![
+                Effect::ProduceResource(Resource::Stone, 1)
             ],
         },
         Unit {
@@ -200,8 +196,8 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 1,
                 resources: Resources::new(),
             },
-            effects: effects![
-                ProduceResource::new(Resource::Clay, 1)
+            effects: vec![
+                Effect::ProduceResource(Resource::Clay, 1)
             ],
         },
         Unit {
@@ -212,8 +208,8 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 1,
                 resources: Resources::new(),
             },
-            effects: effects![
-                ProduceResource::new(Resource::Glass, 1)
+            effects: vec![
+                Effect::ProduceResource(Resource::Glass, 1)
             ],
         },
         Unit {
@@ -224,8 +220,8 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 1,
                 resources: Resources::new(),
             },
-            effects: effects![
-                ProduceResource::new(Resource::Papyrus, 1)
+            effects: vec![
+                Effect::ProduceResource(Resource::Papyrus, 1)
             ],
         },
         Unit {
@@ -236,8 +232,8 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 0,
                 resources: Resources::new(),
             },
-            effects: effects![
-                Military::for_building(1)
+            effects: vec![
+                Effect::Military(1, true),
             ],
         },
         Unit {
@@ -250,9 +246,9 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 1),
                 ]),
             },
-            effects: effects![
-                Points::new(1),
-                Science::new(ScientificSymbol::Compass)
+            effects: vec![
+                Effect::Points(1),
+                Effect::Science(ScientificSymbol::Compass),
             ],
         },
         Unit {
@@ -265,9 +261,9 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Glass, 1),
                 ]),
             },
-            effects: effects![
-                Points::new(1),
-                Science::new(ScientificSymbol::Wheel)
+            effects: vec![
+                Effect::Points(1),
+                Effect::Science(ScientificSymbol::Wheel),
             ],
         },
         Unit {
@@ -278,11 +274,9 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 3,
                 resources: Resources::new(),
             },
-            effects: effects![
-                FixedResourcePrice{
-                    resources: vec![Resource::Stone]
-                },
-                DiscardRewardAdjuster
+            effects: vec![
+                Effect::FixedResourcePrice(vec![Resource::Stone]),
+                Effect::DiscardRewardAdjuster,
             ],
         },
         Unit {
@@ -293,11 +287,9 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 3,
                 resources: Resources::new(),
             },
-            effects: effects![
-                FixedResourcePrice{
-                    resources: vec![Resource::Clay]
-                },
-                DiscardRewardAdjuster
+            effects: vec![
+                Effect::FixedResourcePrice(vec![Resource::Clay]),
+                Effect::DiscardRewardAdjuster,
             ],
         },
         Unit {
@@ -308,11 +300,9 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 3,
                 resources: Resources::new(),
             },
-            effects: effects![
-                FixedResourcePrice{
-                    resources: vec![Resource::Wood]
-                },
-                DiscardRewardAdjuster
+            effects: vec![
+                Effect::FixedResourcePrice(vec![Resource::Wood]),
+                Effect::DiscardRewardAdjuster,
             ],
         },
         Unit {
@@ -325,9 +315,9 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Wood, 1),
                 ]),
             },
-            effects: effects![
-                Military::for_building(1),
-                Chain::new(Id::HorseBreeders)
+            effects: vec![
+                Effect::Military(1, true),
+                Effect::Chain(Id::HorseBreeders),
             ],
         },
         Unit {
@@ -340,9 +330,9 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Clay, 1),
                 ]),
             },
-            effects: effects![
-                Military::for_building(1),
-                Chain::new(Id::Barracks)
+            effects: vec![
+                Effect::Military(1, true),
+                Effect::Chain(Id::Barracks),
             ],
         },
         Unit {
@@ -353,9 +343,9 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 2,
                 resources: Resources::new(),
             },
-            effects: effects![
-                Military::for_building(1),
-                Chain::new(Id::Fortifications)
+            effects: vec![
+                Effect::Military(1, true),
+                Effect::Chain(Id::Fortifications),
             ],
         },
         Unit {
@@ -366,9 +356,9 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 2,
                 resources: Resources::new(),
             },
-            effects: effects![
-                Science::new(ScientificSymbol::Writing),
-                Chain::new(Id::Library)
+            effects: vec![
+                Effect::Science(ScientificSymbol::Writing),
+                Effect::Chain(Id::Library),
             ],
         },
         Unit {
@@ -379,7 +369,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 2,
                 resources: Resources::new(),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Theater,
@@ -389,7 +379,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 0,
                 resources: Resources::new(),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Altar,
@@ -399,7 +389,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 0,
                 resources: Resources::new(),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Baths,
@@ -411,7 +401,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Stone, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Tavern,
@@ -421,7 +411,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 0,
                 resources: Resources::new(),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::SawMill,
@@ -431,7 +421,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 2,
                 resources: Resources::new(),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::BrickYard,
@@ -441,7 +431,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 2,
                 resources: Resources::new(),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::ShelfQuarry,
@@ -451,7 +441,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 2,
                 resources: Resources::new(),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::GlassBlower,
@@ -461,7 +451,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 0,
                 resources: Resources::new(),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::DryingRoom,
@@ -471,7 +461,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 0,
                 resources: Resources::new(),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Walls,
@@ -483,7 +473,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Stone, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Forum,
@@ -495,7 +485,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Clay, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Caravansery,
@@ -508,7 +498,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::CustomHouse,
@@ -518,7 +508,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 4,
                 resources: Resources::new(),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::CourtHouse,
@@ -531,7 +521,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Glass, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::HorseBreeders,
@@ -544,7 +534,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Wood, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Barracks,
@@ -554,7 +544,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 3,
                 resources: Resources::new(),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::ArcheryRange,
@@ -568,7 +558,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::ParadeGround,
@@ -581,7 +571,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Glass, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Library,
@@ -595,7 +585,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Glass, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Dispensary,
@@ -608,7 +598,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Stone, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::School,
@@ -621,7 +611,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Laboratory,
@@ -634,7 +624,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Glass, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Statue,
@@ -646,7 +636,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Clay, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Temple,
@@ -659,7 +649,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Aqueduct,
@@ -671,7 +661,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Stone, 3),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Rostrum,
@@ -684,7 +674,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Wood, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Brewery,
@@ -694,7 +684,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 0,
                 resources: Resources::new(),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Arsenal,
@@ -707,7 +697,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Wood, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Pretorium,
@@ -717,7 +707,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 coins: 8,
                 resources: Resources::new(),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Academy,
@@ -731,7 +721,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Glass, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Study,
@@ -745,7 +735,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::ChamberOfCommerce,
@@ -757,7 +747,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Port,
@@ -771,7 +761,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Armory,
@@ -784,7 +774,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Glass, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Palace,
@@ -799,7 +789,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Glass, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::TownHall,
@@ -812,7 +802,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Wood, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Obelisk,
@@ -825,7 +815,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Glass, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Fortifications,
@@ -839,7 +829,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::SiegeWorkshop,
@@ -852,7 +842,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Glass, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Circus,
@@ -865,7 +855,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Stone, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::University,
@@ -879,7 +869,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Observatory,
@@ -892,7 +882,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Gardens,
@@ -905,7 +895,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Wood, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Pantheon,
@@ -919,7 +909,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Senate,
@@ -933,7 +923,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Lighthouse,
@@ -946,7 +936,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Glass, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::Arena,
@@ -960,7 +950,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Wood, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::MerchantsGuild,
@@ -975,7 +965,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::ShipOwnersGuild,
@@ -990,7 +980,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::BuildersGuild,
@@ -1005,7 +995,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Glass, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::MagistratesGuild,
@@ -1019,7 +1009,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::ScientistsGuild,
@@ -1032,7 +1022,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Wood, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::MoneyLendersGuild,
@@ -1045,7 +1035,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Wood, 2),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
         Unit {
             id: Id::TacticiansGuild,
@@ -1059,7 +1049,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                     (Resource::Papyrus, 1),
                 ]),
             },
-            effects: effects![],
+            effects: vec![],
         },
     ]
         .into_iter()
