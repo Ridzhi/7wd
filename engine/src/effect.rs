@@ -9,8 +9,8 @@ use crate::{
 
 pub enum Effect {
     Chain(building::Id),
-    Reward(Coins),
-    RewardFor(Bonus, Coins),
+    Coins(Coins),
+    CoinsFor(Bonus, Coins),
     DestructBuilding(building::Kind),
     DiscardRewardAdjuster,
     Discounter {
@@ -30,7 +30,7 @@ pub enum Effect {
     PickTopLineBuilding,
     PlayAgain,
     Points(u8),
-    ProduceResource(Resource, u8),
+    Resource(Resource, u8),
     Science(ScientificSymbol),
 }
 
@@ -41,11 +41,11 @@ impl Effect {
                 s.me_mut().chains.push(building);
             }
 
-            Self::Reward(coins) => {
+            Self::Coins(coins) => {
                 s.me_mut().coins += coins;
             }
 
-            Self::RewardFor(bonus, coins) => {
+            Self::CoinsFor(bonus, coins) => {
                 s.me_mut().coins += s.me_mut().bonus_rate(bonus) * coins;
             }
 
@@ -144,7 +144,7 @@ impl Effect {
                 s.play_again = true;
             }
 
-            Self::ProduceResource(resource, count) => {
+            Self::Resource(resource, count) => {
                 *s.me_mut().resources.get_mut(&resource).unwrap() += count;
                 update_resource_price(s, &resource);
             }
@@ -176,7 +176,7 @@ impl Effect {
 
     pub fn rollback(&self, s: &mut State) {
         match *self {
-            Effect::ProduceResource(resource, count) => {
+            Effect::Resource(resource, count) => {
                 let current = s.me().resources[&resource];
                 *s.me_mut().resources.get_mut(&resource).unwrap() = min(current - count, 0);
                 update_resource_price(s, &resource);
