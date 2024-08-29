@@ -47,6 +47,18 @@ pub enum Resource {
     Papyrus,
 }
 
+impl Resource {
+    pub fn all() -> Vec<Resource> {
+        vec![
+            Self::Clay,
+            Self::Wood,
+            Self::Stone,
+            Self::Glass,
+            Self::Papyrus,
+        ]
+    }
+}
+
 pub type Coins = u8;
 
 pub type PriceList<T> = HashMap<T, Coins>;

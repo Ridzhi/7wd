@@ -1,5 +1,7 @@
-use derivative::Derivative;
-use crate::{BaseUnit, Effect};
+use std::collections::HashMap;
+use std::sync::LazyLock;
+use crate::{BaseUnit, Effect, Resource, ScientificSymbol};
+use crate::economy::PayScope;
 
 #[derive(Debug, Clone, Copy, Eq, Hash, PartialEq)]
 pub enum Id {
@@ -15,11 +17,9 @@ pub enum Id {
     Urbanism,
 }
 
-#[derive(Derivative)]
-#[derivative(Debug)]
+#[derive(Debug)]
 pub struct Unit {
     pub id: Id,
-    #[derivative(Debug="ignore")]
     pub effects: Vec<Effect>,
 }
 
@@ -28,3 +28,78 @@ impl BaseUnit for Unit {
         &self.effects
     }
 }
+
+pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
+    vec![
+        Unit {
+            id: Id::Agriculture,
+            effects: vec![
+                Effect::Coins(6),
+                Effect::Points(4),
+            ],
+        },
+        Unit {
+            id: Id::Architecture,
+            effects: vec![
+                Effect::Discounter{
+                    scope: PayScope::Wonders,
+                    resources: Resource::all(),
+                    count: 2,
+                },
+            ],
+        },
+        Unit {
+            id: Id::Economy,
+            // @TODO make as set flag effect
+            effects: vec![],
+        },
+        Unit {
+            id: Id::Law,
+            effects: vec![
+                Effect::Science(ScientificSymbol::Law),
+            ],
+        },
+        Unit {
+            id: Id::Masonry,
+            effects: vec![
+                Effect::Discounter{
+                    scope: PayScope::Civilian,
+                    resources: Resource::all(),
+                    count: 2,
+                },
+            ],
+        },
+        Unit {
+            id: Id::Mathematics,
+            effects: vec![
+                Effect::Mathematics,
+            ],
+        },
+        Unit {
+            id: Id::Philosophy,
+            effects: vec![
+                Effect::Points(7),
+            ],
+        },
+        Unit {
+            id: Id::Strategy,
+            // @TODO make as set flag effect
+            effects: vec![],
+        },
+        Unit {
+            id: Id::Theology,
+            // @TODO make as set flag effect
+            effects: vec![],
+        },
+        Unit {
+            id: Id::Urbanism,
+            // @TODO make as set flag effect
+            effects: vec![
+                Effect::Coins(6),
+            ],
+        },
+    ]
+        .into_iter()
+        .map(|unit| (unit.id, unit))
+        .collect::<HashMap<_,_>>()
+});

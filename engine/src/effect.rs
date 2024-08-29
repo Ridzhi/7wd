@@ -7,6 +7,7 @@ use crate::{
     *,
 };
 
+#[derive(Debug)]
 pub enum Effect {
     Chain(building::Id),
     Coins(Coins),
