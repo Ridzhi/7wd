@@ -9,7 +9,7 @@ mod military;
 mod deck;
 
 pub use self::{
-    economy::{Resource, Resources, Coins, Cost},
+    economy::{Resource, Resources, Coins, Cost, PayScope},
     effect::{Effect, PostEffect},
     player::Nickname,
     state::State,

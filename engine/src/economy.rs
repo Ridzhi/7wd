@@ -48,15 +48,24 @@ pub enum Resource {
 }
 
 impl Resource {
-    pub fn all() -> Vec<Resource> {
-        vec![
-            Self::Clay,
-            Self::Wood,
-            Self::Stone,
-            Self::Glass,
-            Self::Papyrus,
-        ]
-    }
+    pub const ALL: [Self;5] = [
+        Self::Clay,
+        Self::Wood,
+        Self::Stone,
+        Self::Glass,
+        Self::Papyrus,
+    ];
+
+    pub const RAW_MATERIALS: [Self;3] = [
+        Self::Clay,
+        Self::Wood,
+        Self::Stone,
+    ];
+
+    pub const MANUFACTURED_GOODS: [Self; 2] = [
+        Self::Glass,
+        Self::Papyrus,
+    ];
 }
 
 pub type Coins = u8;

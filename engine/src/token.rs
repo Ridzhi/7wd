@@ -43,7 +43,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
             effects: vec![
                 Effect::Discounter{
                     scope: PayScope::Wonders,
-                    resources: Resource::all(),
+                    resources: Resource::ALL.to_vec(),
                     count: 2,
                 },
             ],
@@ -64,7 +64,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
             effects: vec![
                 Effect::Discounter{
                     scope: PayScope::Civilian,
-                    resources: Resource::all(),
+                    resources: Resource::ALL.to_vec(),
                     count: 2,
                 },
             ],
