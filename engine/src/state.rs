@@ -1,8 +1,9 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN, DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY};
+use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN, DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY, Action, Error};
 use crate::effect::PostEffect;
 
+#[derive(Default, Debug)]
 pub struct State {
     pub phase: Phase,
     pub players: Players,
@@ -14,7 +15,19 @@ pub struct State {
     pub interactive_units: Units,
     pub post_effects: Vec<PostEffect>,
     pub play_again: bool,
-    pub result: Option<Result>,
+    pub finish: Option<Finish>,
+}
+
+impl State {
+    pub fn from(actions: Vec<Action>) -> Result<Self, Error> {
+        let mut s = Self::default();
+
+        for action in actions {
+            action.apply(&mut s)?;
+        }
+
+        Ok(s)
+    }
 }
 
 impl State {
@@ -40,7 +53,7 @@ impl State {
         }
 
         self.phase = Phase::Over;
-        self.result = Some(Result {
+        self.finish = Some(Finish {
             winner,
             victory,
         });
@@ -97,7 +110,7 @@ impl State {
     }
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct City {
     pub coins: u8,
     pub resources: Resources,
@@ -145,13 +158,14 @@ pub struct Score {
     total: u8,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Units {
     pub wonders: Vec<wonder::Id>,
     pub buildings: Vec<building::Id>,
     pub tokens: Vec<token::Id>,
 }
 
+#[derive(Default, Debug)]
 pub struct RandomUnits {
     pub tokens: Vec<token::Id>,
 }
@@ -192,11 +206,13 @@ impl Bank {
     }
 }
 
-struct Result {
+#[derive(Debug)]
+struct Finish {
     pub winner: Nickname,
     pub victory: Victory,
 }
 
+#[derive(Default, Debug)]
 pub struct Players {
     pub starts: Nickname,
     pub me: Nickname,
@@ -216,6 +232,7 @@ impl Players {
     }
 }
 
+#[derive(Default, Debug)]
 pub struct Buildings {
     pub discarded: Vec<building::Id>,
 }

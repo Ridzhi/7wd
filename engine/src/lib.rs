@@ -15,6 +15,7 @@ pub use self::{
     player::Nickname,
     state::State,
     deck::Deck,
+    action::Action,
 };
 
 pub const DEFAULT_RESOURCE_PRICE: u8 = 2;

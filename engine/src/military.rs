@@ -2,7 +2,7 @@ use crate::{*};
 
 pub type Pos = u8;
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Track {
     pub pos: Pos,
     pub max_zone: usize,

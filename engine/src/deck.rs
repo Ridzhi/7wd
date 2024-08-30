@@ -1,5 +1,6 @@
 use crate::{*};
 
+#[derive(Default, Debug)]
 pub struct Deck {
 
 }

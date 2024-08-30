@@ -205,6 +205,7 @@ impl Effect {
     }
 }
 
+#[derive(Debug)]
 pub enum PostEffect {
     DestructBuilding(Nickname, Vec<building::Id>),
     PickBoardToken(Nickname, Vec<token::Id>),
