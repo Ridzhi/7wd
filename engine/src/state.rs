@@ -44,19 +44,6 @@ impl State {
             winner,
             victory,
         });
-        // if winner.is_none() {
-        //     if self.me().score.total != self.enemy().score.total {
-        //         winner = Some(
-        //             if self.me().score.total > self.enemy().score.civilian {
-        //                 self.me().name
-        //             } else {
-        //                 self.enemy().name
-        //             }
-        //         );
-        //     }
-        // }
-
-        // refresh cities
     }
 
     pub fn move_conflict_pawn(&mut self, power: u8) -> (Coins, bool) {

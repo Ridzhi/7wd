@@ -7,6 +7,7 @@ mod token;
 mod economy;
 mod military;
 mod deck;
+mod action;
 
 pub use self::{
     economy::{Resource, Resources, Coins, Cost, PayScope},
@@ -113,3 +114,7 @@ pub trait BaseUnit {
 }
 
 pub type Points = u8;
+
+pub enum Error {
+    ActionNotAllowed,
+}
