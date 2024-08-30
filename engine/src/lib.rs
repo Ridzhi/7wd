@@ -25,19 +25,23 @@ pub const STARTING_TOKENS_COUNT: usize = 5;
 pub const RANDOM_TOKENS_COUNT: usize = 5;
 pub const WONDER_SELECTION_POOL_SIZE: u8 = 4;
 pub const WONDERS_CONSTRUCT_LIMIT: u8 = 7;
-pub const DECK_LIMIT: u8 = 20;
-pub const GUILDS_LIMIT: u8 = 3;
+pub const DECK_LIMIT: usize = 20;
+pub const GUILDS_LIMIT: usize = 3;
 pub const COINS_PER_POINT: u8 = 3;
 pub const FIXED_RESOURCE_PRICE: u8 = 1;
 pub const SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN: u8 = 2;
 pub const DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY: u8 = 6;
 
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Age {
     #[default]
     I = 1,
     II,
     III,
+}
+
+impl Age {
+    pub const ALL: [Age;3] = [Age::I, Age::II, Age::III];
 }
 
 #[derive(Debug, Default,Eq, PartialEq, Copy, Clone)]
