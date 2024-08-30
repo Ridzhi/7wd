@@ -20,6 +20,13 @@ pub enum Id {
     StatueOfLiberty,
 }
 
+impl Id {
+    pub const PROMO: [Self;2] = [
+        Self::Messe,
+        Self::StatueOfLiberty,
+    ];
+}
+
 pub struct Unit {
     pub id: Id,
     pub cost: Cost,

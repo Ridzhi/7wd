@@ -21,8 +21,8 @@ pub use self::{
 pub const DEFAULT_RESOURCE_PRICE: u8 = 2;
 pub const DEFAULT_DISCARD_REWARD: u8 = 2;
 pub const STARTING_CITY_COINS: u8 = 7;
-pub const STARTING_TOKENS_COUNT: u8 = 5;
-pub const RANDOM_TOKENS_COUNT: u8 = 5;
+pub const STARTING_TOKENS_COUNT: usize = 5;
+pub const RANDOM_TOKENS_COUNT: usize = 5;
 pub const WONDER_SELECTION_POOL_SIZE: u8 = 4;
 pub const WONDERS_CONSTRUCT_LIMIT: u8 = 7;
 pub const DECK_LIMIT: u8 = 20;
@@ -118,4 +118,9 @@ pub type Points = u8;
 
 pub enum Error {
     ActionNotAllowed,
+}
+
+#[derive(Default)]
+pub struct Options {
+    pub with_promo_wonders: bool,
 }
