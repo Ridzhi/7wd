@@ -59,7 +59,12 @@ impl Action {
                     buildings: v.buildings,
                     tokens: v.random_tokens,
                     wonders: v.wonders,
-                }
+                };
+                s.interactive_units.wonders = s.random_units.wonders
+                    .iter()
+                    .take(WONDER_SELECTION_POOL_SIZE)
+                    .copied()
+                    .collect();
             },
 
             _ => return Ok(())
