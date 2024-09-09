@@ -1,10 +1,11 @@
 use std::cmp::Ordering;
 use std::collections::HashMap;
-use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN, DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY, Action, Error};
+use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN, DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY, Action, Error, Age, DEFAULT_DISCARD_REWARD, DEFAULT_RESOURCE_PRICE, STARTING_CITY_COINS};
 use crate::effect::PostEffect;
 
 #[derive(Default, Debug)]
 pub struct State {
+    pub age: Age,
     pub phase: Phase,
     pub players: Players,
     pub deck: Deck,
@@ -110,7 +111,7 @@ impl State {
     }
 }
 
-#[derive(Default, Debug)]
+#[derive(Debug)]
 pub struct City {
     pub coins: u8,
     pub resources: Resources,
@@ -145,6 +146,23 @@ impl City {
     }
 }
 
+impl Default for City {
+    fn default() -> Self {
+        Self {
+            coins: STARTING_CITY_COINS,
+            resources: Default::default(),
+            score: Default::default(),
+            buildings: vec![],
+            wonders: vec![],
+            tokens: vec![],
+            scientific_symbols: vec![],
+            chains: vec![],
+            bank: Default::default(),
+            track: Default::default(),
+        }
+    }
+}
+
 #[derive(Debug, Default)]
 pub struct Score {
     civilian: u8,
@@ -167,10 +185,12 @@ pub struct Units {
 
 #[derive(Default, Debug)]
 pub struct RandomUnits {
+    pub buildings: HashMap<Age, Vec<building::Id>>,
     pub tokens: Vec<token::Id>,
+    pub wonders: Vec<wonder::Id>,
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Bank {
     pub discard_reward: u8,
     pub building_price: PriceList<building::Id>,
@@ -203,6 +223,21 @@ impl Bank {
             .for_each(|discount| {
                 discount.apply(cost, &priority);
             });
+    }
+}
+
+impl Default for Bank {
+    fn default() -> Self {
+        Self {
+            discard_reward: DEFAULT_DISCARD_REWARD,
+            building_price: Default::default(),
+            wonder_price: Default::default(),
+            resource_price: Resource::ALL
+                .iter()
+                .map(|r| (*r, DEFAULT_RESOURCE_PRICE))
+                .collect(),
+            discounts: Default::default(),
+        }
     }
 }
 

@@ -1,36 +1,69 @@
 use std::collections::HashMap;
 use rand::prelude::{*};
 use crate::{*};
-
-pub enum Id {
-    Prepare = 1,
-    Over,
-    SelectWhoBeginsTheNextAge,
-    ConstructWonder,
-    ConstructBuilding,
-    DiscardBuilding,
-    DestructBuilding,
-    PickWonder,
-    PickBoardToken,
-    PickRandomToken,
-    PickTopLineCard,
-    PickDiscardedCard,
-    PickReturnedCards,
-}
+use crate::state::{City, Players, RandomUnits};
+// pub enum Id {
+//     Prepare = 1,
+//     Over,
+//     SelectWhoBeginsTheNextAge,
+//     ConstructWonder,
+//     ConstructBuilding,
+//     DiscardBuilding,
+//     DestructBuilding,
+//     PickWonder,
+//     PickBoardToken,
+//     PickRandomToken,
+//     PickTopLineCard,
+//     PickDiscardedCard,
+//     PickReturnedCards,
+// }
 
 pub enum Action {
     Prepare(Prepare),
-}
+    // resign, timeout. (loser, reason)
+    Over(Nickname, Victory),
+    SelectWhoBeginsTheNextAge(Nickname),
+    ConstructWonder(wonder::Id, building::Id),
+    ConstructBuilding(building::Id),
+    DiscardBuilding(building::Id),
+    DestructBuilding(building::Id),
+    PickWonder(wonder::Id),
+    PickBoardToken(token::Id),
+    PickRandomToken(token::Id),
+    PickTopLineCard(building::Id),
+    PickDiscardedCard(building::Id),
+    // pick, give
+    PickReturnedCards(building::Id, building::Id),
+  }
 
 impl Action {
     pub fn apply(self, s: &mut State) -> Result<(), Error> {
-        // match self {
-        //     Self::Prepare{} => {
-        //
-        //     },
-        //
-        //     _ => Ok(())
-        // }
+        match self {
+            Self::Prepare(v) => {
+                if s.phase != Phase::None {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                s.age = Age::I;
+                s.phase = Phase::WondersSelection;
+                s.players = Players{
+                    starts: v.p1.clone(),
+                    me: v.p1.clone(),
+                    enemy: v.p1.clone(),
+                };
+                s.cities = HashMap::from([
+                    (v.p1, City::default()),
+                    (v.p2, City::default()),
+                ]);
+                s.random_units = RandomUnits{
+                    buildings: v.buildings,
+                    tokens: v.random_tokens,
+                    wonders: v.wonders,
+                }
+            },
+
+            _ => return Ok(())
+        }
         Ok(())
     }
 }

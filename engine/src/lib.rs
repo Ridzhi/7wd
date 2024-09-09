@@ -46,8 +46,9 @@ impl Age {
 
 #[derive(Debug, Default,Eq, PartialEq, Copy, Clone)]
 pub enum Phase {
-    Over = 1,
     #[default]
+    None = 0,
+    Over,
     WondersSelection,
     Turn,
     WhoBeginsTheNextAgeSelection,
