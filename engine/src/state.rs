@@ -2,6 +2,7 @@ use std::cmp::Ordering;
 use std::collections::HashMap;
 use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN, DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY, Action, Error, Age, DEFAULT_DISCARD_REWARD, DEFAULT_RESOURCE_PRICE, STARTING_CITY_COINS};
 use crate::effect::PostEffect;
+use crate::player::Finisher;
 
 #[derive(Default, Debug)]
 pub struct State {
@@ -48,12 +49,24 @@ impl State {
         self.cities.get_mut(&self.players.enemy).unwrap()
     }
 
-    pub fn over(&mut self, victory: Victory, winner: Nickname) {
+    pub fn over(&mut self, finisher: Finisher, victory: Victory) {
         if self.phase == Phase::Over {
             return;
         }
 
         self.phase = Phase::Over;
+
+        let winner= match finisher {
+            Finisher::Winner(w) => w,
+            Finisher::Loser(l) => {
+                if l == self.players.me {
+                    self.players.enemy
+                } else {
+                    self.players.me
+                }
+            }
+        };
+
         self.finish = Some(Finish {
             winner,
             victory,
@@ -90,24 +103,24 @@ impl State {
 
     pub fn resolve_winner(&self) -> Nickname {
         let winner = match self.me().score.total.cmp(&self.enemy().score.total) {
-            Ordering::Greater => &self.players.me,
-            Ordering::Less => &self.players.enemy,
+            Ordering::Greater => self.players.me,
+            Ordering::Less => self.players.enemy,
             Ordering::Equal => {
                 match self.me().score.civilian.cmp(&self.enemy().score.commercial) {
-                    Ordering::Greater => &self.players.me,
-                    Ordering::Less => &self.players.enemy,
+                    Ordering::Greater => self.players.me,
+                    Ordering::Less => self.players.enemy,
                     Ordering::Equal => {
                         if self.players.me == self.players.starts {
-                            &self.players.me
+                            self.players.me
                         } else {
-                            &self.players.enemy
+                            self.players.enemy
                         }
                     }
                 }
             }
         };
 
-        winner.clone()
+        winner
     }
 }
 

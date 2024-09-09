@@ -1,13 +1,14 @@
 use std::collections::HashMap;
 use rand::prelude::{*};
 use crate::{*};
+use crate::player::Finisher;
 use crate::state::{City, Players, RandomUnits};
 
 
 pub enum Action {
     Prepare(Prepare),
     // resign, timeout. (loser, reason)
-    Over(Nickname, Victory),
+    Resign(Nickname),
     SelectWhoBeginsTheNextAge(Nickname),
     ConstructWonder(wonder::Id, building::Id),
     ConstructBuilding(building::Id),
@@ -33,9 +34,9 @@ impl Action {
                 s.age = Age::I;
                 s.phase = Phase::WondersSelection;
                 s.players = Players{
-                    starts: v.p1.clone(),
-                    me: v.p1.clone(),
-                    enemy: v.p1.clone(),
+                    starts: v.p1,
+                    me: v.p1,
+                    enemy: v.p1,
                 };
                 s.cities = HashMap::from([
                     (v.p1, City::default()),
@@ -51,6 +52,10 @@ impl Action {
                     .take(WONDER_SELECTION_POOL_SIZE)
                     .copied()
                     .collect();
+            },
+
+            Self::Resign(actor) => {
+                s.over(Finisher::Loser(actor), Victory::Resign);
             },
 
             _ => return Ok(())

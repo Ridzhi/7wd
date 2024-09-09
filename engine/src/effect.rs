@@ -6,6 +6,7 @@ use crate::{
     state::{City, State, Units},
     *,
 };
+use crate::player::Finisher;
 
 #[derive(Debug)]
 pub enum Effect {
@@ -57,7 +58,7 @@ impl Effect {
                     return;
                 }
 
-                s.post_effects.push(PostEffect::DestructBuilding(s.players.me.clone(), buildings));
+                s.post_effects.push(PostEffect::DestructBuilding(s.players.me, buildings));
             }
 
             Self::DiscardRewardAdjuster => {
@@ -101,7 +102,7 @@ impl Effect {
                 }
 
                 if supremacy {
-                    s.over(Victory::MilitarySupremacy, s.players.me.clone())
+                    s.over(Finisher::Winner(s.players.me), Victory::MilitarySupremacy);
                 }
             }
 
@@ -109,19 +110,19 @@ impl Effect {
                 let tokens = s.progress_tokens.iter().flatten().cloned().collect::<Vec<_>>();
 
                 if !tokens.is_empty() {
-                    s.post_effects.push(PostEffect::PickBoardToken(s.players.me.clone(), tokens));
+                    s.post_effects.push(PostEffect::PickBoardToken(s.players.me, tokens));
                 }
             }
 
             Self::PickDiscardedBuilding => {
                 if !s.buildings.discarded.is_empty() {
-                    s.post_effects.push(PostEffect::PickDiscardedBuilding(s.players.me.clone(), s.buildings.discarded.clone()));
+                    s.post_effects.push(PostEffect::PickDiscardedBuilding(s.players.me, s.buildings.discarded.clone()));
                 }
             }
 
             Self::PickRandomToken => {
                 if !s.random_units.tokens.is_empty() {
-                    s.post_effects.push(PostEffect::PickRandomToken(s.players.me.clone(), s.random_units.tokens.clone()));
+                    s.post_effects.push(PostEffect::PickRandomToken(s.players.me, s.random_units.tokens.clone()));
                 }
             }
 
@@ -129,7 +130,7 @@ impl Effect {
                 let returned_buildings = s.deck.get_returned_buildings();
 
                 if !returned_buildings.is_empty() {
-                    s.post_effects.push(PostEffect::PickReturnedBuildings(s.players.me.clone(), returned_buildings));
+                    s.post_effects.push(PostEffect::PickReturnedBuildings(s.players.me, returned_buildings));
                 }
             }
 
@@ -137,7 +138,7 @@ impl Effect {
                 let top_line_buildings = s.deck.get_top_line_buildings();
 
                 if !top_line_buildings.is_empty() {
-                    s.post_effects.push(PostEffect::PickTopLineBuilding(s.players.me.clone(), top_line_buildings));
+                    s.post_effects.push(PostEffect::PickTopLineBuilding(s.players.me, top_line_buildings));
                 }
             }
 
@@ -167,7 +168,7 @@ impl Effect {
                 }
 
                 if s.me().scientific_symbols.len() == DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY as usize {
-                    s.over(Victory::ScienceSupremacy, s.players.me.clone());
+                    s.over(Finisher::Winner(s.players.me), Victory::ScienceSupremacy);
                 }
             }
 
