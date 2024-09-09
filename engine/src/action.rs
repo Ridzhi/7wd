@@ -52,11 +52,11 @@ impl Action {
                     .take(WONDER_SELECTION_POOL_SIZE)
                     .copied()
                     .collect();
-            },
+            }
 
             Self::Resign(actor) => {
                 s.over(Finisher::Loser(actor), Victory::Resign);
-            },
+            }
 
             Self::SelectWhoBeginsTheNextAge(p) => {
                 if s.phase != Phase::WhoBeginsTheNextAgeSelection {
@@ -65,6 +65,14 @@ impl Action {
 
                 s.players.set_turn(p);
                 s.phase = Phase::Turn;
+            }
+
+            Self::ConstructWonder(wonder, building) => {
+                if s.phase != Phase::Turn {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+
             }
 
             _ => return Ok(())

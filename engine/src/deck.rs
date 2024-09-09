@@ -14,3 +14,12 @@ impl Deck {
         unimplemented!()
     }
 }
+
+pub type Layout = Vec<Slot>;
+
+pub enum Slot {
+    Empty,
+    FaceDown,
+    FaceDownGuild,
+    FaceUp(building::Id),
+}

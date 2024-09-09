@@ -282,6 +282,7 @@ impl Players {
 
 #[derive(Default, Debug)]
 pub struct Buildings {
+
     pub discarded: Vec<building::Id>,
 }
 
