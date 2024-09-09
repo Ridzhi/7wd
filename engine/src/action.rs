@@ -2,21 +2,7 @@ use std::collections::HashMap;
 use rand::prelude::{*};
 use crate::{*};
 use crate::state::{City, Players, RandomUnits};
-// pub enum Id {
-//     Prepare = 1,
-//     Over,
-//     SelectWhoBeginsTheNextAge,
-//     ConstructWonder,
-//     ConstructBuilding,
-//     DiscardBuilding,
-//     DestructBuilding,
-//     PickWonder,
-//     PickBoardToken,
-//     PickRandomToken,
-//     PickTopLineCard,
-//     PickDiscardedCard,
-//     PickReturnedCards,
-// }
+
 
 pub enum Action {
     Prepare(Prepare),
