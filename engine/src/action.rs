@@ -58,6 +58,15 @@ impl Action {
                 s.over(Finisher::Loser(actor), Victory::Resign);
             },
 
+            Self::SelectWhoBeginsTheNextAge(p) => {
+                if s.phase != Phase::WhoBeginsTheNextAgeSelection {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                s.players.set_turn(p);
+                s.phase = Phase::Turn;
+            }
+
             _ => return Ok(())
         }
         Ok(())
