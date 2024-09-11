@@ -72,6 +72,17 @@ impl Action {
                     return Err(Error::ActionNotAllowed);
                 }
 
+                if !s.buildings.playable.contains(&building) {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                let free_wonder = s.me().wonders
+                    .iter()
+                    .find(|(w, b)| w == &wonder && b.is_none());
+
+                if free_wonder.is_none() {
+                    return Err(Error::ActionNotAllowed);
+                }
 
             }
 

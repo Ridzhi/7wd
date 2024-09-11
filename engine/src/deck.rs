@@ -17,7 +17,9 @@ impl Deck {
 
 pub type Layout = Vec<Slot>;
 
+#[derive(Default, Debug)]
 pub enum Slot {
+    #[default]
     Empty,
     FaceDown,
     FaceDownGuild,
