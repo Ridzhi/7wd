@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::iter::Iterator;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum PayScope {
@@ -74,7 +75,7 @@ pub type PriceList<T> = HashMap<T, Coins>;
 
 pub type Resources = HashMap<Resource, u8>;
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct Cost {
     pub coins: Coins,
     pub resources: Resources,

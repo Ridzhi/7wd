@@ -4,6 +4,7 @@ use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, 
 use crate::deck::Layout;
 use crate::effect::PostEffect;
 use crate::player::Finisher;
+use crate::state::ScienceStatus::ProgressToken;
 
 #[derive(Default, Debug)]
 pub struct State {
@@ -74,6 +75,23 @@ impl State {
         });
     }
 
+    pub fn pay(&mut self, scope: PayScope, cost: Cost) -> Result<(), Error> {
+        let cost_coins = cost.coins;
+        let price = self.me().bank.get_price(scope, cost);
+
+        if price > self.me().coins {
+            return Err(Error::NotEnoughCoins);
+        }
+
+        self.me_mut().coins -= price;
+
+        if self.enemy().tokens.contains(&token::Id::Economy) {
+            self.enemy_mut().coins += (price - cost_coins);
+        }
+
+        Ok(())
+    }
+
     pub fn move_conflict_pawn(&mut self, power: u8) -> (Coins, bool) {
         let mut fine: Coins = 0;
         let mut supremacy = false;
@@ -127,7 +145,7 @@ impl State {
 
 #[derive(Debug)]
 pub struct City {
-    pub coins: u8,
+    pub coins: Coins,
     pub resources: Resources,
     pub score: Score,
     pub buildings: Vec<building::Id>,
@@ -214,8 +232,14 @@ pub struct Bank {
 }
 
 impl Bank {
-    pub fn get_price(&self, scope: PayScope, cost: Cost) -> u8 {
-        0
+    pub fn get_price(&self, scope: PayScope, mut cost: Cost) -> Coins {
+        self.discount(scope, &mut cost);
+
+        cost.coins + cost.resources
+            .iter()
+            .fold(0, |acc, (resource, count)| {
+                acc + self.resource_price[resource] * count
+            })
     }
 
     pub fn has_fixed_resource_price(&self, r: &Resource) -> bool {

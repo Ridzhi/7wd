@@ -76,6 +76,7 @@ impl Action {
                     return Err(Error::ActionNotAllowed);
                 }
 
+                // @TODO переписать в один иетератор с маппингом ошибки
                 let free_wonder = s.me().wonders
                     .iter()
                     .find(|(w, b)| w == &wonder && b.is_none());
@@ -83,6 +84,11 @@ impl Action {
                 if free_wonder.is_none() {
                     return Err(Error::ActionNotAllowed);
                 }
+
+                // @TODO подумать над совместить cost и scope в enum UnitCost(Global, Wonder, Civilian)
+                s.pay(PayScope::Wonders, wonder::REGISTRY.get(&wonder).unwrap().cost.clone())?;
+
+
 
             }
 

@@ -123,6 +123,7 @@ pub type Points = u8;
 
 pub enum Error {
     ActionNotAllowed,
+    NotEnoughCoins,
 }
 
 #[derive(Default)]
