@@ -132,7 +132,7 @@ impl Prepare {
             .filter(|id| {
                 o.with_promo_wonders || !wonder::Id::PROMO.contains(id)
             })
-            .choose_multiple(&mut thread_rng(), WONDER_SELECTION_POOL_SIZE as usize * 2)
+            .choose_multiple(&mut thread_rng(), WONDER_SELECTION_POOL_SIZE * 2)
     }
 
     fn get_random_tokens() -> (Vec<token::Id>, Vec<token::Id>) {
