@@ -1,10 +1,11 @@
 use std::collections::{HashMap, HashSet};
+use std::ops::IndexMut;
 use crate::{*};
 
 #[derive(Default, Debug)]
 pub struct Deck {
     pub graph: HashMap<building::Id, [Option<building::Id>; 2]>,
-    pub buildings: HashMap<Age, Vec<building::Id>>,
+    pub buildings: Vec<building::Id>,
     pub face_down: HashSet<building::Id>,
 }
 
@@ -39,20 +40,63 @@ impl Deck {
         "#,
     ];
 
-    pub fn new(age: Age) -> Self {
-        // unimplemented!();
-        let mut deck = Self::default();
+    pub fn new(age: Age, buildings: Vec<building::Id>) -> Self {
+        let mut deck = Deck::default();
         let layout = Self::get_layout(age);
-
-        let mut prev_line: Line = Default::default();
-        let mut current_line: Line = Default::default();
-        let mut in_row_pos = 0usize;
-        let row_n = 1usize;
+        let mut scheme: Vec<Line> = Vec::with_capacity(layout.lines().count());
         let mut building_pos = 0usize;
 
-        for line in layout.lines().skip(1) {
+        for layout_line in layout.lines().skip(1) {
+            let mut line = Line::default();
+            let mut line_pos = 0usize;
+
+            for char in layout_line.chars() {
+                if char == '[' {
+                    line[line_pos] = Some(buildings[building_pos]);
+                    line[line_pos + 1] = Some(buildings[building_pos]);
+                }
+
+                line_pos += 1;
+            }
+
+            scheme.push(line);
+        }
+
+        for line in scheme {
+            for slot in line {
+                if let Some(id) = slot {
+                    deck.graph.insert(id, Default::default());
+                }
+            }
+        }
+
+        // let mut deck = Deck::default();
+        //
+        // let mut prev_line: Line = Default::default();
+        // let mut current_line: Line = Default::default();
+        // let mut in_row_pos = 0usize;
+        // let row_n = 1usize;
+        // let mut building_pos = 0usize;
+        //
+        // for line in layout.lines().skip(1) {
+        //     for char in line.chars() {
+        //         if char == '[' {
+        //             let bid = buildings[building_pos];
+        //             current_line.insert(in_row_pos, bid);
+        //             deck.graph.insert(bid, Default::default());
+        //
+        //             if let Some(top_right) = prev_line.get(&(in_row_pos + 1)) {
+        //                 deck.graph.get_mut(top_right)[]
+        //             }
+        //         }
+        //
+        //         in_row_pos += 1;
+        //     }
+        //
+        //     in_row_pos = 0;
+        //     prev_line = current_line;
+        //     current_line = Default::default();
             // for char in line.chars() {
-            //
             //     if char == '[' {
             //         println!("char");
             //     }
@@ -61,8 +105,7 @@ impl Deck {
             //         println!("_");
             //     }
             // }
-            println!("{}", line);
-        }
+        // }
 
         // for char in layout.chars() {
         //     match char {
@@ -100,7 +143,11 @@ impl Deck {
         //     }
         // }
         //
-        deck
+        Self {
+            graph: Default::default(),
+            buildings,
+            face_down: Default::default(),
+        }
     }
 
     pub fn get_layout(age: Age) -> &'static str {
@@ -129,4 +176,7 @@ pub enum Slot {
     FaceUp(building::Id),
 }
 
-type Line = HashMap<usize, building::Id>;
+// track in which positions placed item
+// each building keep 2 slots
+// suggest 10 buildings is enough
+type Line = [Option<building::Id>; 20];

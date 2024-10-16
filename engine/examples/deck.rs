@@ -1,5 +1,5 @@
 use std::error::Error;
-use engine::{Age, Deck};
+use engine::{Age, Deck, Prepare};
 // trait Deck {
 //     fn pull(&mut self, id: u8) -> Result<(), Box<dyn Error>>;
 // }
@@ -17,7 +17,8 @@ fn main() {
     // ";
     // let mut lines = text.lines();
     // println!("_{}", lines.next().unwrap());
+    let buildings = Prepare::get_random_buildings();
 
-    let d = Deck::new(Age::I);
+    let d = Deck::new(Age::I, buildings[&Age::I].clone());
     println!("deck package");
 }

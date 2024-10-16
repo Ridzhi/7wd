@@ -52,6 +52,8 @@ impl Action {
                     .take(WONDER_SELECTION_POOL_SIZE)
                     .copied()
                     .collect();
+
+                s.deck = Deck::new(s.age, s.random_units.buildings[&s.age].clone());
             }
 
             Self::Resign(actor) => {
@@ -98,7 +100,7 @@ impl Action {
     }
 }
 
-struct Prepare {
+pub struct Prepare {
     p1: Nickname,
     p2: Nickname,
     wonders: Vec<wonder::Id>,
@@ -125,7 +127,7 @@ impl Prepare {
         }
     }
 
-    fn get_random_wonders(o: &Options) -> Vec<wonder::Id> {
+    pub fn get_random_wonders(o: &Options) -> Vec<wonder::Id> {
         wonder::REGISTRY
             .iter()
             .map(|(id, _)| *id)
@@ -135,7 +137,7 @@ impl Prepare {
             .choose_multiple(&mut thread_rng(), WONDER_SELECTION_POOL_SIZE * 2)
     }
 
-    fn get_random_tokens() -> (Vec<token::Id>, Vec<token::Id>) {
+    pub fn get_random_tokens() -> (Vec<token::Id>, Vec<token::Id>) {
         let tokens = token::REGISTRY
             .iter()
             .map(|(id, _)| *id)
@@ -147,7 +149,7 @@ impl Prepare {
         )
     }
 
-    fn get_random_buildings() -> HashMap<Age, Vec<building::Id>> {
+    pub fn get_random_buildings() -> HashMap<Age, Vec<building::Id>> {
         let mut buildings: HashMap<Age, Vec<building::Id>> = Default::default();
 
         for age in Age::ALL {
