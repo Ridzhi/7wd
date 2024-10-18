@@ -4,13 +4,13 @@ use crate::{*};
 
 #[derive(Default, Debug)]
 pub struct Deck {
-    pub graph: HashMap<building::Id, [Option<building::Id>; 2]>,
+    pub graph: HashMap<building::Id, Child>,
     pub buildings: Vec<building::Id>,
     pub face_down: HashSet<building::Id>,
 }
 
 impl Deck {
-    // fake line(will skipped) to keep whitespaces after String.lines()
+    // fake line(will skipped) to keep leading whitespaces after String.lines()
     pub const LAYOUTS: [&'static str; 3] = [
         r#"
 ------------
@@ -52,6 +52,7 @@ impl Deck {
 
             for char in layout_line.chars() {
                 if char == '[' {
+                    // @TODO research how to insert in one expr
                     line[line_pos] = Some(buildings[building_pos]);
                     line[line_pos + 1] = Some(buildings[building_pos]);
                 }
@@ -62,13 +63,39 @@ impl Deck {
             scheme.push(line);
         }
 
-        for line in scheme {
-            for slot in line {
+        let mut it = scheme.iter().peekable();
+
+        for line in it {
+            for (pos, slot) in line.iter().enumerate()  {
                 if let Some(id) = slot {
-                    deck.graph.insert(id, Default::default());
+                    let mut nodes: Child = Default::default();
+
+                    if let Some(next) = it.peek() {
+                        if let Some(left) = next[pos-1] {
+                            nodes[0] = Some(left)
+                        }
+
+                        if let Some(right) = next[pos + 1] {
+                            nodes[1] = Some(right)
+                        }
+                    }
+
+                    deck.graph.insert(*id, nodes);
                 }
             }
         }
+
+        // for (pos, line) in scheme.iter().enumerate() {
+        //     for (pos, slot) in line.iter().enumerate() {
+        //         if let Some(id) = slot {
+        //             deck.graph.insert(*id, Default::default());
+        //         }
+        //
+        //         if
+        //
+        //         // if
+        //     }
+        // }
 
         // let mut deck = Deck::default();
         //
@@ -178,5 +205,6 @@ pub enum Slot {
 
 // track in which positions placed item
 // each building keep 2 slots
-// suggest 10 buildings is enough
+// suggest 10 buildings is enough(6 max currently)
 type Line = [Option<building::Id>; 20];
+type Child = [Option<building::Id>; 2];
