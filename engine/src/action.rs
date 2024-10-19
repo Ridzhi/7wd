@@ -53,7 +53,7 @@ impl Action {
                     .copied()
                     .collect();
 
-                s.deck = Deck::new(get_layout(s.age), s.random_units.buildings[&s.age].clone());
+                // s.deck = Deck::new(get_layout(s.age), s.random_units.buildings[&s.age].clone());
             }
 
             Self::Resign(actor) => {

@@ -11,15 +11,17 @@ pub struct State {
     pub age: Age,
     pub phase: Phase,
     pub players: Players,
-    pub deck: Deck,
     pub cities: HashMap<Nickname, City>,
     pub progress_tokens: [Option<token::Id>; 5],
     pub buildings: Buildings,
-    pub random_units: RandomUnits,
     pub interactive_units: Units,
     pub post_effects: Vec<PostEffect>,
     pub play_again: bool,
     pub finish: Option<Finish>,
+
+    // clients invisible
+    pub deck: Deck,
+    pub random_units: RandomUnits,
 }
 
 impl State {
