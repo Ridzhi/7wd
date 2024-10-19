@@ -40,7 +40,6 @@ impl Deck {
     ];
 
     pub fn new(age: Age, buildings: Vec<building::Id>) -> Self {
-        // let mut deck = Deck::default();
         let scheme = Self::build_scheme(age, &buildings);
         let graph = Self::build_graph(&scheme);
 
