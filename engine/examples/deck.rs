@@ -19,6 +19,6 @@ fn main() {
     // println!("_{}", lines.next().unwrap());
     let buildings = Prepare::get_random_buildings();
 
-    let d = Deck::new(Age::I, buildings[&Age::I].clone());
+    let d = Deck::new(Deck::get_layout(Age::I), buildings[&Age::I].clone());
     println!("deck package");
 }

@@ -39,8 +39,8 @@ impl Deck {
         "#,
     ];
 
-    pub fn new(age: Age, buildings: Vec<building::Id>) -> Self {
-        let scheme = Self::build_scheme(age, &buildings);
+    pub fn new(layout: &str, buildings: Vec<building::Id>) -> Self {
+        let scheme = Self::build_scheme(layout, &buildings);
         let graph = Self::build_graph(&scheme);
 
         let face_down = scheme.iter()
@@ -72,8 +72,7 @@ impl Deck {
 
     pub fn pull_building(id: building::Id) {}
 
-    fn build_scheme(age: Age, buildings: &Vec<building::Id>) -> Vec<Line> {
-        let layout = Self::get_layout(age);
+    fn build_scheme(layout: &str, buildings: &Vec<building::Id>) -> Vec<Line> {
         let mut scheme: Vec<Line> = Vec::with_capacity(layout.lines().count());
         let mut building_pos = 0usize;
 
@@ -142,3 +141,75 @@ pub enum Slot {
 // suggest 10 buildings is enough(6 max currently)
 type Line = [Option<building::Id>; 20];
 type Child = [Option<building::Id>; 2];
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use building::Id::*;
+
+    #[test]
+    fn check_new() {
+        let d = Deck::new(Deck::get_layout(Age::I), vec![
+            LumberYard,//100
+            LoggingCamp,//101
+            ClayPool,//102
+            ClayPit,//103
+            Quarry,//104
+            StonePit,//105
+            GlassWorks,//106
+            Press,//107
+            GuardTower,//108
+            Workshop,//109
+            Apothecary,//110
+            StoneReserve,//111
+            ClayReserve,//112
+            WoodReserve,//113
+            Stable,//114
+            Garrison,//115
+            Palisade,//116
+            Scriptorium,//117
+            Pharmacist,//118
+            Theater,//119
+        ]);
+
+        assert_eq!(
+            d.face_down,
+            HashSet::from([
+                ClayPool,
+                ClayPit,
+                Quarry,
+                Workshop,
+                Apothecary,
+                StoneReserve,
+                ClayReserve,
+                WoodReserve,
+            ]),
+        );
+
+        assert_eq!(
+            d.graph,
+            HashMap::from([
+                (LumberYard, [Some(ClayPool), Some(ClayPit)]),
+                (LoggingCamp, [Some(ClayPit), Some(Quarry)]),
+                (ClayPool, [Some(StonePit), Some(GlassWorks)]),
+                (ClayPit, [Some(GlassWorks), Some(Press)]),
+                (Quarry, [Some(Press), Some(GuardTower)]),
+                (StonePit, [Some(Workshop), Some(Apothecary)]),
+                (GlassWorks, [Some(Apothecary), Some(StoneReserve)]),
+                (Press, [Some(StoneReserve), Some(ClayReserve)]),
+                (GuardTower, [Some(ClayReserve), Some(WoodReserve)]),
+                (Workshop, [Some(Stable), Some(Garrison)]),
+                (Apothecary, [Some(Garrison), Some(Palisade)]),
+                (StoneReserve, [Some(Palisade), Some(Scriptorium)]),
+                (ClayReserve, [Some(Scriptorium), Some(Pharmacist)]),
+                (WoodReserve, [Some(Pharmacist), Some(Theater)]),
+                (Stable, [None, None]),
+                (Garrison, [None, None]),
+                (Palisade, [None, None]),
+                (Scriptorium, [None, None]),
+                (Pharmacist, [None, None]),
+                (Theater, [None, None]),
+            ]),
+        );
+    }
+}

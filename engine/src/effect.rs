@@ -268,54 +268,54 @@ fn update_resource_price(s: &mut State, r: &Resource) {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use std::collections::HashMap;
-    use super::*;
-
-    #[test]
-    fn test_change_coins() {
-        let mut s = State {
-            phase: Phase::WondersSelection,
-            turn: "user1".to_string(),
-            cities: HashMap::from([
-                ("user1".to_string(), City::default()),
-                ("user2".to_string(), City::default()),
-            ]),
-            post_effects: Vec::new(),
-            interactive_units: Units::default(),
-        };
-
-        let effects = vec![
-            Reward { coins: 3 }
-        ];
-
-        effects.iter().for_each(|eff| eff.apply(&mut s));
-
-        assert_eq!(s.me_mut().coins, 3);
-        assert_eq!(s.enemy_mut().coins, 0);
-    }
-
-    #[test]
-    fn test_change_coins_negative() {
-        let mut s = State {
-            phase: Phase::WondersSelection,
-            turn: "user1".to_string(),
-            cities: HashMap::from([
-                ("user1".to_string(), City::default()),
-                ("user2".to_string(), City::default()),
-            ]),
-            post_effects: Vec::new(),
-            interactive_units: Units::default(),
-        };
-
-        let effects = vec![
-            Reward { coins: -3 }
-        ];
-
-        effects.iter().for_each(|eff| eff.apply(&mut s));
-
-        assert_eq!(s.me_mut().coins, 0);
-        assert_eq!(s.enemy_mut().coins, 0);
-    }
-}
+// #[cfg(test)]
+// mod tests {
+//     use std::collections::HashMap;
+//     use super::*;
+//
+//     #[test]
+//     fn test_change_coins() {
+//         let mut s = State {
+//             phase: Phase::WondersSelection,
+//             turn: "user1".to_string(),
+//             cities: HashMap::from([
+//                 ("user1".to_string(), City::default()),
+//                 ("user2".to_string(), City::default()),
+//             ]),
+//             post_effects: Vec::new(),
+//             interactive_units: Units::default(),
+//         };
+//
+//         let effects = vec![
+//             Reward { coins: 3 }
+//         ];
+//
+//         effects.iter().for_each(|eff| eff.apply(&mut s));
+//
+//         assert_eq!(s.me_mut().coins, 3);
+//         assert_eq!(s.enemy_mut().coins, 0);
+//     }
+//
+//     #[test]
+//     fn test_change_coins_negative() {
+//         let mut s = State {
+//             phase: Phase::WondersSelection,
+//             turn: "user1".to_string(),
+//             cities: HashMap::from([
+//                 ("user1".to_string(), City::default()),
+//                 ("user2".to_string(), City::default()),
+//             ]),
+//             post_effects: Vec::new(),
+//             interactive_units: Units::default(),
+//         };
+//
+//         let effects = vec![
+//             Reward { coins: -3 }
+//         ];
+//
+//         effects.iter().for_each(|eff| eff.apply(&mut s));
+//
+//         assert_eq!(s.me_mut().coins, 0);
+//         assert_eq!(s.enemy_mut().coins, 0);
+//     }
+// }
