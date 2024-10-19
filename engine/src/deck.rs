@@ -39,7 +39,8 @@ pub fn get_layout(age: Age) -> &'static str {
 #[derive(Default, Debug)]
 pub struct Deck {
     pub buildings: Vec<building::Id>,
-    pub graph: HashMap<building::Id, Child>,
+    pub scheme: Vec<Line>,
+    pub graph: HashMap<building::Id, Children>,
     pub face_down: HashSet<building::Id>,
 }
 
@@ -58,6 +59,7 @@ impl Deck {
 
         Self {
             buildings,
+            scheme,
             graph,
             face_down,
         }
@@ -66,7 +68,7 @@ impl Deck {
     pub fn get_public_layout(&self) -> Layout {
         self.buildings.iter()
             .map(|id| {
-                if (!self.graph.contains_key(id)) {
+                if !self.graph.contains_key(id) {
                     return Slot::Empty;
                 }
 
@@ -85,22 +87,66 @@ impl Deck {
 
     pub fn get_playable_buildings(&self) -> HashSet<building::Id> {
         self.graph.iter()
-            .filter(|(parent, children)| {
-                children.iter().flatten().count() == 0
+            .filter_map(|(parent, children)| {
+                if children.iter().flatten().count() == 0 {
+                    Some(*parent)
+                } else {
+                    None
+                }
             })
-            .map(|(parent, _)| *parent)
             .collect()
     }
 
     pub fn get_returned_buildings(&self) -> Vec<building::Id> {
-        unimplemented!()
+        let age = building::REGISTRY[&self.buildings[0]].age;
+
+        building::REGISTRY.values()
+            .filter_map(|item| {
+                if item.age == age && !self.buildings.contains(&item.id) {
+                    Some(item.id)
+                } else {
+                    None
+                }
+            })
+            .collect()
     }
 
     pub fn get_top_line_buildings(&self) -> Vec<building::Id> {
-        unimplemented!()
+        let top_line_buildings_count = self.scheme[0].iter().flatten().count() / 2;
+
+        self.get_public_layout().iter()
+            .take(top_line_buildings_count)
+            .filter_map(|slot| {
+                if let Slot::FaceUp(id) = slot {
+                    Some(*id)
+                } else {
+                    None
+                }
+            })
+            .collect()
     }
 
-    pub fn pull_building(id: building::Id) {}
+    pub fn pull_building(&mut self, id: building::Id) {
+        self.graph.remove(&id);
+        self.graph.iter_mut()
+            .for_each(|(parent, children)| {
+                if let Some(left) = children[0] {
+                    if left == id {
+                        *children.get_mut(0).unwrap() = None;
+                    }
+                }
+
+                if let Some(right) = children[0] {
+                    if right == id {
+                        *children.get_mut(1).unwrap() = None;
+                    }
+                }
+
+                if children.iter().flatten().count() == 0 {
+                    self.face_down.remove(&parent);
+                }
+            })
+    }
 
     fn build_scheme(layout: &str, buildings: &Vec<building::Id>) -> Vec<Line> {
         let mut scheme: Vec<Line> = Vec::with_capacity(layout.lines().count());
@@ -127,14 +173,14 @@ impl Deck {
         scheme
     }
 
-    fn build_graph(scheme: &Vec<Line>) -> HashMap<building::Id, Child> {
-        let mut graph: HashMap<building::Id, Child> = Default::default();
+    fn build_graph(scheme: &Vec<Line>) -> HashMap<building::Id, Children> {
+        let mut graph: HashMap<building::Id, Children> = Default::default();
         let mut it = scheme.iter().peekable();
 
         while let Some(line) = it.next() {
             for (pos, slot) in line.iter().enumerate()  {
                 if let Some(id) = slot {
-                    let mut nodes: Child = Default::default();
+                    let mut nodes: Children = Default::default();
 
                     if let Some(next) = it.peek() {
                         if let Some(left) = next[pos-1] {
@@ -170,7 +216,7 @@ pub enum Slot {
 // each building keep 2 slots
 // suggest 10 buildings is enough(6 max currently)
 type Line = [Option<building::Id>; 20];
-type Child = [Option<building::Id>; 2];
+type Children = [Option<building::Id>; 2];
 
 #[cfg(test)]
 mod tests {
