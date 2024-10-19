@@ -88,7 +88,7 @@ impl Action {
                 }
 
                 // @TODO подумать над совместить cost и scope в enum UnitCost(Global, Wonder, Civilian)
-                s.pay(PayScope::Wonders, wonder::REGISTRY.get(&wonder).unwrap().cost.clone())?;
+                s.pay(PayScope::Wonders, wonder::REGISTRY[&wonder].cost.clone())?;
 
 
 
