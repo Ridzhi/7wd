@@ -1,17 +1,9 @@
 use std::collections::{HashMap, HashSet};
 use crate::{*};
 
-#[derive(Default, Debug)]
-pub struct Deck {
-    pub buildings: Vec<building::Id>,
-    pub graph: HashMap<building::Id, Child>,
-    pub face_down: HashSet<building::Id>,
-}
-
-impl Deck {
-    // fake line(will skipped) to keep leading whitespaces after String.lines()
-    pub const LAYOUTS: [&'static str; 3] = [
-        r#"
+// fake line(will skipped) to keep leading whitespaces after String.lines()
+pub const LAYOUTS: [&'static str; 3] = [
+    r#"
 ------------
     [][]
    [][][]
@@ -19,7 +11,7 @@ impl Deck {
  [][][][][]
 [][][][][][]
         "#,
-        r#"
+    r#"
 ------------
 [][][][][][]
  [][][][][]
@@ -27,7 +19,7 @@ impl Deck {
    [][][]
     [][]
         "#,
-        r#"
+    r#"
 --------
   [][]
  [][][]
@@ -37,8 +29,20 @@ impl Deck {
  [][][]
   [][]
         "#,
-    ];
+];
 
+pub fn get_layout(age: Age) -> &'static str {
+    LAYOUTS[age as usize - 1].trim()
+}
+
+#[derive(Default, Debug)]
+pub struct Deck {
+    pub buildings: Vec<building::Id>,
+    pub graph: HashMap<building::Id, Child>,
+    pub face_down: HashSet<building::Id>,
+}
+
+impl Deck {
     pub fn new(layout: &str, buildings: Vec<building::Id>) -> Self {
         let scheme = Self::build_scheme(layout, &buildings);
         let graph = Self::build_graph(&scheme);
@@ -56,10 +60,6 @@ impl Deck {
             graph,
             face_down,
         }
-    }
-
-    pub fn get_layout(age: Age) -> &'static str {
-        Self::LAYOUTS[age as usize - 1].trim()
     }
 
     pub fn get_returned_buildings(&self) -> Vec<building::Id> {
@@ -149,7 +149,7 @@ mod tests {
 
     #[test]
     fn check_new() {
-        let d = Deck::new(Deck::get_layout(Age::I), vec![
+        let d = Deck::new(get_layout(Age::I), vec![
             LumberYard,//100
             LoggingCamp,//101
             ClayPool,//102

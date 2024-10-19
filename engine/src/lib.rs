@@ -14,7 +14,7 @@ pub use self::{
     effect::{Effect, PostEffect},
     player::Nickname,
     state::State,
-    deck::Deck,
+    deck::{Deck, get_layout},
     action::{Action, Prepare},
 };
 
