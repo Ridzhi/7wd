@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use crate::{*};
+use crate::Action::Prepare;
 
 // fake line(will skipped) to keep leading whitespaces after String.lines()
 pub const LAYOUTS: [&'static str; 3] = [
@@ -60,6 +61,35 @@ impl Deck {
             graph,
             face_down,
         }
+    }
+
+    pub fn get_public_layout(&self) -> Layout {
+        self.buildings.iter()
+            .map(|id| {
+                if (!self.graph.contains_key(id)) {
+                    return Slot::Empty;
+                }
+
+                if self.face_down.contains(id) {
+                    return if building::REGISTRY[id].kind == building::Kind::Guild {
+                        Slot::FaceDownGuild
+                    } else {
+                        Slot::FaceDownGuild
+                    }
+                }
+
+                Slot::FaceUp(*id)
+            })
+            .collect()
+    }
+
+    pub fn get_playable_buildings(&self) -> HashSet<building::Id> {
+        self.graph.iter()
+            .filter(|(parent, children)| {
+                children.iter().flatten().count() == 0
+            })
+            .map(|(parent, _)| *parent)
+            .collect()
     }
 
     pub fn get_returned_buildings(&self) -> Vec<building::Id> {
