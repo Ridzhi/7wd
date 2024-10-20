@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
-use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN, DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY, Action, Error, Age, DEFAULT_DISCARD_REWARD, DEFAULT_RESOURCE_PRICE, STARTING_CITY_COINS};
+use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN, DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY, Action, Error, Age, DEFAULT_DISCARD_REWARD, DEFAULT_RESOURCE_PRICE, STARTING_CITY_COINS, get_layout};
 use crate::deck::Layout;
 use crate::effect::PostEffect;
 use crate::player::Finisher;
@@ -142,6 +142,63 @@ impl State {
         };
 
         winner
+    }
+
+    pub fn after(&mut self) {
+        if self.phase == Phase::Over {
+            return;
+        }
+
+        let has_post_effects = self.post_effects.len() > 0;
+        let is_over = self.age.is_last()
+            && self.phase == Phase::Turn
+            && self.deck.is_empty()
+            && !has_post_effects;
+
+        if is_over {
+            self.over(Finisher::Winner(self.resolve_winner()), Victory::Civilian);
+            return;
+        }
+
+        // post effects has own logic to set turn
+        // we resolve turn and use this to fallback turn after post effects if needed
+        self.resolve_next_turn();
+
+        if !has_post_effects {
+            if self.deck.is_empty() && !self.age.is_last() {
+                self.age.next();
+                self.deck = Deck::new(get_layout(self.age), self.random_units.buildings[&self.age].clone())
+            }
+        }
+
+        // refresh_building
+        // refresh cities
+
+    }
+
+    fn resolve_next_turn(&mut self) {
+        if self.deck.is_empty() && !self.age.is_last() {
+            self.phase = Phase::WhoBeginsTheNextAgeSelection;
+            self.play_again = false;
+
+            // if military parity last player continue
+            if self.me().track.pos == self.enemy().track.pos {
+                return;
+            }
+
+            // if enemy no have military advantage turn moves to him, otherwise me stay
+            if self.enemy().track.pos == 0 {
+                self.players.next_turn();
+                return;
+            }
+        }
+
+        if self.play_again {
+            self.play_again = false;
+            return;
+        }
+
+        self.players.next_turn();
     }
 }
 

@@ -65,6 +65,10 @@ impl Deck {
         }
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.graph.is_empty()
+    }
+
     pub fn get_public_layout(&self) -> Layout {
         self.buildings.iter()
             .map(|id| {

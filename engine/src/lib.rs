@@ -42,6 +42,18 @@ pub enum Age {
 
 impl Age {
     pub const ALL: [Age;3] = [Age::I, Age::II, Age::III];
+
+    pub fn next(&mut self) {
+        *self = match self {
+            Age::I => Age::II,
+            Age::II => Age::III,
+            Age::III => Age::III,
+        }
+    }
+
+    pub fn is_last(&self) -> bool {
+        *self == Self::III
+    }
 }
 
 #[derive(Debug, Default,Eq, PartialEq, Copy, Clone)]
