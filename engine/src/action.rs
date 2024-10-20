@@ -69,34 +69,53 @@ impl Action {
                 s.phase = Phase::Turn;
             }
 
-            Self::ConstructWonder(wonder, building) => {
+            Self::ConstructWonder(wid, bid) => {
                 if s.phase != Phase::Turn {
                     return Err(Error::ActionNotAllowed);
                 }
 
-                if !s.buildings.playable.contains(&building) {
+                if !s.buildings.playable.contains(&bid) {
                     return Err(Error::ActionNotAllowed);
                 }
 
                 // @TODO переписать в один иетератор с маппингом ошибки
                 let free_wonder = s.me_mut().wonders
                     .iter()
-                    .find(|(w, b)| w == &wonder && b.is_none());
+                    .find(|(w, b)| w == &wid && b.is_none());
 
                 if free_wonder.is_none() {
                     return Err(Error::ActionNotAllowed);
                 }
 
                 // @TODO подумать над совместить cost и scope в enum UnitCost(Global, Wonder, Civilian)
-                s.pay(PayScope::Wonders, wonder::REGISTRY[&wonder].cost.clone())?;
-                s.deck.pull_building(&building);
+                s.pay(PayScope::Wonders, wonder::REGISTRY[&wid].cost.clone())?;
+                s.deck.pull_building(&bid);
 
                 s.me_mut().wonders.iter_mut()
                     .for_each(|(w,b)| {
-                       if w == &wonder {
-                           *b = Some(building)
+                       if w == &wid {
+                           *b = Some(bid)
                        }
                     });
+
+                let total_wonders_constructed = s.me().wonders.iter()
+                    .chain(s.enemy().wonders.iter())
+                    .filter(|(_, b)| b.is_some())
+                    .count();
+
+                if total_wonders_constructed == WONDERS_CONSTRUCT_LIMIT {
+                    s.me_mut().wonders
+                        .retain(|(_, b)| !b.is_none());
+
+                    s.enemy_mut().wonders
+                        .retain(|(_, b)| !b.is_none());
+                }
+
+                wonder::REGISTRY[&wid].construct(s);
+
+                if s.me().tokens.contains(&token::Id::Theology) {
+                    s.play_again = true;
+                }
             }
 
             _ => return Ok(())
