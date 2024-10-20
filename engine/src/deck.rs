@@ -126,18 +126,18 @@ impl Deck {
             .collect()
     }
 
-    pub fn pull_building(&mut self, id: building::Id) {
+    pub fn pull_building(&mut self, id: &building::Id) {
         self.graph.remove(&id);
         self.graph.iter_mut()
             .for_each(|(parent, children)| {
                 if let Some(left) = children[0] {
-                    if left == id {
+                    if &left == id {
                         *children.get_mut(0).unwrap() = None;
                     }
                 }
 
                 if let Some(right) = children[0] {
-                    if right == id {
+                    if &right == id {
                         *children.get_mut(1).unwrap() = None;
                     }
                 }

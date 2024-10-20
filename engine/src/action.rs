@@ -79,7 +79,7 @@ impl Action {
                 }
 
                 // @TODO переписать в один иетератор с маппингом ошибки
-                let free_wonder = s.me().wonders
+                let mut free_wonder = s.me().wonders
                     .iter()
                     .find(|(w, b)| w == &wonder && b.is_none());
 
@@ -90,7 +90,10 @@ impl Action {
                 // @TODO подумать над совместить cost и scope в enum UnitCost(Global, Wonder, Civilian)
                 s.pay(PayScope::Wonders, wonder::REGISTRY[&wonder].cost.clone())?;
 
-
+                s.deck.pull_building(&building);
+                // free_wonder.unwrap().1 = None;
+                // free_wonder.unwrap().get = Some(building)
+                // s.me_mut().wonders
 
             }
 
