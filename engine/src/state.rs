@@ -1,6 +1,7 @@
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
-use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN, DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY, Action, Error, Age, DEFAULT_DISCARD_REWARD, DEFAULT_RESOURCE_PRICE, STARTING_CITY_COINS, get_layout};
+use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN, DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY, Action, Error, Age, DEFAULT_DISCARD_REWARD, DEFAULT_RESOURCE_PRICE, STARTING_CITY_COINS, get_layout, BaseUnit};
+use crate::building::Kind;
 use crate::deck::Layout;
 use crate::effect::PostEffect;
 use crate::player::Finisher;
@@ -171,7 +172,7 @@ impl State {
         }
 
         self.refresh_buildings();
-
+        self.refresh_cities();
         // refresh_building
         // refresh cities
 
@@ -185,10 +186,14 @@ impl State {
     fn refresh_cities(&mut self) {
         let turn = self.players.me;
 
-        self.cities
-            .keys()
+        vec![self.players.me, self.players.enemy].into_iter()
             .for_each(|n| {
-                self.players.set_turn(*n);
+                self.players.set_turn(n);
+                // @TODO remove clone
+                let playable = self.buildings.playable.clone();
+                self.me_mut().refresh_buildings_price(playable);
+                self.me_mut().refresh_wonders_price();
+
                 // self.me_mut()
             })
     }
@@ -275,6 +280,22 @@ impl City {
                 }
             })
             .collect()
+    }
+
+    pub fn refresh_score(&mut self, state: &mut State) {
+        let mut score = Score::default();
+
+        for id in self.buildings.iter() {
+            let points = building::REGISTRY[id].points(state);
+
+            match building::REGISTRY[id].kind {
+                Kind::Scientific => score.science += points,
+                Kind::Civilian => score.civilian += points,
+                Kind::Commercial => score.commercial += points,
+                Kind::Guild => score.guilds += points,
+                _ => (),
+            };
+        }
     }
 }
 
