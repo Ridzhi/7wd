@@ -4,7 +4,6 @@ use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, 
 use crate::deck::Layout;
 use crate::effect::PostEffect;
 use crate::player::Finisher;
-use crate::state::ScienceStatus::ProgressToken;
 
 #[derive(Default, Debug)]
 pub struct State {
@@ -171,9 +170,27 @@ impl State {
             }
         }
 
+        self.refresh_buildings();
+
         // refresh_building
         // refresh cities
 
+    }
+
+    fn refresh_buildings(&mut self) {
+        self.buildings.layout = self.deck.get_public_layout();
+        self.buildings.playable = self.deck.get_playable_buildings();
+    }
+
+    fn refresh_cities(&mut self) {
+        let turn = self.players.me;
+
+        self.cities
+            .keys()
+            .for_each(|n| {
+                self.players.set_turn(*n);
+                // self.me_mut()
+            })
     }
 
     fn resolve_next_turn(&mut self) {
@@ -234,6 +251,30 @@ impl City {
             }
             Bonus::Coin => self.coins / COINS_PER_POINT,
         }
+    }
+
+    pub fn refresh_buildings_price(&mut self, target: HashSet<building::Id>) {
+        self.bank.building_price = target.iter()
+            .map(|id| {
+                if self.chains.contains(id) {
+                    return (*id, 0);
+                }
+
+                (*id, self.bank.get_price(PayScope::from_building(id), building::REGISTRY[id].cost.clone()))
+            })
+            .collect()
+    }
+
+    pub fn refresh_wonders_price(&mut self) {
+        self.bank.wonder_price = self.wonders.iter()
+            .filter_map(|(w, b)| {
+                if b.is_some() {
+                    None
+                } else {
+                    Some((*w, self.bank.get_price(PayScope::Wonders, wonder::REGISTRY[w].cost.clone())))
+                }
+            })
+            .collect()
     }
 }
 

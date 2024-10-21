@@ -1,11 +1,22 @@
 use std::collections::HashMap;
 use std::iter::Iterator;
+use crate::building;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum PayScope {
     Global,
     Civilian,
     Wonders,
+}
+
+impl PayScope {
+    pub fn from_building(id: &building::Id) -> Self {
+        if building::REGISTRY[id].kind == building::Kind::Civilian {
+            Self::Civilian
+        } else {
+            Self::Global
+        }
+    }
 }
 
 #[derive(Debug)]
