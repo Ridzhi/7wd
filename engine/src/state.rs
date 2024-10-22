@@ -193,7 +193,8 @@ impl State {
                 let playable = self.buildings.playable.clone();
                 self.me_mut().refresh_buildings_price(playable);
                 self.me_mut().refresh_wonders_price();
-
+                // сделать получение скора и присваивание снаружи
+                self.me_mut().refresh_score();
                 // self.me_mut()
             })
     }
@@ -296,6 +297,30 @@ impl City {
                 _ => (),
             };
         }
+
+        for (w,b) in self.wonders.iter() {
+            if b.is_some() {
+                score.wonders += wonder::REGISTRY[&w].points(state);
+            }
+        }
+
+        for id in self.tokens.iter() {
+            score.tokens += token::REGISTRY[id].points(state);
+        }
+
+        score.coins = self.coins / COINS_PER_POINT;
+        // points() or get_points()?!
+        score.military = self.track.get_points();
+        score.total = score.civilian
+            + score.science
+            + score.commercial
+            + score.guilds
+            + score.wonders
+            + score.tokens
+            + score.coins
+            + score.military;
+
+        self.score = score;
     }
 }
 
