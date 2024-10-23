@@ -1,17 +1,17 @@
+#[derive(Default)]
+struct State {
+    pub points: usize,
+    pub p1: City,
+    pub p2: City,
+}
+
+#[derive(Default)]
+struct City {
+    pub coins: usize,
+}
+
+
+
 fn main() {
-    let layout = r#"
-    [][]
-   [][][]
-  [][][][]
- [][][][][]
-[][][][][][]
-"#.trim();
-
-    for char in layout.chars() {
-        if char == '\n' {
-            println!("newline");
-        }
-    }
-
-    // println!("test string");
+    let s = State::default();
 }
