@@ -190,8 +190,11 @@ impl State {
             .for_each(|p| {
                 self.players.set_turn(p);
                 // @TODO remove clone
-                let playable = self.buildings.playable.clone();
-                self.me_mut().refresh_buildings_price(playable);
+                // let playable = self.buildings.playable.clone();
+                //
+                // self.me_mut().refresh_buildings_price(playable);
+                let buildings_price = get_buildings_price(p, self);
+                self.me_mut().bank.building_price = buildings_price;
                 self.me_mut().refresh_wonders_price();
                 let score = get_score(p, self);
                 self.me_mut().score = score;
@@ -259,18 +262,6 @@ impl City {
             }
             Bonus::Coin => self.coins / COINS_PER_POINT,
         }
-    }
-
-    pub fn refresh_buildings_price(&mut self, target: HashSet<building::Id>) {
-        self.bank.building_price = target.iter()
-            .map(|id| {
-                if self.chains.contains(id) {
-                    return (*id, 0);
-                }
-
-                (*id, self.bank.get_price(PayScope::from_building(id), building::REGISTRY[id].cost.clone()))
-            })
-            .collect()
     }
 
     pub fn refresh_wonders_price(&mut self) {
@@ -465,4 +456,17 @@ pub(crate) fn get_score(p: Nickname, state: &mut State) -> Score {
         + score.military;
 
     score
+}
+
+pub(crate) fn get_buildings_price(p: Nickname, state: &mut State) -> PriceList<building::Id> {
+    let city = state.cities.get(&p).unwrap();
+    state.buildings.playable.iter()
+        .map(|id| {
+            if city.chains.contains(id) {
+                return (*id, 0);
+            }
+
+            (*id, city.bank.get_price(PayScope::from_building(id), building::REGISTRY[id].cost.clone()))
+        })
+        .collect()
 }
