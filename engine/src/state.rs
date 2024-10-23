@@ -187,14 +187,16 @@ impl State {
         let turn = self.players.me;
 
         vec![self.players.me, self.players.enemy].into_iter()
-            .for_each(|n| {
-                self.players.set_turn(n);
+            .for_each(|p| {
+                self.players.set_turn(p);
                 // @TODO remove clone
                 let playable = self.buildings.playable.clone();
                 self.me_mut().refresh_buildings_price(playable);
                 self.me_mut().refresh_wonders_price();
+                let score = get_score(p, self);
+                self.me_mut().score = score;
                 // сделать получение скора и присваивание снаружи
-                self.me_mut().refresh_score();
+                // self.me_mut().refresh_score();
                 // self.me_mut()
             })
     }
@@ -281,46 +283,6 @@ impl City {
                 }
             })
             .collect()
-    }
-
-    pub fn refresh_score(&mut self, state: &mut State) {
-        let mut score = Score::default();
-
-        for id in self.buildings.iter() {
-            let points = building::REGISTRY[id].points(state);
-
-            match building::REGISTRY[id].kind {
-                Kind::Scientific => score.science += points,
-                Kind::Civilian => score.civilian += points,
-                Kind::Commercial => score.commercial += points,
-                Kind::Guild => score.guilds += points,
-                _ => (),
-            };
-        }
-
-        for (w,b) in self.wonders.iter() {
-            if b.is_some() {
-                score.wonders += wonder::REGISTRY[&w].points(state);
-            }
-        }
-
-        for id in self.tokens.iter() {
-            score.tokens += token::REGISTRY[id].points(state);
-        }
-
-        score.coins = self.coins / COINS_PER_POINT;
-        // points() or get_points()?!
-        score.military = self.track.get_points();
-        score.total = score.civilian
-            + score.science
-            + score.commercial
-            + score.guilds
-            + score.wonders
-            + score.tokens
-            + score.coins
-            + score.military;
-
-        self.score = score;
     }
 }
 
@@ -462,4 +424,45 @@ enum ScienceStatus {
     Regular,
     ProgressToken,
     Supremacy,
+}
+
+pub(crate) fn get_score(p: Nickname, state: &mut State) -> Score {
+    let mut score = Score::default();
+    let city = state.cities.get(&p).unwrap();
+
+    for id in city.buildings.iter() {
+        let points = building::REGISTRY[id].get_points(state);
+
+        match building::REGISTRY[id].kind {
+            Kind::Scientific => score.science += points,
+            Kind::Civilian => score.civilian += points,
+            Kind::Commercial => score.commercial += points,
+            Kind::Guild => score.guilds += points,
+            _ => (),
+        };
+    }
+
+    for (w,b) in city.wonders.iter() {
+        if b.is_some() {
+            score.wonders += wonder::REGISTRY[&w].get_points(state);
+        }
+    }
+
+    for id in city.tokens.iter() {
+        score.tokens += token::REGISTRY[id].get_points(state);
+    }
+
+    score.coins = city.coins / COINS_PER_POINT;
+    // points() or get_points()?!
+    score.military = city.track.get_points();
+    score.total = score.civilian
+        + score.science
+        + score.commercial
+        + score.guilds
+        + score.wonders
+        + score.tokens
+        + score.coins
+        + score.military;
+
+    score
 }
