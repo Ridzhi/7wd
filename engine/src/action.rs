@@ -121,6 +121,31 @@ impl Action {
                 state::after(s);
             }
 
+            Self::ConstructBuilding(bid) => {
+                if s.phase != Phase::Turn {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                if !s.buildings.playable.contains(&bid) {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                if s.me().chains.contains(&bid) {
+                    if s.me().tokens.contains(&token::Id::Urbanism) {
+                        s.me_mut().coins += 4;
+                    }
+                } else {
+                    s.pay(PayScope::Wonders, building::REGISTRY[&bid].cost.clone())?;
+                }
+
+                s.me_mut().buildings.push(bid);
+                s.deck.pull_building(&bid);
+
+                building::REGISTRY[&bid].construct(s);
+
+                state::after(s);
+            }
+
             _ => return Ok(())
         }
         Ok(())
