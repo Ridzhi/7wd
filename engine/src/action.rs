@@ -117,6 +117,8 @@ impl Action {
                 if s.me().tokens.contains(&token::Id::Theology) {
                     s.play_again = true;
                 }
+
+                state::after(s);
             }
 
             _ => return Ok(())
