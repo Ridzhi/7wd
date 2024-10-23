@@ -162,6 +162,21 @@ impl Action {
                 state::after(s);
             }
 
+            Self::DestructBuilding(bid) => {
+                if s.phase != Phase::DestructBuildingSelection {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                if !s.interactive_units.buildings.contains(&bid) {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                s.enemy_mut().buildings.retain(|id| *id != bid);
+                building::REGISTRY[&bid].destruct(s);
+
+                state::after(s);
+            }
+
             _ => return Ok(())
         }
         Ok(())
