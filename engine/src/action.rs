@@ -146,6 +146,22 @@ impl Action {
                 state::after(s);
             }
 
+            Self::DiscardBuilding(bid) => {
+                if s.phase != Phase::Turn {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                if !s.buildings.playable.contains(&bid) {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                s.buildings.discarded.push(bid);
+                s.deck.pull_building(&bid);
+                s.me_mut().coins = s.me().bank.discard_reward;
+
+                state::after(s);
+            }
+
             _ => return Ok(())
         }
         Ok(())
