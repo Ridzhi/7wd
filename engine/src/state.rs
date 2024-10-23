@@ -171,37 +171,8 @@ impl State {
             }
         }
 
-        self.refresh_buildings();
-        self.refresh_cities();
-        // refresh_building
-        // refresh cities
-
-    }
-
-    fn refresh_buildings(&mut self) {
-        self.buildings.layout = self.deck.get_public_layout();
-        self.buildings.playable = self.deck.get_playable_buildings();
-    }
-
-    fn refresh_cities(&mut self) {
-        let turn = self.players.me;
-
-        vec![self.players.me, self.players.enemy].into_iter()
-            .for_each(|p| {
-                self.players.set_turn(p);
-                // @TODO remove clone
-                // let playable = self.buildings.playable.clone();
-                //
-                // self.me_mut().refresh_buildings_price(playable);
-                let buildings_price = get_buildings_price(p, self);
-                self.me_mut().bank.building_price = buildings_price;
-                self.me_mut().refresh_wonders_price();
-                let score = get_score(p, self);
-                self.me_mut().score = score;
-                // сделать получение скора и присваивание снаружи
-                // self.me_mut().refresh_score();
-                // self.me_mut()
-            })
+        refresh_buildings(self);
+        refresh_cities(self);
     }
 
     fn resolve_next_turn(&mut self) {
@@ -262,18 +233,6 @@ impl City {
             }
             Bonus::Coin => self.coins / COINS_PER_POINT,
         }
-    }
-
-    pub fn refresh_wonders_price(&mut self) {
-        self.bank.wonder_price = self.wonders.iter()
-            .filter_map(|(w, b)| {
-                if b.is_some() {
-                    None
-                } else {
-                    Some((*w, self.bank.get_price(PayScope::Wonders, wonder::REGISTRY[w].cost.clone())))
-                }
-            })
-            .collect()
     }
 }
 
@@ -417,9 +376,9 @@ enum ScienceStatus {
     Supremacy,
 }
 
-pub(crate) fn get_score(p: Nickname, state: &mut State) -> Score {
+fn get_score(state: &mut State) -> Score {
     let mut score = Score::default();
-    let city = state.cities.get(&p).unwrap();
+    let city = state.me();
 
     for id in city.buildings.iter() {
         let points = building::REGISTRY[id].get_points(state);
@@ -444,7 +403,6 @@ pub(crate) fn get_score(p: Nickname, state: &mut State) -> Score {
     }
 
     score.coins = city.coins / COINS_PER_POINT;
-    // points() or get_points()?!
     score.military = city.track.get_points();
     score.total = score.civilian
         + score.science
@@ -458,8 +416,8 @@ pub(crate) fn get_score(p: Nickname, state: &mut State) -> Score {
     score
 }
 
-pub(crate) fn get_buildings_price(p: Nickname, state: &mut State) -> PriceList<building::Id> {
-    let city = state.cities.get(&p).unwrap();
+fn get_buildings_price(state: &mut State) -> PriceList<building::Id> {
+    let city = state.me();
     state.buildings.playable.iter()
         .map(|id| {
             if city.chains.contains(id) {
@@ -469,4 +427,42 @@ pub(crate) fn get_buildings_price(p: Nickname, state: &mut State) -> PriceList<b
             (*id, city.bank.get_price(PayScope::from_building(id), building::REGISTRY[id].cost.clone()))
         })
         .collect()
+}
+
+fn get_wonders_price(state: &mut State) -> PriceList<wonder::Id> {
+    let city = state.me();
+    city.wonders.iter()
+        .filter_map(|(w, b)| {
+            if b.is_some() {
+                None
+            } else {
+                Some((*w, city.bank.get_price(PayScope::Wonders, wonder::REGISTRY[w].cost.clone())))
+            }
+        })
+        .collect()
+}
+
+fn refresh_cities(state: &mut State) {
+    let turn = state.players.me;
+
+    vec![state.players.me, state.players.enemy].into_iter()
+        .for_each(|p| {
+            state.players.set_turn(p);
+
+            let buildings_price = get_buildings_price(state);
+            state.me_mut().bank.building_price = buildings_price;
+
+            let wonders_price = get_wonders_price(state);
+            state.me_mut().bank.wonder_price = wonders_price;
+
+            let score = get_score(state);
+            state.me_mut().score = score;
+        });
+
+    state.players.set_turn(turn);
+}
+
+fn refresh_buildings(state: &mut State) {
+    state.buildings.layout = state.deck.get_public_layout();
+    state.buildings.playable = state.deck.get_playable_buildings();
 }
