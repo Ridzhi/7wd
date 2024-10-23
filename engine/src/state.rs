@@ -144,37 +144,6 @@ impl State {
         winner
     }
 
-    pub fn after(&mut self) {
-        if self.phase == Phase::Over {
-            return;
-        }
-
-        let has_post_effects = self.post_effects.len() > 0;
-        let is_over = self.age.is_last()
-            && self.phase == Phase::Turn
-            && self.deck.is_empty()
-            && !has_post_effects;
-
-        if is_over {
-            self.over(Finisher::Winner(self.resolve_winner()), Victory::Civilian);
-            return;
-        }
-
-        // post effects has own logic to set turn
-        // we resolve turn and use this to fallback turn after post effects if needed
-        self.resolve_next_turn();
-
-        if !has_post_effects {
-            if self.deck.is_empty() && !self.age.is_last() {
-                self.age.next();
-                self.deck = Deck::new(get_layout(self.age), self.random_units.buildings[&self.age].clone())
-            }
-        }
-
-        refresh_buildings(self);
-        refresh_cities(self);
-    }
-
     fn resolve_next_turn(&mut self) {
         if self.deck.is_empty() && !self.age.is_last() {
             self.phase = Phase::WhoBeginsTheNextAgeSelection;
@@ -374,6 +343,39 @@ enum ScienceStatus {
     Regular,
     ProgressToken,
     Supremacy,
+}
+
+pub fn after(state: &mut State) {
+    if state.phase == Phase::Over {
+        return;
+    }
+
+    let has_post_effects = state.post_effects.len() > 0;
+    let is_over = state.age.is_last()
+        && state.phase == Phase::Turn
+        && state.deck.is_empty()
+        && !has_post_effects;
+
+    if is_over {
+        state.over(Finisher::Winner(state.resolve_winner()), Victory::Civilian);
+        return;
+    }
+
+    // post effects has own logic to set turn
+    // we resolve turn and use this to fallback turn after post effects if needed
+    state.resolve_next_turn();
+
+    if !has_post_effects {
+        if state.deck.is_empty() && !state.age.is_last() {
+            state.age.next();
+            state.deck = Deck::new(get_layout(state.age), state.random_units.buildings[&state.age].clone())
+        }
+    }
+
+    refresh_buildings(state);
+    refresh_cities(state);
+
+
 }
 
 fn get_score(state: &mut State) -> Score {
