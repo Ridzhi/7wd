@@ -102,7 +102,7 @@ impl Effect {
                 }
 
                 if supremacy {
-                    s.over(Finisher::Winner(s.players.me), Victory::MilitarySupremacy);
+                    state::over(s, Finisher::Winner(s.players.me), Victory::MilitarySupremacy);
                 }
             }
 
@@ -168,7 +168,7 @@ impl Effect {
                 }
 
                 if s.me().scientific_symbols.len() == DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY as usize {
-                    s.over(Finisher::Winner(s.players.me), Victory::ScienceSupremacy);
+                    state::over(s,Finisher::Winner(s.players.me), Victory::ScienceSupremacy);
                 }
             }
 

@@ -1,6 +1,6 @@
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
-use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN, DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY, Action, Error, Age, DEFAULT_DISCARD_REWARD, DEFAULT_RESOURCE_PRICE, STARTING_CITY_COINS, get_layout, BaseUnit};
+use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, effect, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN, DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY, Action, Error, Age, DEFAULT_DISCARD_REWARD, DEFAULT_RESOURCE_PRICE, STARTING_CITY_COINS, get_layout, BaseUnit, state};
 use crate::building::Kind;
 use crate::deck::Layout;
 use crate::effect::PostEffect;
@@ -60,7 +60,7 @@ impl State {
 
         self.phase = Phase::Over;
 
-        let winner= match finisher {
+        let winner = match finisher {
             Finisher::Winner(w) => w,
             Finisher::Loser(l) => {
                 if l == self.players.me {
@@ -120,28 +120,6 @@ impl State {
         }
 
         (fine, supremacy)
-    }
-
-    pub fn resolve_winner(&self) -> Nickname {
-        let winner = match self.me().score.total.cmp(&self.enemy().score.total) {
-            Ordering::Greater => self.players.me,
-            Ordering::Less => self.players.enemy,
-            Ordering::Equal => {
-                match self.me().score.civilian.cmp(&self.enemy().score.commercial) {
-                    Ordering::Greater => self.players.me,
-                    Ordering::Less => self.players.enemy,
-                    Ordering::Equal => {
-                        if self.players.me == self.players.starts {
-                            self.players.me
-                        } else {
-                            self.players.enemy
-                        }
-                    }
-                }
-            }
-        };
-
-        winner
     }
 
     fn resolve_next_turn(&mut self) {
@@ -346,65 +324,67 @@ enum ScienceStatus {
     Supremacy,
 }
 
-pub fn after(state: &mut State) {
-    if state.phase == Phase::Over {
+pub fn after(s: &mut State) {
+    if s.phase == Phase::Over {
         return;
     }
 
-    let has_post_effects = state.post_effects.len() > 0;
-    let is_over = state.age.is_last()
-        && state.phase == Phase::Turn
-        && state.deck.is_empty()
+    let has_post_effects = s.post_effects.len() > 0;
+    let is_over = s.age.is_last()
+        && s.phase == Phase::Turn
+        && s.deck.is_empty()
         && !has_post_effects;
 
     if is_over {
-        state.over(Finisher::Winner(state.resolve_winner()), Victory::Civilian);
+        let finisher = Finisher::Winner(resolve_winner(s));
+        over(s, finisher, Victory::Civilian);
         return;
     }
 
     // post effects has own logic to set turn
     // we resolve turn and use this to fallback turn after post effects if needed
-    state.resolve_next_turn();
+    s.resolve_next_turn();
 
     if !has_post_effects {
-        if state.deck.is_empty() && !state.age.is_last() {
-            state.age.next();
-            state.deck = Deck::new(get_layout(state.age), state.random_units.buildings[&state.age].clone())
+        if s.deck.is_empty() && !s.age.is_last() {
+            s.age.next();
+            s.deck = Deck::new(get_layout(s.age), s.random_units.buildings[&s.age].clone())
         }
     }
 
-    refresh_buildings(state);
-    refresh_cities(state);
+    refresh_buildings(s);
+    refresh_cities(s);
 
     if has_post_effects {
-        if state.players.fallback.is_none() {
-            state.players.fallback = Some(state.players.me);
+        if s.players.fallback.is_none() {
+            s.players.fallback = Some(s.players.me);
         }
 
-        state.post_effects.remove(0).apply(state);
+        s.post_effects.remove(0).apply(s);
     } else {
-        if let Some(p) = state.players.fallback {
+        if let Some(p) = s.players.fallback {
             // if starts next age, origin turn resolve is priority
-            if state.phase != Phase::WhoBeginsTheNextAgeSelection {
-                state.phase = Phase::Turn;
-                state.players.set_turn(p);
+            if s.phase != Phase::WhoBeginsTheNextAgeSelection {
+                s.phase = Phase::Turn;
+                s.players.set_turn(p);
             }
 
-            state.players.fallback = None;
+            s.players.fallback = None;
         }
     }
 
-    if state.deck.is_empty() && state.age.is_last() && state.phase == Phase::Turn {
-        state.over(Finisher::Winner(state.resolve_winner()), Victory::Civilian);
+    if s.deck.is_empty() && s.age.is_last() && s.phase == Phase::Turn {
+        let finisher = Finisher::Winner(resolve_winner(s));
+        over(s, finisher, Victory::Civilian);
     }
 }
 
-fn get_score(state: &mut State) -> Score {
+fn get_score(s: &mut State) -> Score {
     let mut score = Score::default();
-    let city = state.me();
+    let city = s.me();
 
     for id in city.buildings.iter() {
-        let points = building::REGISTRY[id].get_points(state);
+        let points = building::REGISTRY[id].get_points(s);
 
         match building::REGISTRY[id].kind {
             Kind::Scientific => score.science += points,
@@ -415,14 +395,14 @@ fn get_score(state: &mut State) -> Score {
         };
     }
 
-    for (w,b) in city.wonders.iter() {
+    for (w, b) in city.wonders.iter() {
         if b.is_some() {
-            score.wonders += wonder::REGISTRY[&w].get_points(state);
+            score.wonders += wonder::REGISTRY[&w].get_points(s);
         }
     }
 
     for id in city.tokens.iter() {
-        score.tokens += token::REGISTRY[id].get_points(state);
+        score.tokens += token::REGISTRY[id].get_points(s);
     }
 
     score.coins = city.coins / COINS_PER_POINT;
@@ -439,9 +419,9 @@ fn get_score(state: &mut State) -> Score {
     score
 }
 
-fn get_buildings_price(state: &mut State) -> PriceList<building::Id> {
-    let city = state.me();
-    state.buildings.playable.iter()
+fn get_buildings_price(s: &mut State) -> PriceList<building::Id> {
+    let city = s.me();
+    s.buildings.playable.iter()
         .map(|id| {
             if city.chains.contains(id) {
                 return (*id, 0);
@@ -452,8 +432,8 @@ fn get_buildings_price(state: &mut State) -> PriceList<building::Id> {
         .collect()
 }
 
-fn get_wonders_price(state: &mut State) -> PriceList<wonder::Id> {
-    let city = state.me();
+fn get_wonders_price(s: &mut State) -> PriceList<wonder::Id> {
+    let city = s.me();
     city.wonders.iter()
         .filter_map(|(w, b)| {
             if b.is_some() {
@@ -465,27 +445,71 @@ fn get_wonders_price(state: &mut State) -> PriceList<wonder::Id> {
         .collect()
 }
 
-fn refresh_cities(state: &mut State) {
-    let turn = state.players.me;
-
-    vec![state.players.me, state.players.enemy].into_iter()
-        .for_each(|p| {
-            state.players.set_turn(p);
-
-            let buildings_price = get_buildings_price(state);
-            state.me_mut().bank.building_price = buildings_price;
-
-            let wonders_price = get_wonders_price(state);
-            state.me_mut().bank.wonder_price = wonders_price;
-
-            let score = get_score(state);
-            state.me_mut().score = score;
-        });
-
-    state.players.set_turn(turn);
+pub fn resolve_winner(s: &mut State) -> Nickname {
+    match s.me().score.total.cmp(&s.enemy().score.total) {
+        Ordering::Greater => s.players.me,
+        Ordering::Less => s.players.enemy,
+        Ordering::Equal => {
+            match s.me().score.civilian.cmp(&s.enemy().score.commercial) {
+                Ordering::Greater => s.players.me,
+                Ordering::Less => s.players.enemy,
+                Ordering::Equal => {
+                    if s.players.me == s.players.starts {
+                        s.players.me
+                    } else {
+                        s.players.enemy
+                    }
+                }
+            }
+        }
+    }
 }
 
-fn refresh_buildings(state: &mut State) {
-    state.buildings.layout = state.deck.get_public_layout();
-    state.buildings.playable = state.deck.get_playable_buildings();
+fn refresh_cities(s: &mut State) {
+    let turn = s.players.me;
+
+    vec![s.players.me, s.players.enemy].into_iter()
+        .for_each(|p| {
+            s.players.set_turn(p);
+
+            let buildings_price = get_buildings_price(s);
+            s.me_mut().bank.building_price = buildings_price;
+
+            let wonders_price = get_wonders_price(s);
+            s.me_mut().bank.wonder_price = wonders_price;
+
+            let score = get_score(s);
+            s.me_mut().score = score;
+        });
+
+    s.players.set_turn(turn);
+}
+
+fn refresh_buildings(s: &mut State) {
+    s.buildings.layout = s.deck.get_public_layout();
+    s.buildings.playable = s.deck.get_playable_buildings();
+}
+
+pub(crate) fn over(s: &mut State, finisher: Finisher, victory: Victory) {
+    if s.phase == Phase::Over {
+        return;
+    }
+
+    s.phase = Phase::Over;
+
+    let winner = match finisher {
+        Finisher::Winner(w) => w,
+        Finisher::Loser(l) => {
+            if l == s.players.me {
+                s.players.enemy
+            } else {
+                s.players.me
+            }
+        }
+    };
+
+    s.finish = Some(Finish {
+        winner,
+        victory,
+    });
 }

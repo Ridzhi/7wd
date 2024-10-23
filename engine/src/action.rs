@@ -58,7 +58,7 @@ impl Action {
             }
 
             Self::Resign(actor) => {
-                s.over(Finisher::Loser(actor), Victory::Resign);
+                state::over(s, Finisher::Loser(actor), Victory::Resign);
             }
 
             Self::SelectWhoBeginsTheNextAge(p) => {
