@@ -37,6 +37,7 @@ impl Action {
                     starts: v.p1,
                     me: v.p1,
                     enemy: v.p1,
+                    fallback: None,
                 };
                 s.cities = HashMap::from([
                     (v.p1, City::default()),

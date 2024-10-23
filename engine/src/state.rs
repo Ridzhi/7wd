@@ -317,6 +317,7 @@ pub struct Players {
     pub starts: Nickname,
     pub me: Nickname,
     pub enemy: Nickname,
+    pub fallback: Option<Nickname>,
 }
 
 impl Players {
@@ -375,7 +376,27 @@ pub fn after(state: &mut State) {
     refresh_buildings(state);
     refresh_cities(state);
 
+    if has_post_effects {
+        if state.players.fallback.is_none() {
+            state.players.fallback = Some(state.players.me);
+        }
 
+        state.post_effects.remove(0).apply(state);
+    } else {
+        if let Some(p) = state.players.fallback {
+            // if starts next age, origin turn resolve is priority
+            if state.phase != Phase::WhoBeginsTheNextAgeSelection {
+                state.phase = Phase::Turn;
+                state.players.set_turn(p);
+            }
+
+            state.players.fallback = None;
+        }
+    }
+
+    if state.deck.is_empty() && state.age.is_last() && state.phase == Phase::Turn {
+        state.over(Finisher::Winner(state.resolve_winner()), Victory::Civilian);
+    }
 }
 
 fn get_score(state: &mut State) -> Score {
