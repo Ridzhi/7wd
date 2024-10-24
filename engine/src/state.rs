@@ -215,7 +215,8 @@ pub struct Score {
 
 #[derive(Default, Debug)]
 pub struct Units {
-    pub wonders: Vec<wonder::Id>,
+    // should keep empty slot to show origin order on client
+    pub wonders: Vec<Option<wonder::Id>>,
     pub buildings: Vec<building::Id>,
     pub tokens: Vec<token::Id>,
 }
@@ -465,7 +466,7 @@ pub fn resolve_winner(s: &mut State) -> Nickname {
     }
 }
 
-fn refresh_cities(s: &mut State) {
+pub(crate) fn refresh_cities(s: &mut State) {
     let turn = s.players.me;
 
     vec![s.players.me, s.players.enemy].into_iter()
@@ -485,7 +486,7 @@ fn refresh_cities(s: &mut State) {
     s.players.set_turn(turn);
 }
 
-fn refresh_buildings(s: &mut State) {
+pub(crate) fn refresh_buildings(s: &mut State) {
     s.buildings.layout = s.deck.get_public_layout();
     s.buildings.playable = s.deck.get_playable_buildings();
 }

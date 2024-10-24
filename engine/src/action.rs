@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use rand::prelude::{*};
 use crate::{*};
 use crate::player::Finisher;
-use crate::state::{City, Players, RandomUnits};
+use crate::state::{City, Players, RandomUnits, refresh_cities, refresh_buildings};
 
 
 pub enum Action {
@@ -52,6 +52,7 @@ impl Action {
                     .iter()
                     .take(WONDER_SELECTION_POOL_SIZE)
                     .copied()
+                    .map(|id| Some(id))
                     .collect();
 
                 // s.deck = Deck::new(get_layout(s.age), s.random_units.buildings[&s.age].clone());
@@ -177,6 +178,64 @@ impl Action {
                 state::after(s);
             }
 
+            Self::PickWonder(wid) => {
+                if s.phase != Phase::WondersSelection {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                let wi = s.interactive_units.wonders.iter()
+                    .enumerate()
+                    .find_map(|(ind, val)| {
+                       if let Some(id) = val {
+                           if *id == wid {
+                               return Some(ind);
+                           }
+                       }
+
+                       return None
+                    });
+
+                if let Some(ind) = wi {
+                    *s.interactive_units.wonders.get_mut(ind).unwrap() = None;
+                } else {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                s.me_mut().wonders.push((wid, None));
+
+                let picked_count = s.me().wonders.len() + s.enemy().wonders.len();
+
+
+                // pick scheme
+                // [N] - player
+                // stage 1: [1][2][2][1]
+                // stage 2: [2][1][1][2]
+                // after first move 1
+                match picked_count {
+                    2|6 => (), //  2 wonders in a row
+                    _ => s.players.next_turn() // normal flow, next player
+                }
+
+                match picked_count {
+                    WONDER_SELECTION_POOL_SIZE => {
+                        s.interactive_units.wonders = s.random_units.wonders.iter()
+                            .skip(WONDER_SELECTION_POOL_SIZE)
+                            .copied()
+                            .map(|id| Some(id))
+                            .collect();
+                    },
+
+                    8 => {
+                        s.phase = Phase::Turn;
+                        // s.interactive_units.wonders = None
+                        s.deck = Deck::new(get_layout(s.age), s.random_units.buildings[&s.age].clone());
+                        refresh_buildings(s);
+                        refresh_cities(s);
+                    },
+
+                    _ => (),
+                }
+            }
             _ => return Ok(())
         }
         Ok(())
