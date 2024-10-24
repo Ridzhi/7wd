@@ -142,3 +142,12 @@ pub enum Error {
 pub struct Options {
     pub with_promo_wonders: bool,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn game_11() {
+        assert!(true);
+    }
+}
