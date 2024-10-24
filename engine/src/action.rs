@@ -312,6 +312,23 @@ impl Action {
 
                 after(s);
             }
+
+            Self::PickDiscardedCard(bid) => {
+                if s.phase != Phase::DiscardedBuildingSelection {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                if !s.interactive_units.buildings.contains(&bid) {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                s.me_mut().buildings.push(bid);
+                s.buildings.discarded.retain(|id| *id != bid);
+                building::REGISTRY[&bid].construct(s);
+
+                after(s);
+            }
+
             _ => return Ok(())
         }
         Ok(())
