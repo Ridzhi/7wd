@@ -6,7 +6,7 @@ use crate::state::{City, Players, RandomUnits, refresh_cities, refresh_buildings
 
 
 pub enum Action {
-    Prepare(Prepare),
+    Prepare(Setup),
     // resign, timeout. (loser, reason)
     Resign(Nickname),
     SelectWhoBeginsTheNextAge(Nickname),
@@ -17,10 +17,10 @@ pub enum Action {
     PickWonder(wonder::Id),
     PickBoardToken(token::Id),
     PickRandomToken(token::Id),
-    PickTopLineCard(building::Id),
-    PickDiscardedCard(building::Id),
+    PickTopLineBuilding(building::Id),
+    PickDiscardedBuilding(building::Id),
     // pick, give
-    PickReturnedCards(building::Id, building::Id),
+    PickReturnedBuildings(building::Id, building::Id),
   }
 
 impl Action {
@@ -297,7 +297,7 @@ impl Action {
                 after(s);
             }
 
-            Self::PickTopLineCard(bid) => {
+            Self::PickTopLineBuilding(bid) => {
                 if s.phase != Phase::TopLineBuildingSelection {
                     return Err(Error::ActionNotAllowed);
                 }
@@ -313,7 +313,7 @@ impl Action {
                 after(s);
             }
 
-            Self::PickDiscardedCard(bid) => {
+            Self::PickDiscardedBuilding(bid) => {
                 if s.phase != Phase::DiscardedBuildingSelection {
                     return Err(Error::ActionNotAllowed);
                 }
@@ -329,7 +329,7 @@ impl Action {
                 after(s);
             }
 
-            Self::PickReturnedCards(pick, give) => {
+            Self::PickReturnedBuildings(pick, give) => {
                 if s.phase != Phase::ReturnedBuildingSelection {
                     return Err(Error::ActionNotAllowed);
                 }
@@ -365,16 +365,16 @@ impl Action {
     }
 }
 
-pub struct Prepare {
-    p1: Nickname,
-    p2: Nickname,
-    wonders: Vec<wonder::Id>,
-    board_tokens: Vec<token::Id>,
-    random_tokens: Vec<token::Id>,
-    buildings: HashMap<Age, Vec<building::Id>>
+pub struct Setup {
+    pub p1: Nickname,
+    pub p2: Nickname,
+    pub wonders: Vec<wonder::Id>,
+    pub board_tokens: Vec<token::Id>,
+    pub random_tokens: Vec<token::Id>,
+    pub buildings: HashMap<Age, Vec<building::Id>>
 }
 
-impl Prepare {
+impl Setup {
     pub fn new(mut p1: Nickname, mut p2: Nickname, o: Options) -> Self {
         if random() {
             std::mem::swap(&mut p1, &mut p2);
