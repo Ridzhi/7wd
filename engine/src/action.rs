@@ -227,7 +227,7 @@ impl Action {
 
                     8 => {
                         s.phase = Phase::Turn;
-                        // s.interactive_units.wonders = None
+                        s.interactive_units.wonders = vec![];
                         s.deck = Deck::new(get_layout(s.age), s.random_units.buildings[&s.age].clone());
                         refresh_buildings(s);
                         refresh_cities(s);
