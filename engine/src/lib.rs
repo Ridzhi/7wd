@@ -148,6 +148,8 @@ mod tests {
     use super::*;
     #[test]
     fn game_11() {
-        assert!(true);
+        let actions = vec![];
+        let s = State::from(actions);
+        assert!(s.is_ok());
     }
 }
