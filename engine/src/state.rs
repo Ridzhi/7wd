@@ -310,6 +310,10 @@ impl Players {
             self.next_turn();
         }
     }
+
+    pub fn members(&self) -> Vec<Nickname> {
+        vec![self.me, self.enemy]
+    }
 }
 
 #[derive(Default, Debug)]

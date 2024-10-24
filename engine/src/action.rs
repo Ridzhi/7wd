@@ -329,7 +329,37 @@ impl Action {
                 after(s);
             }
 
-            _ => return Ok(())
+            Self::PickReturnedCards(pick, give) => {
+                if s.phase != Phase::ReturnedBuildingSelection {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                if pick == give {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                if !s.interactive_units.buildings.contains(&pick) {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                if !s.interactive_units.buildings.contains(&give) {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                let players = s.players.members();
+                let fallback_turn = s.players.me;
+
+                players.into_iter()
+                    .for_each(|p| {
+                        s.players.set_turn(p);
+                        s.me_mut().buildings.push(pick);
+                        building::REGISTRY[&pick].construct(s);
+                    });
+
+                s.players.set_turn(fallback_turn);
+
+                after(s);
+            }
         }
         Ok(())
     }
