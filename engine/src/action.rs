@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use rand::prelude::{*};
 use crate::{*};
 use crate::player::Finisher;
-use crate::state::{City, Players, RandomUnits, refresh_cities, refresh_buildings};
+use crate::state::{City, Players, RandomUnits, refresh_cities, refresh_buildings, after};
 
 
 pub enum Action {
@@ -115,7 +115,7 @@ impl Action {
 
                 wonder::REGISTRY[&wid].construct(s);
 
-                if s.me().tokens.contains(&token::Id::Theology) {
+                if s.me().progress_tokens.contains(&token::Id::Theology) {
                     s.play_again = true;
                 }
 
@@ -132,7 +132,7 @@ impl Action {
                 }
 
                 if s.me().chains.contains(&bid) {
-                    if s.me().tokens.contains(&token::Id::Urbanism) {
+                    if s.me().progress_tokens.contains(&token::Id::Urbanism) {
                         s.me_mut().coins += 4;
                     }
                 } else {
@@ -235,6 +235,36 @@ impl Action {
 
                     _ => (),
                 }
+            }
+
+            Self::PickBoardToken(tid) => {
+                if s.phase != Phase::BoardTokenSelection {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                if !s.interactive_units.tokens.contains(&tid) {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                s.me_mut().progress_tokens.push(tid);
+                token::REGISTRY[&tid].construct(s);
+                let t_ind = s.progress_tokens.iter()
+                    .enumerate()
+                    .find_map(|(ind, val)| {
+                        if let Some(id) = val {
+                            return if *id == tid {
+                                Some(ind)
+                            } else {
+                                None
+                            }
+                        }
+
+                        return None;
+                    });
+
+                *s.progress_tokens.get_mut(t_ind.unwrap()).unwrap() = None;
+
+                after(s);
             }
             _ => return Ok(())
         }

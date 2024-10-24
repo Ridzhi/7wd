@@ -87,7 +87,7 @@ impl State {
 
         self.me_mut().coins -= price;
 
-        if self.enemy().tokens.contains(&token::Id::Economy) {
+        if self.enemy().progress_tokens.contains(&token::Id::Economy) {
             self.enemy_mut().coins += (price - cost_coins);
         }
 
@@ -155,7 +155,7 @@ pub struct City {
     pub score: Score,
     pub buildings: Vec<building::Id>,
     pub wonders: Vec<(wonder::Id, Option<building::Id>)>,
-    pub tokens: Vec<token::Id>,
+    pub progress_tokens: Vec<token::Id>,
     pub scientific_symbols: Vec<(ScientificSymbol, u8)>,
     pub chains: Vec<building::Id>,
     pub bank: Bank,
@@ -191,7 +191,7 @@ impl Default for City {
             score: Default::default(),
             buildings: vec![],
             wonders: vec![],
-            tokens: vec![],
+            progress_tokens: vec![],
             scientific_symbols: vec![],
             chains: vec![],
             bank: Default::default(),
@@ -402,7 +402,7 @@ fn get_score(s: &mut State) -> Score {
         }
     }
 
-    for id in city.tokens.iter() {
+    for id in city.progress_tokens.iter() {
         score.tokens += token::REGISTRY[id].get_points(s);
     }
 

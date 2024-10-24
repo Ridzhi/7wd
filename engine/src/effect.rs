@@ -91,7 +91,7 @@ impl Effect {
             Self::Military(power, use_strategy_token) => {
                 let mut power = power;
 
-                if use_strategy_token && s.me().tokens.contains(&token::Id::Strategy) {
+                if use_strategy_token && s.me().progress_tokens.contains(&token::Id::Strategy) {
                     power += 1;
                 }
 
@@ -194,7 +194,7 @@ impl Effect {
             }
 
             Self::Mathematics => {
-                s.me().tokens.len() as u8 * 3
+                s.me().progress_tokens.len() as u8 * 3
             }
 
             Self::Points(count) => {
