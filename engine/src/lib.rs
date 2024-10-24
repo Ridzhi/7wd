@@ -269,7 +269,7 @@ mod tests {
             ConstructBuilding(WoodReserve),
             ConstructBuilding(StoneReserve),
             ConstructBuilding(Scriptorium),
-            // ConstructBuilding(StonePit),
+            ConstructBuilding(StonePit),
             // ConstructBuilding(Quarry),
             // DiscardBuilding(Garrison),
             // ConstructBuilding(Pharmacist),
