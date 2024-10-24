@@ -36,7 +36,7 @@ impl Action {
                 s.players = Players{
                     starts: v.p1,
                     me: v.p1,
-                    enemy: v.p1,
+                    enemy: v.p2,
                     fallback: None,
                 };
                 s.cities = HashMap::from([
@@ -54,8 +54,6 @@ impl Action {
                     .copied()
                     .map(|id| Some(id))
                     .collect();
-
-                // s.deck = Deck::new(get_layout(s.age), s.random_units.buildings[&s.age].clone());
             }
 
             Self::Resign(actor) => {
@@ -204,7 +202,6 @@ impl Action {
                 s.me_mut().wonders.push((wid, None));
 
                 let picked_count = s.me().wonders.len() + s.enemy().wonders.len();
-
 
                 // pick scheme
                 // [N] - player
