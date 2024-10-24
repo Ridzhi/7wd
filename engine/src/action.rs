@@ -119,7 +119,7 @@ impl Action {
                     s.play_again = true;
                 }
 
-                state::after(s);
+                after(s);
             }
 
             Self::ConstructBuilding(bid) => {
@@ -144,7 +144,7 @@ impl Action {
 
                 building::REGISTRY[&bid].construct(s);
 
-                state::after(s);
+                after(s);
             }
 
             Self::DiscardBuilding(bid) => {
@@ -160,7 +160,7 @@ impl Action {
                 s.deck.pull_building(&bid);
                 s.me_mut().coins = s.me().bank.discard_reward;
 
-                state::after(s);
+                after(s);
             }
 
             Self::DestructBuilding(bid) => {
@@ -175,7 +175,7 @@ impl Action {
                 s.enemy_mut().buildings.retain(|id| *id != bid);
                 building::REGISTRY[&bid].destruct(s);
 
-                state::after(s);
+                after(s);
             }
 
             Self::PickWonder(wid) => {
@@ -263,6 +263,52 @@ impl Action {
                     });
 
                 *s.progress_tokens.get_mut(t_ind.unwrap()).unwrap() = None;
+
+                after(s);
+            }
+
+            Self::PickRandomToken(tid) => {
+                if s.phase != Phase::RandomTokenSelection {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                if !s.interactive_units.tokens.contains(&tid) {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                s.me_mut().progress_tokens.push(tid);
+                token::REGISTRY[&tid].construct(s);
+                let t_ind = s.progress_tokens.iter()
+                    .enumerate()
+                    .find_map(|(ind, val)| {
+                        if let Some(id) = val {
+                            return if *id == tid {
+                                Some(ind)
+                            } else {
+                                None
+                            }
+                        }
+
+                        return None;
+                    });
+
+                *s.progress_tokens.get_mut(t_ind.unwrap()).unwrap() = None;
+
+                after(s);
+            }
+
+            Self::PickTopLineCard(bid) => {
+                if s.phase != Phase::TopLineBuildingSelection {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                if !s.interactive_units.buildings.contains(&bid) {
+                    return Err(Error::ActionNotAllowed);
+                }
+
+                s.me_mut().buildings.push(bid);
+                s.deck.pull_building(&bid);
+                building::REGISTRY[&bid].construct(s);
 
                 after(s);
             }
