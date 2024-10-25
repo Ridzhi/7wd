@@ -125,7 +125,7 @@ impl Action {
                     return Err(Error::ActionNotAllowed);
                 }
 
-                if bid == building::Id::Quarry {
+                if bid == building::Id::Palisade {
                     println!("point");
                 }
 
@@ -160,7 +160,7 @@ impl Action {
 
                 s.buildings.discarded.push(bid);
                 s.deck.pull_building(&bid);
-                s.me_mut().coins = s.me().bank.discard_reward;
+                s.me_mut().coins += s.me().bank.discard_reward;
 
                 after(s);
             }

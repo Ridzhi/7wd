@@ -133,6 +133,7 @@ pub trait BaseUnit {
 
 pub type Points = u8;
 
+#[derive(Debug)]
 pub enum Error {
     ActionNotAllowed,
     NotEnoughCoins,
@@ -336,6 +337,13 @@ mod tests {
             // PickBoardToken(Philosophy),
         ];
         let s = State::from(actions);
-        assert!(s.is_ok());
+
+        let is_ok = s.is_ok();
+
+        if s.is_err() {
+            println!("{:?}", s.unwrap_err());
+        }
+
+        assert!(is_ok);
     }
 }

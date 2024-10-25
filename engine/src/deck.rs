@@ -187,12 +187,22 @@ impl Deck {
                     let mut nodes: Children = Default::default();
 
                     if let Some(next) = it.peek() {
-                        if let Some(left) = next[pos-1] {
-                            nodes[0] = Some(left)
+                        if pos > 0 {
+                            let item = next.get(pos-1);
+
+                            if let Some(v) = item {
+                                if let Some(left) = v {
+                                    nodes[0] = Some(*left)
+                                }
+                            }
                         }
 
-                        if let Some(right) = next[pos + 1] {
-                            nodes[1] = Some(right)
+                        let item = next.get(pos+1);
+
+                        if let Some(v) = item {
+                            if let Some(right) = v {
+                                nodes[1] = Some(*right)
+                            }
                         }
                     }
 
