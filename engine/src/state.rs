@@ -217,17 +217,17 @@ impl Default for City {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Copy, Clone, Eq, PartialEq)]
 pub struct Score {
-    civilian: u8,
-    science: u8,
-    commercial: u8,
-    guilds: u8,
-    wonders: u8,
-    tokens: u8,
-    coins: u8,
-    military: u8,
-    total: u8,
+    pub civilian: u8,
+    pub science: u8,
+    pub commercial: u8,
+    pub guilds: u8,
+    pub wonders: u8,
+    pub tokens: u8,
+    pub coins: u8,
+    pub military: u8,
+    pub total: u8,
 }
 
 #[derive(Default, Debug)]

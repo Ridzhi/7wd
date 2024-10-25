@@ -152,6 +152,7 @@ mod tests {
     use wonder::Id::{*};
     use token::Id::{*};
     use building::Id::{*};
+    use crate::state::Score;
 
     #[test]
     fn game_11() {
@@ -336,14 +337,42 @@ mod tests {
             ConstructBuilding(Academy),
             PickBoardToken(Philosophy),
         ];
-        let s = State::from(actions);
+        let s = State::from(actions).expect("its ok");
 
-        let is_ok = s.is_ok();
+        // coins 33
+        let expected1 = Score{
+            civilian: 20,
+            science: 13,
+            commercial: 6,
+            guilds: 0,
+            wonders: 9,
+            tokens: 11,
+            coins: 11,
+            military: 0,
+            total: 70,
+        };
 
-        if s.is_err() {
-            println!("{:?}", s.unwrap_err());
-        }
+        // coins 19
+        let expected2 = Score{
+            civilian: 6,
+            science: 2,
+            commercial: 9,
+            guilds: 10,
+            wonders: 9,
+            tokens: 0,
+            coins: 6,
+            military: 0,
+            total: 42,
+        };
 
-        assert!(is_ok);
+        let p1 = s.enemy();
+        let p2 = s.me();
+
+        let actual1 = p1.score;
+        let actual2 = p2.score;
+        // assert_eq!(33, p1.coins);
+        // assert_eq!(19, p2.coins);
+        assert_eq!(expected1, actual1);
+        // assert_eq!(expected2, actual2);
     }
 }
