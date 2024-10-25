@@ -12,7 +12,7 @@ pub struct State {
     pub phase: Phase,
     pub players: Players,
     pub cities: HashMap<Nickname, City>,
-    pub progress_tokens: [Option<token::Id>; 5],
+    pub progress_tokens: Vec<Option<token::Id>>,
     pub buildings: Buildings,
     pub interactive_units: Units,
     pub post_effects: Vec<PostEffect>,

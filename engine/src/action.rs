@@ -43,6 +43,7 @@ impl Action {
                     (v.p1, City::default()),
                     (v.p2, City::default()),
                 ]);
+                s.progress_tokens = v.board_tokens.iter().map(|id| Some(*id)).collect();
                 s.random_units = RandomUnits{
                     buildings: v.buildings,
                     tokens: v.random_tokens,
