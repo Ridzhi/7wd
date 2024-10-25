@@ -296,7 +296,7 @@ mod tests {
             ConstructBuilding(Barracks),
             ConstructBuilding(Library),
             PickBoardToken(Theology),
-            // ConstructBuilding(Walls),
+            ConstructBuilding(Walls),
             // ConstructBuilding(Brewery),
             // DiscardBuilding(HorseBreeders),
             // ConstructWonder(Messe, Statue),

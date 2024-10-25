@@ -199,7 +199,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
                 resources: Resources::new(),
             },
             effects: vec![
-                Effect::Resource(Resource::Clay, 1)
+                Effect::Resource(Resource::Stone, 1)
             ],
         },
         Unit {

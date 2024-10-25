@@ -126,7 +126,7 @@ impl Action {
                     return Err(Error::ActionNotAllowed);
                 }
 
-                if bid == building::Id::Palisade {
+                if bid == building::Id::Walls {
                     println!("point");
                 }
 
@@ -139,7 +139,7 @@ impl Action {
                         s.me_mut().coins += 4;
                     }
                 } else {
-                    s.pay(PayScope::Wonders, building::REGISTRY[&bid].cost.clone())?;
+                    s.pay(PayScope::from_building(&bid), building::REGISTRY[&bid].cost.clone())?;
                 }
 
                 s.me_mut().buildings.push(bid);
