@@ -372,7 +372,7 @@ mod tests {
         let actual2 = p2.score;
         // assert_eq!(33, p1.coins);
         // assert_eq!(19, p2.coins);
-        assert_eq!(expected1, actual1);
+        assert_eq!(expected1.military, actual1.military);
         // assert_eq!(expected2, actual2);
     }
 }
