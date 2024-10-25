@@ -140,7 +140,7 @@ impl Deck {
                     }
                 }
 
-                if let Some(right) = children[0] {
+                if let Some(right) = children[1] {
                     if &right == id {
                         *children.get_mut(1).unwrap() = None;
                     }

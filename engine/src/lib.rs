@@ -270,7 +270,7 @@ mod tests {
             ConstructBuilding(StoneReserve),
             ConstructBuilding(Scriptorium),
             ConstructBuilding(StonePit),
-            // ConstructBuilding(Quarry),
+            ConstructBuilding(Quarry),
             // DiscardBuilding(Garrison),
             // ConstructBuilding(Pharmacist),
             // ConstructBuilding(ClayPool),
