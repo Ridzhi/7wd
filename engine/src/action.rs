@@ -198,7 +198,7 @@ impl Action {
                     });
 
                 if let Some(ind) = wi {
-                    *s.interactive_units.wonders.get_mut(ind).unwrap() = None;
+                    *s.interactive_units.wonders.get_mut(ind).expect("interactive wonders have ind") = None;
                 } else {
                     return Err(Error::ActionNotAllowed);
                 }
@@ -263,7 +263,7 @@ impl Action {
                         return None;
                     });
 
-                *s.progress_tokens.get_mut(t_ind.unwrap()).unwrap() = None;
+                *s.progress_tokens.get_mut(t_ind.expect("t ind should be")).expect("s.progress_tokens get t by ind") = None;
 
                 after(s);
             }
@@ -293,7 +293,7 @@ impl Action {
                         return None;
                     });
 
-                *s.progress_tokens.get_mut(t_ind.unwrap()).unwrap() = None;
+                *s.progress_tokens.get_mut(t_ind.expect("t ind should be")).expect("s.progress_tokens get t by ind") = None;
 
                 after(s);
             }
