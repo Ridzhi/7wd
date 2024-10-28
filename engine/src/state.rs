@@ -9,7 +9,6 @@ use crate::{
   deck::{Layout},
   military::{Track}
 };
-// use crate::{Deck, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, Action, Error, Age, DEFAULT_DISCARD_REWARD, DEFAULT_RESOURCE_PRICE, STARTING_CITY_COINS, get_layout, BaseUnit};
 
 #[derive(Default, Debug)]
 pub struct State {
@@ -17,7 +16,7 @@ pub struct State {
     pub phase: Phase,
     pub players: Players,
     pub cities: HashMap<Nickname, City>,
-    pub progress_tokens: Vec<Option<token::Id>>,
+    pub tokens: Vec<Option<token::Id>>,
     pub buildings: Buildings,
     pub interactive_units: Units,
     pub post_effects: Vec<PostEffect>,
@@ -98,7 +97,7 @@ impl State {
 
         self.me_mut().coins -= price;
 
-        if self.enemy().progress_tokens.contains(&token::Id::Economy) {
+        if self.enemy().tokens.contains(&token::Id::Economy) {
             self.enemy_mut().coins += price - cost_coins;
         }
 
@@ -166,7 +165,7 @@ pub struct City {
     pub score: Score,
     pub buildings: Vec<building::Id>,
     pub wonders: Vec<(wonder::Id, Option<building::Id>)>,
-    pub progress_tokens: Vec<token::Id>,
+    pub tokens: Vec<token::Id>,
     pub scientific_symbols: Vec<(ScientificSymbol, u8)>,
     pub chains: Vec<building::Id>,
     pub bank: Bank,
@@ -202,7 +201,7 @@ impl Default for City {
             score: Default::default(),
             buildings: vec![],
             wonders: vec![],
-            progress_tokens: vec![],
+            tokens: vec![],
             scientific_symbols: vec![],
             chains: vec![],
             bank: Default::default(),
@@ -411,7 +410,7 @@ fn get_score(s: &mut State) -> Score {
         }
     }
 
-    for tid in city.progress_tokens.iter() {
+    for tid in city.tokens.iter() {
         score.tokens += get_token(tid).get_points(s);
     }
 

@@ -91,7 +91,7 @@ impl Effect {
             Self::Military(power, use_strategy_token) => {
                 let mut power = power;
 
-                if use_strategy_token && s.me().progress_tokens.contains(&token::Id::Strategy) {
+                if use_strategy_token && s.me().tokens.contains(&token::Id::Strategy) {
                     power += 1;
                 }
 
@@ -107,7 +107,7 @@ impl Effect {
             }
 
             Self::PickBoardToken => {
-                let tokens = s.progress_tokens.iter().flatten().cloned().collect::<Vec<_>>();
+                let tokens = s.tokens.iter().flatten().cloned().collect::<Vec<_>>();
 
                 if !tokens.is_empty() {
                     s.post_effects.push(PostEffect::PickBoardToken(s.players.me, tokens));
@@ -200,7 +200,7 @@ impl Effect {
             }
 
             Self::Mathematics => {
-                s.me().progress_tokens.len() as u8 * 3
+                s.me().tokens.len() as u8 * 3
             }
 
             Self::Points(count) => {

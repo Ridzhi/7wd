@@ -48,7 +48,7 @@ impl Action {
                     (v.p1, City::default()),
                     (v.p2, City::default()),
                 ]);
-                s.progress_tokens = v.board_tokens.iter().map(|id| Some(*id)).collect();
+                s.tokens = v.board_tokens.iter().map(|id| Some(*id)).collect();
                 s.random_units = state::RandomUnits {
                     buildings: v.buildings,
                     tokens: v.random_tokens,
@@ -117,7 +117,7 @@ impl Action {
 
                 get_wonder(&wid).construct(s);
 
-                if s.me().progress_tokens.contains(&token::Id::Theology) {
+                if s.me().tokens.contains(&token::Id::Theology) {
                     s.play_again = true;
                 }
 
@@ -134,7 +134,7 @@ impl Action {
                 }
 
                 if s.me().chains.contains(&bid) {
-                    if s.me().progress_tokens.contains(&token::Id::Urbanism) {
+                    if s.me().tokens.contains(&token::Id::Urbanism) {
                         s.me_mut().coins += 4;
                     }
                 } else {
@@ -325,9 +325,9 @@ impl Action {
             return Err(Error::ActionNotAllowed);
         }
 
-        s.me_mut().progress_tokens.push(tid.clone());
+        s.me_mut().tokens.push(tid.clone());
         get_token(&tid).construct(s);
-        let t_ind = s.progress_tokens.iter()
+        let t_ind = s.tokens.iter()
             .enumerate()
             .find_map(|(ind, val)| {
                 if let Some(id) = val {
@@ -341,7 +341,7 @@ impl Action {
                 return None;
             });
 
-        *s.progress_tokens.get_mut(t_ind.unwrap()).unwrap() = None;
+        *s.tokens.get_mut(t_ind.unwrap()).unwrap() = None;
 
         Ok(after(s))
     }
