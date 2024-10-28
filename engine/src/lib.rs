@@ -12,14 +12,6 @@ mod deck;
 mod action;
 
 use prelude::*;
-// pub use self::{
-//     economy::{Resource, Resources, Coins, Cost, PayScope},
-//     effect::{Effect, PostEffect},
-//     player::Nickname,
-//     state::State,
-//     deck::{Deck, get_layout},
-//     action::{Action, Setup},
-// };
 
 pub const DEFAULT_RESOURCE_PRICE: u8 = 2;
 pub const DEFAULT_DISCARD_REWARD: u8 = 2;
