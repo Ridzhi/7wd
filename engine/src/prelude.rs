@@ -6,4 +6,5 @@ pub use crate::{
     state::{State, City},
     deck::{Deck, get_layout},
     action::{Action, Setup},
+    rule::{*},
 };
