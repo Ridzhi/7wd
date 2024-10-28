@@ -2,7 +2,7 @@ use std::cmp::{Ordering};
 use std::collections::{HashMap, HashSet};
 use crate::{
   prelude::*,
-  building::{self, Kind},
+  building::{self},
   token,
   wonder,
   player::{Finisher},
@@ -188,7 +188,7 @@ impl City {
                     .filter(|(_, building)| building.is_some())
                     .count() as u8
             }
-            Bonus::Coin => self.coins / crate::COINS_PER_POINT,
+            Bonus::Coin => self.coins / COINS_PER_POINT,
         }
     }
 }
@@ -196,7 +196,7 @@ impl City {
 impl Default for City {
     fn default() -> Self {
         Self {
-            coins: crate::STARTING_CITY_COINS,
+            coins: STARTING_CITY_COINS,
             resources: HashMap::from_iter(Resource::ALL.iter().map(|r| (*r, 0u8))),
             score: Default::default(),
             buildings: vec![],
@@ -259,7 +259,7 @@ impl Bank {
     }
 
     pub fn has_fixed_resource_price(&self, r: &Resource) -> bool {
-        self.resource_price[r] == crate::FIXED_RESOURCE_PRICE
+        self.resource_price[r] == FIXED_RESOURCE_PRICE
     }
 
     fn get_resources_ordered_by_price(&self) -> Vec<Resource> {
@@ -283,12 +283,12 @@ impl Bank {
 impl Default for Bank {
     fn default() -> Self {
         Self {
-            discard_reward: crate::DEFAULT_DISCARD_REWARD,
+            discard_reward: DEFAULT_DISCARD_REWARD,
             building_price: Default::default(),
             wonder_price: Default::default(),
             resource_price: Resource::ALL
                 .iter()
-                .map(|r| (*r, crate::DEFAULT_RESOURCE_PRICE))
+                .map(|r| (*r, DEFAULT_RESOURCE_PRICE))
                 .collect(),
             discounts: Default::default(),
         }
@@ -396,10 +396,10 @@ fn get_score(s: &mut State) -> Score {
         let points = get_building(bid).get_points(s);
 
         match get_building(bid).kind {
-            Kind::Scientific => score.science += points,
-            Kind::Civilian => score.civilian += points,
-            Kind::Commercial => score.commercial += points,
-            Kind::Guild => score.guilds += points,
+            building::Kind::Scientific => score.science += points,
+            building::Kind::Civilian => score.civilian += points,
+            building::Kind::Commercial => score.commercial += points,
+            building::Kind::Guild => score.guilds += points,
             _ => (),
         };
     }
@@ -414,7 +414,7 @@ fn get_score(s: &mut State) -> Score {
         score.tokens += get_token(tid).get_points(s);
     }
 
-    score.coins = city.coins / crate::COINS_PER_POINT;
+    score.coins = city.coins / COINS_PER_POINT;
     score.military = city.track.get_points();
     score.total = score.civilian
         + score.science
