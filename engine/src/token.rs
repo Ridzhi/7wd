@@ -50,7 +50,6 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
         },
         Unit {
             id: Id::Economy,
-            // @TODO make as set flag effect
             effects: vec![],
         },
         Unit {
@@ -83,17 +82,14 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
         },
         Unit {
             id: Id::Strategy,
-            // @TODO make as set flag effect
             effects: vec![],
         },
         Unit {
             id: Id::Theology,
-            // @TODO make as set flag effect
             effects: vec![],
         },
         Unit {
             id: Id::Urbanism,
-            // @TODO make as set flag effect
             effects: vec![
                 Effect::Coins(6),
             ],
