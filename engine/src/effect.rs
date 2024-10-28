@@ -44,14 +44,10 @@ impl Effect {
 
             Self::Coins(coins) => {
                 s.me_mut().coins += coins;
-                // println!("{} coins(add{}) = {}", s.players.me, coins, s.me().coins);
-                // println!("{} coins(add) = {}", s.players.enemy, s.enemy().coins);
             }
 
             Self::CoinsFor(bonus, coins) => {
                 s.me_mut().coins += s.me().bonus_rate(bonus) * coins;
-                // println!("{} coins for(add{}) = {}", s.players.me, s.me().bonus_rate(bonus) * coins, s.me().coins);
-                // println!("{} coins for (add) = {}", s.players.enemy, s.enemy().coins);
             }
 
             Self::DestructBuilding(kind) => {
