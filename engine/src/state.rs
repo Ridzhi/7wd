@@ -28,11 +28,8 @@ impl State {
     pub fn from(actions: Vec<Action>) -> Result<Self, Error> {
         let mut s = Self::default();
 
-        for (ind, action) in actions.into_iter().enumerate() {
-            println!("Move #{}", ind);
+        for action in actions {
             action.apply(&mut s)?;
-            println!("me   {} coins = {}", s.players.me, s.me().coins);
-            println!("enemy{} coins = {}", s.players.enemy, s.enemy().coins);
         }
 
         Ok(s)
