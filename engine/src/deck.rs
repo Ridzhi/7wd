@@ -82,7 +82,7 @@ impl Deck {
                     return if get_building(id).kind == building::Kind::Guild {
                         Slot::FaceDownGuild
                     } else {
-                        Slot::FaceDownGuild
+                        Slot::FaceDown
                     }
                 }
 
@@ -175,7 +175,7 @@ impl Deck {
         scheme
     }
 
-    fn build_graph(scheme: &Vec<Line>) -> HashMap<building::Id, Children> {
+    fn build_graph(scheme: &[Line]) -> HashMap<building::Id, Children> {
         let mut graph: HashMap<building::Id, Children> = Default::default();
         let mut it = scheme.iter().peekable();
 
