@@ -94,7 +94,7 @@ impl State {
         self.me_mut().coins -= price;
 
         if self.enemy().progress_tokens.contains(&token::Id::Economy) {
-            self.enemy_mut().coins += (price - cost_coins);
+            self.enemy_mut().coins += price - cost_coins;
         }
 
         Ok(())
