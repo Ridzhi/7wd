@@ -83,14 +83,9 @@ impl State {
     pub fn pay(&mut self, scope: PayScope, mut cost: Cost) -> Result<(), Error> {
         let cost_coins = cost.coins;
 
-        let has_user_me = self.me().buildings.contains(&building::Id::CustomHouse);
-        let has_user_enemy = self.enemy().buildings.contains(&building::Id::CustomHouse);
-
         cost.resources.iter_mut().
             for_each(|(r, count)| {
-                let has_count = self.me().resources[r];
-                let new_count = count.saturating_sub(has_count);
-                *count = new_count;
+                *count = count.saturating_sub(self.me().resources[r]);
             });
 
         let price = self.me().bank.get_price(scope, cost);
