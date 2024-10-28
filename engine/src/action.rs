@@ -126,7 +126,7 @@ impl Action {
                     return Err(Error::ActionNotAllowed);
                 }
 
-                if bid == building::Id::Walls {
+                if bid == building::Id::ArcheryRange {
                     println!("point");
                 }
 
@@ -348,15 +348,18 @@ impl Action {
                     return Err(Error::ActionNotAllowed);
                 }
 
-                let players = s.players.members();
                 let fallback_turn = s.players.me;
 
-                players.into_iter()
-                    .for_each(|p| {
-                        s.players.set_turn(p);
-                        s.me_mut().buildings.push(pick);
-                        building::REGISTRY[&pick].construct(s);
-                    });
+                {
+                    s.me_mut().buildings.push(pick);
+                    building::REGISTRY[&pick].construct(s);
+                }
+
+                {
+                    s.players.set_turn(s.players.enemy);
+                    s.me_mut().buildings.push(give);
+                    building::REGISTRY[&give].construct(s);
+                }
 
                 s.players.set_turn(fallback_turn);
 

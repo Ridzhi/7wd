@@ -260,82 +260,82 @@ mod tests {
                     )
                 ]),
             }),
-            PickWonder(TheTempleOfArtemis),
-            PickWonder(TheHangingGardens),
-            PickWonder(TheColossus),
-            PickWonder(Messe),
-            PickWonder(TheSphinx),
-            PickWonder(StatueOfLiberty),
-            PickWonder(TheMausoleum),
-            PickWonder(ThePyramids),
-            ConstructBuilding(WoodReserve),
-            ConstructBuilding(StoneReserve),
-            ConstructBuilding(Scriptorium),
-            ConstructBuilding(StonePit),
-            ConstructBuilding(Quarry),
-            DiscardBuilding(Garrison),
-            ConstructBuilding(Pharmacist),
-            ConstructBuilding(ClayPool),
-            ConstructBuilding(LumberYard),
-            ConstructBuilding(Baths),
-            DiscardBuilding(ClayPit),
-            ConstructBuilding(LoggingCamp),
-            ConstructBuilding(GlassWorks),
-            ConstructBuilding(Altar),
-            ConstructBuilding(Workshop),
-            DiscardBuilding(ClayReserve),
-            ConstructBuilding(Tavern),
-            ConstructBuilding(Stable),
-            ConstructBuilding(Theater),
-            ConstructBuilding(Palisade),
-            SelectWhoBeginsTheNextAge(1),
-            ConstructBuilding(DryingRoom),
-            ConstructBuilding(SawMill),
-            ConstructBuilding(ShelfQuarry),
-            DiscardBuilding(ParadeGround),
-            ConstructBuilding(BrickYard),
-            ConstructBuilding(Barracks),
-            ConstructBuilding(Library),
-            PickBoardToken(Theology),
-            ConstructBuilding(Walls),
-            ConstructBuilding(Brewery),
-            DiscardBuilding(HorseBreeders),
-            ConstructWonder(Messe, Statue),
-            PickTopLineBuilding(Dispensary),
-            PickBoardToken(Economy),
-            ConstructBuilding(Laboratory),
-            PickBoardToken(Agriculture),
-            ConstructBuilding(ArcheryRange),
-            ConstructBuilding(Aqueduct),
-            ConstructBuilding(GlassBlower),
-            ConstructBuilding(School),
-            DiscardBuilding(CourtHouse),
-            ConstructBuilding(Caravansery),
-            ConstructBuilding(CustomHouse),
-            SelectWhoBeginsTheNextAge(1),
-            ConstructWonder(TheMausoleum, MoneyLendersGuild),
-            PickDiscardedBuilding(ParadeGround),
-            ConstructBuilding(Lighthouse),
-            ConstructBuilding(ChamberOfCommerce),
-            ConstructBuilding(TownHall),
-            ConstructWonder(ThePyramids, Gardens),
-            ConstructBuilding(Arsenal),
-            DiscardBuilding(Pantheon),
-            DiscardBuilding(Pretorium),
-            ConstructBuilding(MerchantsGuild),
-            ConstructWonder(StatueOfLiberty, Senate),
-            PickReturnedBuildings(Study, Circus),
-            ConstructWonder(TheTempleOfArtemis, Palace),
-            ConstructBuilding(Obelisk),
-            ConstructBuilding(Arena),
-            ConstructBuilding(SiegeWorkshop),
-            ConstructBuilding(MagistratesGuild),
-            ConstructBuilding(Armory),
-            ConstructBuilding(Observatory),
-            ConstructBuilding(Fortifications),
-            ConstructBuilding(Port),
-            ConstructBuilding(Academy),
-            PickBoardToken(Philosophy),
+            PickWonder(TheTempleOfArtemis),//1
+            PickWonder(TheHangingGardens),//2
+            PickWonder(TheColossus),//3
+            PickWonder(Messe),//4
+            PickWonder(TheSphinx),//5
+            PickWonder(StatueOfLiberty),//6
+            PickWonder(TheMausoleum),//7
+            PickWonder(ThePyramids),//8
+            ConstructBuilding(WoodReserve),//9
+            ConstructBuilding(StoneReserve),//10
+            ConstructBuilding(Scriptorium),//11
+            ConstructBuilding(StonePit),//12
+            ConstructBuilding(Quarry),//13
+            DiscardBuilding(Garrison),//14
+            ConstructBuilding(Pharmacist),//15
+            ConstructBuilding(ClayPool),//16
+            ConstructBuilding(LumberYard),//17
+            ConstructBuilding(Baths),//18
+            DiscardBuilding(ClayPit),//19
+            ConstructBuilding(LoggingCamp),//20
+            ConstructBuilding(GlassWorks),//21
+            ConstructBuilding(Altar),//22
+            ConstructBuilding(Workshop),//23
+            DiscardBuilding(ClayReserve),//24
+            ConstructBuilding(Tavern),//25
+            ConstructBuilding(Stable),//26
+            ConstructBuilding(Theater),//27
+            ConstructBuilding(Palisade),//28
+            SelectWhoBeginsTheNextAge(1),//29
+            ConstructBuilding(DryingRoom),//30
+            ConstructBuilding(SawMill),//31
+            ConstructBuilding(ShelfQuarry),//32
+            DiscardBuilding(ParadeGround),//33
+            ConstructBuilding(BrickYard),//34
+            ConstructBuilding(Barracks),//35
+            ConstructBuilding(Library),//36
+            PickBoardToken(Theology),//37
+            ConstructBuilding(Walls),//38
+            ConstructBuilding(Brewery),//39
+            DiscardBuilding(HorseBreeders),//40
+            ConstructWonder(Messe, Statue),//41
+            PickTopLineBuilding(Dispensary),//42
+            PickBoardToken(Economy),//43
+            ConstructBuilding(Laboratory),//44
+            PickBoardToken(Agriculture),//45
+            ConstructBuilding(ArcheryRange),//46
+            ConstructBuilding(Aqueduct),//47
+            ConstructBuilding(GlassBlower),//48
+            ConstructBuilding(School),//49
+            DiscardBuilding(CourtHouse),//50
+            ConstructBuilding(Caravansery),//51
+            ConstructBuilding(CustomHouse),//52
+            SelectWhoBeginsTheNextAge(1),//53
+            ConstructWonder(TheMausoleum, MoneyLendersGuild),//54
+            PickDiscardedBuilding(ParadeGround),//55
+            ConstructBuilding(Lighthouse),//56
+            ConstructBuilding(ChamberOfCommerce),//57
+            ConstructBuilding(TownHall),//58
+            ConstructWonder(ThePyramids, Gardens),//59
+            ConstructBuilding(Arsenal),//60
+            DiscardBuilding(Pantheon),//61
+            DiscardBuilding(Pretorium),//62
+            ConstructBuilding(MerchantsGuild),//63
+            ConstructWonder(StatueOfLiberty, Senate),//64
+            PickReturnedBuildings(Study, Circus),//65
+            ConstructWonder(TheTempleOfArtemis, Palace),//66
+            ConstructBuilding(Obelisk),//67
+            ConstructBuilding(Arena),//68
+            ConstructBuilding(SiegeWorkshop),//69
+            ConstructBuilding(MagistratesGuild),//70
+            ConstructBuilding(Armory),//71
+            ConstructBuilding(Observatory),//72
+            ConstructBuilding(Fortifications),//73
+            ConstructBuilding(Port),//74
+            ConstructBuilding(Academy),//75
+            PickBoardToken(Philosophy),//76
         ];
         let s = State::from(actions).expect("its ok");
 
@@ -368,11 +368,10 @@ mod tests {
         let p1 = s.enemy();
         let p2 = s.me();
 
-        let actual1 = p1.score;
-        let actual2 = p2.score;
-        // assert_eq!(33, p1.coins);
-        // assert_eq!(19, p2.coins);
-        assert_eq!(expected1.military, actual1.military);
-        // assert_eq!(expected2, actual2);
+        assert_eq!(expected1, p1.score);
+        assert_eq!(33, p1.coins);
+
+        assert_eq!(expected2, p2.score);
+        assert_eq!(19, p2.coins);
     }
 }

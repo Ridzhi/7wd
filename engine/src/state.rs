@@ -28,8 +28,11 @@ impl State {
     pub fn from(actions: Vec<Action>) -> Result<Self, Error> {
         let mut s = Self::default();
 
-        for action in actions {
+        for (ind, action) in actions.into_iter().enumerate() {
+            println!("Move #{}", ind);
             action.apply(&mut s)?;
+            println!("me   {} coins = {}", s.players.me, s.me().coins);
+            println!("enemy{} coins = {}", s.players.enemy, s.enemy().coins);
         }
 
         Ok(s)
@@ -79,9 +82,15 @@ impl State {
 
     pub fn pay(&mut self, scope: PayScope, mut cost: Cost) -> Result<(), Error> {
         let cost_coins = cost.coins;
+
+        let has_user_me = self.me().buildings.contains(&building::Id::CustomHouse);
+        let has_user_enemy = self.enemy().buildings.contains(&building::Id::CustomHouse);
+
         cost.resources.iter_mut().
             for_each(|(r, count)| {
-               *count = count.saturating_sub(self.me().resources[r]);
+                let has_count = self.me().resources[r];
+                let new_count = count.saturating_sub(has_count);
+                *count = new_count;
             });
 
         let price = self.me().bank.get_price(scope, cost);
@@ -103,13 +112,13 @@ impl State {
         let mut fine: Coins = 0;
         let mut supremacy = false;
 
-        if self.enemy_mut().track.pos >= power {
+        if self.enemy().track.pos >= power {
             self.enemy_mut().track.pos -= power;
 
             return (fine, supremacy);
         }
 
-        self.me_mut().track.pos += (power - self.enemy_mut().track.pos);
+        self.me_mut().track.pos += (power - self.enemy().track.pos);
         self.enemy_mut().track.pos = 0;
 
         if self.me_mut().track.pos >= Track::CAPITAL_POS {

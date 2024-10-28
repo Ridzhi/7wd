@@ -45,10 +45,14 @@ impl Effect {
 
             Self::Coins(coins) => {
                 s.me_mut().coins += coins;
+                // println!("{} coins(add{}) = {}", s.players.me, coins, s.me().coins);
+                // println!("{} coins(add) = {}", s.players.enemy, s.enemy().coins);
             }
 
             Self::CoinsFor(bonus, coins) => {
-                s.me_mut().coins += s.me_mut().bonus_rate(bonus) * coins;
+                s.me_mut().coins += s.me().bonus_rate(bonus) * coins;
+                // println!("{} coins for(add{}) = {}", s.players.me, s.me().bonus_rate(bonus) * coins, s.me().coins);
+                // println!("{} coins for (add) = {}", s.players.enemy, s.enemy().coins);
             }
 
             Self::DestructBuilding(kind) => {
@@ -74,7 +78,10 @@ impl Effect {
             }
 
             Self::Fine(coins) => {
-                s.enemy_mut().coins -= min(coins, s.enemy_mut().coins);
+                s.enemy_mut().coins -= min(coins, s.enemy().coins);
+
+                // println!("{} find(sub {}) = {}", s.players.me, min(coins, s.enemy().coins), s.me().coins);
+                // println!("{} fine = {}", s.players.enemy, s.enemy().coins);
             }
 
             Self::FixedResourcePrice(ref resources) => {
@@ -146,9 +153,12 @@ impl Effect {
                 s.play_again = true;
             }
 
-            Self::Resource(resource, count) => {
-                *s.me_mut().resources.get_mut(&resource).expect("effect::resource city.resources has all resources") += count;
-                update_resource_price(s, &resource);
+            Self::Resource(r, count) => {
+                *s.me_mut().resources.get_mut(&r).expect("effect::resource city.resources has all resources") += count;
+
+                if !s.enemy().bank.has_fixed_resource_price(&r) {
+                    *s.enemy_mut().bank.resource_price.get_mut(&r).expect("update_resource_price bank.resource_price has all resources") = DEFAULT_RESOURCE_PRICE + s.me().resources[&r];
+                }
             }
 
             Self::Science(symbol) => {
@@ -181,8 +191,11 @@ impl Effect {
             Effect::Resource(resource, count) => {
                 let current = s.me().resources[&resource];
                 *s.me_mut().resources.get_mut(&resource).expect("rollback effect:resource has all resources") = min(current - count, 0);
-                update_resource_price(s, &resource);
-            },
+
+                if !s.me().bank.has_fixed_resource_price(&resource) {
+                    *s.me_mut().bank.resource_price.get_mut(&resource).expect("update_resource_price bank.resource_price has all resources") = DEFAULT_RESOURCE_PRICE + s.enemy().resources[&resource];
+                }
+            }
             _ => (),
         }
     }
@@ -260,12 +273,6 @@ impl PostEffect {
 
 fn get_guild_rate(s: &State, b: Bonus) -> u8 {
     max(s.me().bonus_rate(b), s.enemy().bonus_rate(b))
-}
-
-fn update_resource_price(s: &mut State, r: &Resource) {
-    if !s.me().bank.has_fixed_resource_price(r) {
-        *s.me_mut().bank.resource_price.get_mut(r).expect("update_resource_price bank.resource_price has all resources") = DEFAULT_RESOURCE_PRICE * s.enemy().resources[r];
-    }
 }
 
 // #[cfg(test)]
