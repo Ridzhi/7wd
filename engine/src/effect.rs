@@ -5,8 +5,8 @@ use crate::{
     building,
     token,
     state,
+    player::Finisher,
 };
-use crate::player::Finisher;
 
 #[derive(Debug)]
 pub enum Effect {
