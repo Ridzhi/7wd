@@ -104,7 +104,7 @@ impl Action {
                     .filter(|(_, b)| b.is_some())
                     .count();
 
-                if total_wonders_constructed == WONDERS_CONSTRUCT_LIMIT {
+                if total_wonders_constructed == WONDERS_CONSTRUCT_LIMIT as usize {
                     s.me_mut().wonders
                         .retain(|(_, b)| !b.is_none());
 
@@ -423,15 +423,15 @@ impl Setup {
             match age {
                 Age::III => {
                     let guilds = Self::get_shuffle_guilds();
-                    shuffled.iter().take(DECK_LIMIT - GUILDS_LIMIT).collect::<Vec<_>>().extend(&guilds);
+                    shuffled.iter().take((DECK_LIMIT - GUILDS_LIMIT) as usize).collect::<Vec<_>>().extend(&guilds);
 
                     buildings.insert(
                         age,
-                        shuffled.into_iter().choose_multiple(&mut thread_rng(), DECK_LIMIT + GUILDS_LIMIT),
+                        shuffled.into_iter().choose_multiple(&mut thread_rng(), (DECK_LIMIT + GUILDS_LIMIT) as usize),
                     );
                 }
                 _ => {
-                    buildings.insert(age, shuffled.into_iter().take(DECK_LIMIT).collect());
+                    buildings.insert(age, shuffled.into_iter().take(DECK_LIMIT as usize).collect());
                 }
             };
         }
@@ -452,6 +452,6 @@ impl Setup {
             .iter()
             .filter(|(_, b)| b.kind == building::Kind::Guild)
             .map(|(id, _)| *id)
-            .choose_multiple(&mut thread_rng(), GUILDS_LIMIT)
+            .choose_multiple(&mut thread_rng(), GUILDS_LIMIT as usize)
     }
 }
