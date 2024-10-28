@@ -80,7 +80,7 @@ impl Effect {
             Self::FixedResourcePrice(ref resources) => {
                 resources.iter()
                     .for_each(|resource| {
-                        *s.me_mut().bank.resource_price.get_mut(resource).unwrap() = crate::FIXED_RESOURCE_PRICE;
+                        *s.me_mut().bank.resource_price.get_mut(resource).unwrap() = FIXED_RESOURCE_PRICE;
                     });
             }
 
@@ -150,7 +150,7 @@ impl Effect {
                 *s.me_mut().resources.get_mut(&r).unwrap() += count;
 
                 if !s.enemy().bank.has_fixed_resource_price(&r) {
-                    *s.enemy_mut().bank.resource_price.get_mut(&r).unwrap() = crate::DEFAULT_RESOURCE_PRICE + s.me().resources[&r];
+                    *s.enemy_mut().bank.resource_price.get_mut(&r).unwrap() = DEFAULT_RESOURCE_PRICE + s.me().resources[&r];
                 }
             }
 
@@ -163,14 +163,14 @@ impl Effect {
                 if let Some(v) = pos {
                     s.me_mut().scientific_symbols[v].1 += 1;
 
-                    if s.me().scientific_symbols[v].1 == crate::SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN {
+                    if s.me().scientific_symbols[v].1 == SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN {
                         Effect::PickBoardToken.apply(s);
                     }
                 } else {
                     s.me_mut().scientific_symbols.push((symbol, 1));
                 }
 
-                if s.me().scientific_symbols.len() == crate::DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY as usize {
+                if s.me().scientific_symbols.len() == DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY as usize {
                     state::over(s, Finisher::Winner(s.players.me), Victory::ScienceSupremacy);
                 }
             }
@@ -186,7 +186,7 @@ impl Effect {
                 *s.me_mut().resources.get_mut(&resource).unwrap() = min(current - count, 0);
 
                 if !s.me().bank.has_fixed_resource_price(&resource) {
-                    *s.me_mut().bank.resource_price.get_mut(&resource).unwrap() = crate::DEFAULT_RESOURCE_PRICE + s.enemy().resources[&resource];
+                    *s.me_mut().bank.resource_price.get_mut(&resource).unwrap() = DEFAULT_RESOURCE_PRICE + s.enemy().resources[&resource];
                 }
             }
             _ => (),

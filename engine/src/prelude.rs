@@ -3,8 +3,8 @@ pub use crate::{
     economy::{Resource, Resources, Coins, Cost, PayScope, Discount, PriceList},
     effect::{Effect, PostEffect},
     player::Nickname,
-    state::{State, City},
+    state::{State, City, Score},
     deck::{Deck, get_layout},
-    action::{Action, Setup},
+    action::{Action},
     rule::{*},
 };

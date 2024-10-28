@@ -123,12 +123,16 @@ pub struct Options {
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
-    use super::*;
-    use Action::{*};
-    use wonder::Id::{*};
-    use token::Id::{*};
-    use building::Id::{*};
-    use crate::state::Score;
+    use crate::{
+        prelude::*,
+        action::{
+            Setup,
+            Action::{*},
+        },
+        building::Id::{*},
+        wonder::Id::{*},
+        token::Id::{*},
+    };
 
     #[test]
     fn game_11() {
