@@ -169,7 +169,7 @@ impl Effect {
                     s.me_mut().scientific_symbols.push((symbol, 1));
                 }
 
-                if s.me().scientific_symbols.len() == DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY{
+                if s.me().scientific_symbols.len() == DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY as usize {
                     state::over(s,Finisher::Winner(s.players.me), Victory::ScienceSupremacy);
                 }
             }
