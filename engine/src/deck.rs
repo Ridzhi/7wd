@@ -133,7 +133,7 @@ impl Deck {
     }
 
     pub fn pull_building(&mut self, id: &building::Id) {
-        self.graph.remove(&id);
+        self.graph.remove(id);
         self.graph.iter_mut()
             .for_each(|(parent, children)| {
                 if let Some(left) = children[0] {
@@ -149,12 +149,12 @@ impl Deck {
                 }
 
                 if children.iter().flatten().count() == 0 {
-                    self.face_down.remove(&parent);
+                    self.face_down.remove(parent);
                 }
             })
     }
 
-    fn build_scheme(layout: &str, buildings: &Vec<building::Id>) -> Vec<Line> {
+    fn build_scheme(layout: &str, buildings: &[building::Id]) -> Vec<Line> {
         let mut scheme: Vec<Line> = Vec::with_capacity(layout.lines().count());
         let mut building_pos = 0usize;
 
