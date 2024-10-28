@@ -83,7 +83,7 @@ impl Effect {
                     });
             }
 
-            Self::Guild(bonus, coins, points) => {
+            Self::Guild(bonus, coins, ..) => {
                 s.me_mut().coins += get_guild_rate(s, bonus) * coins;
             }
 

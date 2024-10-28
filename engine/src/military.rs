@@ -27,7 +27,7 @@ impl Track {
     pub fn move_conflict_pawn(&mut self, s: &mut State, power: u8) -> (Coins, bool) {
         let mut fine: Coins = 0;
         let mut supremacy = false;
-        let mut enemy_pos = &mut s.enemy_mut().track.pos;
+        let enemy_pos = &mut s.enemy_mut().track.pos;
 
         if *enemy_pos >= power {
             *enemy_pos -= power;
