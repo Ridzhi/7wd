@@ -35,7 +35,7 @@ impl Track {
             return (fine, supremacy);
         }
 
-        self.pos += (power - *enemy_pos);
+        self.pos += power - *enemy_pos;
         *enemy_pos = 0;
 
         if self.pos >= Self::CAPITAL_POS {
