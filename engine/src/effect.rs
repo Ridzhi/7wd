@@ -78,9 +78,6 @@ impl Effect {
 
             Self::Fine(coins) => {
                 s.enemy_mut().coins -= min(coins, s.enemy().coins);
-
-                // println!("{} find(sub {}) = {}", s.players.me, min(coins, s.enemy().coins), s.me().coins);
-                // println!("{} fine = {}", s.players.enemy, s.enemy().coins);
             }
 
             Self::FixedResourcePrice(ref resources) => {
