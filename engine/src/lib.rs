@@ -30,7 +30,7 @@ pub const GUILDS_LIMIT: usize = 3;
 pub const COINS_PER_POINT: u8 = 3;
 pub const FIXED_RESOURCE_PRICE: u8 = 1;
 pub const SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN: u8 = 2;
-pub const DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY: u8 = 6;
+pub const DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY: usize = 6;
 
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Age {

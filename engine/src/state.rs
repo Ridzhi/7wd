@@ -341,12 +341,6 @@ pub struct Buildings {
     pub discarded: Vec<building::Id>,
 }
 
-enum ScienceStatus {
-    Regular,
-    ProgressToken,
-    Supremacy,
-}
-
 pub fn after(s: &mut State) {
     if s.phase == Phase::Over {
         return;
