@@ -180,16 +180,13 @@ impl Effect {
     }
 
     pub fn rollback(&self, s: &mut State) {
-        match *self {
-            Effect::Resource(resource, count) => {
-                let current = s.me().resources[&resource];
-                *s.me_mut().resources.get_mut(&resource).unwrap() = min(current - count, 0);
+        if let Effect::Resource(rid, count) = self {
+            let current = s.me().resources[rid];
+            *s.me_mut().resources.get_mut(rid).unwrap() = min(current - count, 0);
 
-                if !s.me().bank.has_fixed_resource_price(&resource) {
-                    *s.me_mut().bank.resource_price.get_mut(&resource).unwrap() = DEFAULT_RESOURCE_PRICE + s.enemy().resources[&resource];
-                }
+            if !s.me().bank.has_fixed_resource_price(rid) {
+                *s.me_mut().bank.resource_price.get_mut(rid).unwrap() = DEFAULT_RESOURCE_PRICE + s.enemy().resources[rid];
             }
-            _ => (),
         }
     }
 
