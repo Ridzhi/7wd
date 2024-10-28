@@ -110,7 +110,7 @@ impl State {
             return (fine, supremacy);
         }
 
-        self.me_mut().track.pos += (power - self.enemy().track.pos);
+        self.me_mut().track.pos += power - self.enemy().track.pos;
         self.enemy_mut().track.pos = 0;
 
         if self.me_mut().track.pos >= Track::CAPITAL_POS {
