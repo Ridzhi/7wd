@@ -126,10 +126,6 @@ impl Action {
                     return Err(Error::ActionNotAllowed);
                 }
 
-                if bid == building::Id::ArcheryRange {
-                    println!("point");
-                }
-
                 if !s.buildings.playable.contains(&bid) {
                     return Err(Error::ActionNotAllowed);
                 }
