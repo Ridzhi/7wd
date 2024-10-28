@@ -419,7 +419,7 @@ impl Setup {
         let mut buildings: HashMap<Age, Vec<building::Id>> = Default::default();
 
         for age in Age::ALL {
-            let mut shuffled = Self::get_shuffle_buildings(age);
+            let shuffled = Self::get_shuffle_buildings(age);
             match age {
                 Age::III => {
                     let guilds = Self::get_shuffle_guilds();
