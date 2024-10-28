@@ -160,16 +160,13 @@ impl Deck {
 
         for layout_line in layout.lines().skip(1) {
             let mut line = Line::default();
-            let mut line_pos = 0usize;
 
-            for char in layout_line.chars() {
+            for (ind, char) in layout_line.chars().enumerate() {
                 if char == '[' {
-                    line[line_pos] = Some(buildings[building_pos]);
-                    line[line_pos + 1] = Some(buildings[building_pos]);
+                    line[ind] = Some(buildings[building_pos]);
+                    line[ind + 1] = Some(buildings[building_pos]);
                     building_pos += 1;
                 }
-
-                line_pos += 1;
             }
 
             scheme.push(line);
