@@ -396,7 +396,7 @@ fn get_score(s: &mut State) -> Score {
     for id in city.buildings.iter() {
         let points = get_building(id).get_points(s);
 
-        match building::REGISTRY[id].kind {
+        match get_building(id).kind {
             Kind::Scientific => score.science += points,
             Kind::Civilian => score.civilian += points,
             Kind::Commercial => score.commercial += points,
