@@ -116,7 +116,7 @@ pub fn filter_by_kind(source: &[Id], kind: Kind) -> Vec<Id> {
     source
         .iter()
         .filter(|id| get_building(id).kind == kind)
-        .map(|&id| id)
+        .copied()
         .collect::<Vec<_>>()
 }
 
