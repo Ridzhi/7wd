@@ -193,19 +193,7 @@ impl Default for City {
     fn default() -> Self {
         Self {
             coins: STARTING_CITY_COINS,
-            // @TODO ask how to do in tg
-            // resources: HashMap::from(
-            //     Resource::ALL.iter()
-            //         .map(|r| (*r, 0u8))
-            //         .collect::<[(Resource, u8)]>()
-            // ),
-            resources: HashMap::from([
-                (Resource::Clay, 0),
-                (Resource::Wood, 0),
-                (Resource::Stone, 0),
-                (Resource::Glass, 0),
-                (Resource::Papyrus, 0),
-            ]),
+            resources: HashMap::from_iter(Resource::ALL.iter().map(|r| (*r, 0u8))),
             score: Default::default(),
             buildings: vec![],
             wonders: vec![],
