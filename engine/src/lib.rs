@@ -54,19 +54,6 @@ pub enum Phase {
     ReturnedBuildingSelection,
 }
 
-#[derive(Debug, Copy, Clone)]
-pub enum Bonus {
-    Resources = 1,
-    RawMaterials,
-    ManufacturedGoods,
-    Military,
-    Commercial,
-    Civilian,
-    Science,
-    Wonder,
-    Coin,
-}
-
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum ScientificSymbol {
     Astrology = 1,
@@ -124,14 +111,14 @@ pub struct Options {
 mod tests {
     use std::collections::HashMap;
     use crate::{
-        prelude::*,
         action::{
+            Action::*,
             Setup,
-            Action::{*},
         },
-        building::Id::{*},
-        wonder::Id::{*},
-        token::Id::{*},
+        building::Id::*,
+        prelude::*,
+        token::Id::*,
+        wonder::Id::*,
     };
 
     #[test]

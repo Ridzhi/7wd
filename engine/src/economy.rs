@@ -92,3 +92,16 @@ pub struct Cost {
     pub coins: Coins,
     pub resources: Resources,
 }
+
+#[derive(Debug, Copy, Clone)]
+pub enum Bonus {
+    Resources = 1,
+    RawMaterials,
+    ManufacturedGoods,
+    Military,
+    Commercial,
+    Civilian,
+    Science,
+    Wonder,
+    Coin,
+}
