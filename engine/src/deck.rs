@@ -5,7 +5,7 @@ use crate::{
 };
 
 // fake line(will skipped) to keep leading whitespaces after String.lines()
-pub const LAYOUTS: [&'static str; 3] = [
+pub const LAYOUTS: [&str; 3] = [
     r#"
 ------------
     [][]
