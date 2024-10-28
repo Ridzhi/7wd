@@ -1,4 +1,4 @@
-use crate::{*};
+use crate::prelude::*;
 
 pub type Pos = u8;
 

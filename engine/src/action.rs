@@ -1,8 +1,13 @@
 use std::collections::HashMap;
 use rand::prelude::{*};
-use crate::{*};
-use crate::player::Finisher;
-use crate::state::{City, Players, RandomUnits, refresh_cities, refresh_buildings, after};
+use crate::{
+    prelude::*,
+    building,
+    wonder,
+    token,
+    player::Finisher,
+    state::{self, after},
+};
 
 
 pub enum Action {
@@ -33,7 +38,7 @@ impl Action {
 
                 s.age = Age::I;
                 s.phase = Phase::WondersSelection;
-                s.players = Players{
+                s.players = state::Players{
                     starts: v.p1,
                     me: v.p1,
                     enemy: v.p2,
@@ -44,14 +49,14 @@ impl Action {
                     (v.p2, City::default()),
                 ]);
                 s.progress_tokens = v.board_tokens.iter().map(|id| Some(*id)).collect();
-                s.random_units = RandomUnits{
+                s.random_units = state::RandomUnits{
                     buildings: v.buildings,
                     tokens: v.random_tokens,
                     wonders: v.wonders,
                 };
                 s.interactive_units.wonders = s.random_units.wonders
                     .iter()
-                    .take(WONDER_SELECTION_POOL_SIZE as usize)
+                    .take(crate::WONDER_SELECTION_POOL_SIZE as usize)
                     .copied()
                     .map(|id| Some(id))
                     .collect();
@@ -102,7 +107,7 @@ impl Action {
                     .filter(|(_, b)| b.is_some())
                     .count();
 
-                if total_wonders_constructed == WONDERS_CONSTRUCT_LIMIT as usize {
+                if total_wonders_constructed == crate::WONDERS_CONSTRUCT_LIMIT as usize {
                     s.me_mut().wonders
                         .retain(|(_, b)| !b.is_none());
 
@@ -213,20 +218,20 @@ impl Action {
                 }
 
                 match picked_count as u8 {
-                    WONDER_SELECTION_POOL_SIZE => {
+                    crate::WONDER_SELECTION_POOL_SIZE => {
                         s.interactive_units.wonders = s.random_units.wonders.iter()
-                            .skip(WONDER_SELECTION_POOL_SIZE as usize)
+                            .skip(crate::WONDER_SELECTION_POOL_SIZE as usize)
                             .copied()
                             .map(|id| Some(id))
                             .collect();
                     },
 
-                    WONDER_TOTAL_POOL_SIZE => {
+                    crate::WONDER_TOTAL_POOL_SIZE => {
                         s.phase = Phase::Turn;
                         s.interactive_units.wonders = vec![];
                         s.deck = Deck::new(get_layout(s.age), s.random_units.buildings[&s.age].clone());
-                        refresh_buildings(s);
-                        refresh_cities(s);
+                        state::refresh_buildings(s);
+                        state::refresh_cities(s);
                     },
 
                     _ => (),
@@ -352,7 +357,7 @@ pub struct Setup {
 }
 
 impl Setup {
-    pub fn new(mut p1: Nickname, mut p2: Nickname, o: Options) -> Self {
+    pub fn new(mut p1: Nickname, mut p2: Nickname, o: crate::Options) -> Self {
         if random() {
             std::mem::swap(&mut p1, &mut p2);
         }
@@ -369,14 +374,14 @@ impl Setup {
         }
     }
 
-    pub fn get_random_wonders(o: &Options) -> Vec<wonder::Id> {
+    pub fn get_random_wonders(o: &crate::Options) -> Vec<wonder::Id> {
         wonder::REGISTRY
             .iter()
             .map(|(id, _)| *id)
             .filter(|id| {
                 o.with_promo_wonders || !wonder::Id::PROMO.contains(id)
             })
-            .choose_multiple(&mut thread_rng(), WONDER_TOTAL_POOL_SIZE as usize)
+            .choose_multiple(&mut thread_rng(), crate::WONDER_TOTAL_POOL_SIZE as usize)
     }
 
     pub fn get_random_tokens() -> (Vec<token::Id>, Vec<token::Id>) {
@@ -386,8 +391,8 @@ impl Setup {
             .choose_multiple(&mut thread_rng(), token::REGISTRY.len());
 
         (
-            tokens.iter().take(STARTING_TOKENS_COUNT).copied().collect(),
-            tokens.iter().skip(STARTING_TOKENS_COUNT).take(RANDOM_TOKENS_COUNT).copied().collect()
+            tokens.iter().take(crate::STARTING_TOKENS_COUNT).copied().collect(),
+            tokens.iter().skip(crate::STARTING_TOKENS_COUNT).take(crate::RANDOM_TOKENS_COUNT).copied().collect()
         )
     }
 
@@ -399,15 +404,15 @@ impl Setup {
             match age {
                 Age::III => {
                     let guilds = Self::get_shuffle_guilds();
-                    shuffled.iter().take((DECK_LIMIT - GUILDS_LIMIT) as usize).collect::<Vec<_>>().extend(&guilds);
+                    shuffled.iter().take((crate::DECK_LIMIT - crate::GUILDS_LIMIT) as usize).collect::<Vec<_>>().extend(&guilds);
 
                     buildings.insert(
                         age,
-                        shuffled.into_iter().choose_multiple(&mut thread_rng(), (DECK_LIMIT + GUILDS_LIMIT) as usize),
+                        shuffled.into_iter().choose_multiple(&mut thread_rng(), (crate::DECK_LIMIT + crate::GUILDS_LIMIT) as usize),
                     );
                 }
                 _ => {
-                    buildings.insert(age, shuffled.into_iter().take(DECK_LIMIT as usize).collect());
+                    buildings.insert(age, shuffled.into_iter().take(crate::DECK_LIMIT as usize).collect());
                 }
             };
         }
@@ -428,6 +433,6 @@ impl Setup {
             .iter()
             .filter(|(_, b)| b.kind == building::Kind::Guild)
             .map(|(id, _)| *id)
-            .choose_multiple(&mut thread_rng(), GUILDS_LIMIT as usize)
+            .choose_multiple(&mut thread_rng(), crate::GUILDS_LIMIT as usize)
     }
 }

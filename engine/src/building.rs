@@ -2,8 +2,10 @@ use std::collections::HashMap;
 use std::iter::{IntoIterator, Iterator};
 use std::sync::LazyLock;
 use std::vec;
-use crate::{*};
-use crate::economy::PayScope;
+use crate::{
+    prelude::*,
+    economy::PayScope,
+};
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Id {

@@ -1,9 +1,10 @@
 use std::cmp::{max, min};
 use std::fmt::{Debug};
 use crate::{
+    prelude::*,
     building,
-    economy::{Coins, Discount, PayScope},
-    *,
+    token,
+    state,
 };
 use crate::player::Finisher;
 
@@ -79,7 +80,7 @@ impl Effect {
             Self::FixedResourcePrice(ref resources) => {
                 resources.iter()
                     .for_each(|resource| {
-                        *s.me_mut().bank.resource_price.get_mut(resource).unwrap() = FIXED_RESOURCE_PRICE;
+                        *s.me_mut().bank.resource_price.get_mut(resource).unwrap() = crate::FIXED_RESOURCE_PRICE;
                     });
             }
 
@@ -149,7 +150,7 @@ impl Effect {
                 *s.me_mut().resources.get_mut(&r).unwrap() += count;
 
                 if !s.enemy().bank.has_fixed_resource_price(&r) {
-                    *s.enemy_mut().bank.resource_price.get_mut(&r).unwrap() = DEFAULT_RESOURCE_PRICE + s.me().resources[&r];
+                    *s.enemy_mut().bank.resource_price.get_mut(&r).unwrap() = crate::DEFAULT_RESOURCE_PRICE + s.me().resources[&r];
                 }
             }
 
@@ -162,15 +163,15 @@ impl Effect {
                 if let Some(v) = pos {
                     s.me_mut().scientific_symbols[v].1 += 1;
 
-                    if s.me().scientific_symbols[v].1 == SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN {
+                    if s.me().scientific_symbols[v].1 == crate::SAME_SCIENTIFIC_SYMBOLS_FOR_TOKEN {
                         Effect::PickBoardToken.apply(s);
                     }
                 } else {
                     s.me_mut().scientific_symbols.push((symbol, 1));
                 }
 
-                if s.me().scientific_symbols.len() == DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY as usize {
-                    state::over(s,Finisher::Winner(s.players.me), Victory::ScienceSupremacy);
+                if s.me().scientific_symbols.len() == crate::DIFFERENT_SCIENTIFIC_SYMBOLS_FOR_SUPREMACY as usize {
+                    state::over(s, Finisher::Winner(s.players.me), Victory::ScienceSupremacy);
                 }
             }
 
@@ -185,7 +186,7 @@ impl Effect {
                 *s.me_mut().resources.get_mut(&resource).unwrap() = min(current - count, 0);
 
                 if !s.me().bank.has_fixed_resource_price(&resource) {
-                    *s.me_mut().bank.resource_price.get_mut(&resource).unwrap() = DEFAULT_RESOURCE_PRICE + s.enemy().resources[&resource];
+                    *s.me_mut().bank.resource_price.get_mut(&resource).unwrap() = crate::DEFAULT_RESOURCE_PRICE + s.enemy().resources[&resource];
                 }
             }
             _ => (),
@@ -266,55 +267,3 @@ impl PostEffect {
 fn get_guild_rate(s: &State, b: Bonus) -> u8 {
     max(s.me().bonus_rate(b), s.enemy().bonus_rate(b))
 }
-
-// #[cfg(test)]
-// mod tests {
-//     use std::collections::HashMap;
-//     use super::*;
-//
-//     #[test]
-//     fn test_change_coins() {
-//         let mut s = State {
-//             phase: Phase::WondersSelection,
-//             turn: "user1".to_string(),
-//             cities: HashMap::from([
-//                 ("user1".to_string(), City::default()),
-//                 ("user2".to_string(), City::default()),
-//             ]),
-//             post_effects: Vec::new(),
-//             interactive_units: Units::default(),
-//         };
-//
-//         let effects = vec![
-//             Reward { coins: 3 }
-//         ];
-//
-//         effects.iter().for_each(|eff| eff.apply(&mut s));
-//
-//         assert_eq!(s.me_mut().coins, 3);
-//         assert_eq!(s.enemy_mut().coins, 0);
-//     }
-//
-//     #[test]
-//     fn test_change_coins_negative() {
-//         let mut s = State {
-//             phase: Phase::WondersSelection,
-//             turn: "user1".to_string(),
-//             cities: HashMap::from([
-//                 ("user1".to_string(), City::default()),
-//                 ("user2".to_string(), City::default()),
-//             ]),
-//             post_effects: Vec::new(),
-//             interactive_units: Units::default(),
-//         };
-//
-//         let effects = vec![
-//             Reward { coins: -3 }
-//         ];
-//
-//         effects.iter().for_each(|eff| eff.apply(&mut s));
-//
-//         assert_eq!(s.me_mut().coins, 0);
-//         assert_eq!(s.enemy_mut().coins, 0);
-//     }
-// }

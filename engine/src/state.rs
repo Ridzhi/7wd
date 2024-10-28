@@ -1,10 +1,15 @@
 use std::cmp::{Ordering};
 use std::collections::{HashMap, HashSet};
-use crate::{Deck, building, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, Action, Error, Age, DEFAULT_DISCARD_REWARD, DEFAULT_RESOURCE_PRICE, STARTING_CITY_COINS, get_layout, BaseUnit};
-use crate::building::Kind;
-use crate::deck::Layout;
-use crate::effect::PostEffect;
-use crate::player::Finisher;
+use crate::{
+  prelude::*,
+  building::{self, Kind},
+  token,
+  wonder,
+  player::{Finisher},
+  deck::{Layout},
+  military::{Track}
+};
+// use crate::{Deck, economy::{Discount, PriceList, Resource, Resources, Cost, PayScope}, token, wonder, military::{Track}, Bonus, Nickname, Phase, COINS_PER_POINT, Victory, Coins, FIXED_RESOURCE_PRICE, ScientificSymbol, Action, Error, Age, DEFAULT_DISCARD_REWARD, DEFAULT_RESOURCE_PRICE, STARTING_CITY_COINS, get_layout, BaseUnit};
 
 #[derive(Default, Debug)]
 pub struct State {
@@ -184,7 +189,7 @@ impl City {
                     .filter(|(_, building)| building.is_some())
                     .count() as u8
             }
-            Bonus::Coin => self.coins / COINS_PER_POINT,
+            Bonus::Coin => self.coins / crate::COINS_PER_POINT,
         }
     }
 }
@@ -192,7 +197,7 @@ impl City {
 impl Default for City {
     fn default() -> Self {
         Self {
-            coins: STARTING_CITY_COINS,
+            coins: crate::STARTING_CITY_COINS,
             resources: HashMap::from_iter(Resource::ALL.iter().map(|r| (*r, 0u8))),
             score: Default::default(),
             buildings: vec![],
@@ -255,7 +260,7 @@ impl Bank {
     }
 
     pub fn has_fixed_resource_price(&self, r: &Resource) -> bool {
-        self.resource_price[r] == FIXED_RESOURCE_PRICE
+        self.resource_price[r] == crate::FIXED_RESOURCE_PRICE
     }
 
     fn get_resources_ordered_by_price(&self) -> Vec<Resource> {
@@ -279,12 +284,12 @@ impl Bank {
 impl Default for Bank {
     fn default() -> Self {
         Self {
-            discard_reward: DEFAULT_DISCARD_REWARD,
+            discard_reward: crate::DEFAULT_DISCARD_REWARD,
             building_price: Default::default(),
             wonder_price: Default::default(),
             resource_price: Resource::ALL
                 .iter()
-                .map(|r| (*r, DEFAULT_RESOURCE_PRICE))
+                .map(|r| (*r, crate::DEFAULT_RESOURCE_PRICE))
                 .collect(),
             discounts: Default::default(),
         }
@@ -410,7 +415,7 @@ fn get_score(s: &mut State) -> Score {
         score.tokens += token::REGISTRY[id].get_points(s);
     }
 
-    score.coins = city.coins / COINS_PER_POINT;
+    score.coins = city.coins / crate::COINS_PER_POINT;
     score.military = city.track.get_points();
     score.total = score.civilian
         + score.science
