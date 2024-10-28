@@ -34,8 +34,6 @@ pub trait BaseUnit {
     }
 }
 
-pub type Points = u8;
-
 #[derive(Debug)]
 pub enum Error {
     ActionNotAllowed,

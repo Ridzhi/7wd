@@ -105,3 +105,5 @@ pub enum Bonus {
     Wonder,
     Coin,
 }
+
+pub type Points = u8;
