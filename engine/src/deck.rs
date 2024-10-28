@@ -135,13 +135,13 @@ impl Deck {
             .for_each(|(parent, children)| {
                 if let Some(left) = children[0] {
                     if &left == id {
-                        *children.get_mut(0).expect("pull_building *children get by ind 0") = None;
+                        *children.get_mut(0).unwrap() = None;
                     }
                 }
 
                 if let Some(right) = children[1] {
                     if &right == id {
-                        *children.get_mut(1).expect("pull_building *children get by ind 1") = None;
+                        *children.get_mut(1).unwrap() = None;
                     }
                 }
 

@@ -38,19 +38,19 @@ impl State {
 
 impl State {
     pub fn me(&self) -> &City {
-        self.cities.get(&self.players.me).expect("city get by nickname")
+        self.cities.get(&self.players.me).unwrap()
     }
 
     pub fn me_mut(&mut self) -> &mut City {
-        self.cities.get_mut(&self.players.me).expect("city get by nickname")
+        self.cities.get_mut(&self.players.me).unwrap()
     }
 
     pub fn enemy(&self) -> &City {
-        self.cities.get(&self.players.enemy).expect("city get by nickname")
+        self.cities.get(&self.players.enemy).unwrap()
     }
 
     pub fn enemy_mut(&mut self) -> &mut City {
-        self.cities.get_mut(&self.players.enemy).expect("city get by nickname")
+        self.cities.get_mut(&self.players.enemy).unwrap()
     }
 
     pub fn over(&mut self, finisher: Finisher, victory: Victory) {

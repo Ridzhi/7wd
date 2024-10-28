@@ -79,7 +79,7 @@ impl Effect {
             Self::FixedResourcePrice(ref resources) => {
                 resources.iter()
                     .for_each(|resource| {
-                        *s.me_mut().bank.resource_price.get_mut(resource).expect("bank.resource price has all resources") = FIXED_RESOURCE_PRICE;
+                        *s.me_mut().bank.resource_price.get_mut(resource).unwrap() = FIXED_RESOURCE_PRICE;
                     });
             }
 
@@ -146,10 +146,10 @@ impl Effect {
             }
 
             Self::Resource(r, count) => {
-                *s.me_mut().resources.get_mut(&r).expect("effect::resource city.resources has all resources") += count;
+                *s.me_mut().resources.get_mut(&r).unwrap() += count;
 
                 if !s.enemy().bank.has_fixed_resource_price(&r) {
-                    *s.enemy_mut().bank.resource_price.get_mut(&r).expect("update_resource_price bank.resource_price has all resources") = DEFAULT_RESOURCE_PRICE + s.me().resources[&r];
+                    *s.enemy_mut().bank.resource_price.get_mut(&r).unwrap() = DEFAULT_RESOURCE_PRICE + s.me().resources[&r];
                 }
             }
 
@@ -182,10 +182,10 @@ impl Effect {
         match *self {
             Effect::Resource(resource, count) => {
                 let current = s.me().resources[&resource];
-                *s.me_mut().resources.get_mut(&resource).expect("rollback effect:resource has all resources") = min(current - count, 0);
+                *s.me_mut().resources.get_mut(&resource).unwrap() = min(current - count, 0);
 
                 if !s.me().bank.has_fixed_resource_price(&resource) {
-                    *s.me_mut().bank.resource_price.get_mut(&resource).expect("update_resource_price bank.resource_price has all resources") = DEFAULT_RESOURCE_PRICE + s.enemy().resources[&resource];
+                    *s.me_mut().bank.resource_price.get_mut(&resource).unwrap() = DEFAULT_RESOURCE_PRICE + s.enemy().resources[&resource];
                 }
             }
             _ => (),

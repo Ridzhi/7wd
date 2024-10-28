@@ -117,7 +117,7 @@ pub fn filter_by_kind(source: &Vec<Id>, kind: Kind) -> Vec<Id> {
             |id|
                 REGISTRY
                     .get(id)
-                    .expect("filter_by_kind registry have id")
+                    .unwrap()
                     .kind == kind
         )
         .map(|&id| id)
