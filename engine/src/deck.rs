@@ -79,7 +79,7 @@ impl Deck {
                 }
 
                 if self.face_down.contains(id) {
-                    return if building::REGISTRY[id].kind == building::Kind::Guild {
+                    return if get_building(id).kind == building::Kind::Guild {
                         Slot::FaceDownGuild
                     } else {
                         Slot::FaceDownGuild
@@ -104,7 +104,7 @@ impl Deck {
     }
 
     pub fn get_returned_buildings(&self) -> Vec<building::Id> {
-        let age = building::REGISTRY[&self.buildings[0]].age;
+        let age = get_building(&self.buildings[0]).age;
 
         building::REGISTRY.values()
             .filter_map(|item| {

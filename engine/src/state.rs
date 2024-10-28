@@ -394,7 +394,7 @@ fn get_score(s: &mut State) -> Score {
     let city = s.me();
 
     for id in city.buildings.iter() {
-        let points = building::REGISTRY[id].get_points(s);
+        let points = get_building(id).get_points(s);
 
         match building::REGISTRY[id].kind {
             Kind::Scientific => score.science += points,
@@ -437,7 +437,7 @@ fn get_buildings_price(s: &mut State) -> PriceList<building::Id> {
                 return (*id, 0);
             }
 
-            (*id, city.bank.get_price(PayScope::from_building(id), building::REGISTRY[id].cost.clone()))
+            (*id, city.bank.get_price(PayScope::from_building(id),get_building(id).cost.clone()))
         })
         .collect()
 }

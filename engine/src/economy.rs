@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::iter::Iterator;
 use crate::building;
+use crate::prelude::get_building;
 
 #[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum PayScope {
@@ -11,7 +12,7 @@ pub enum PayScope {
 
 impl PayScope {
     pub fn from_building(id: &building::Id) -> Self {
-        if building::REGISTRY[id].kind == building::Kind::Civilian {
+        if get_building(id).kind == building::Kind::Civilian {
             Self::Civilian
         } else {
             Self::Global

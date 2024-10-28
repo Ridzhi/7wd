@@ -1,5 +1,6 @@
 pub use crate::{
     BaseUnit, Age, Points, Phase, Error, Victory, ScientificSymbol, Bonus,
+    building::{get as get_building},
     economy::{Resource, Resources, Coins, Cost, PayScope, Discount, PriceList},
     effect::{Effect, PostEffect},
     player::Nickname,

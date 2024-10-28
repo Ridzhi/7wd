@@ -1214,3 +1214,7 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
         .map(|unit| (unit.id, unit))
         .collect::<HashMap<_, _>>()
 });
+
+pub fn get(id: &Id) -> &Unit {
+    REGISTRY.get(id).unwrap()
+}

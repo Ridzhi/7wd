@@ -138,13 +138,13 @@ impl Action {
                         s.me_mut().coins += 4;
                     }
                 } else {
-                    s.pay(PayScope::from_building(&bid), building::REGISTRY[&bid].cost.clone())?;
+                    s.pay(PayScope::from_building(&bid), get_building(&bid).cost.clone())?;
                 }
 
                 s.me_mut().buildings.push(bid);
                 s.deck.pull_building(&bid);
 
-                building::REGISTRY[&bid].construct(s);
+                get_building(&bid).construct(s);
 
                 after(s);
             }
@@ -175,7 +175,7 @@ impl Action {
                 }
 
                 s.enemy_mut().buildings.retain(|id| *id != bid);
-                building::REGISTRY[&bid].destruct(s);
+                get_building(&bid).destruct(s);
 
                 after(s);
             }
@@ -257,7 +257,7 @@ impl Action {
 
                 s.me_mut().buildings.push(bid);
                 s.deck.pull_building(&bid);
-                building::REGISTRY[&bid].construct(s);
+                get_building(&bid).construct(s);
 
                 after(s);
             }
@@ -273,7 +273,7 @@ impl Action {
 
                 s.me_mut().buildings.push(bid);
                 s.buildings.discarded.retain(|id| *id != bid);
-                building::REGISTRY[&bid].construct(s);
+                get_building(&bid).construct(s);
 
                 after(s);
             }
@@ -299,13 +299,13 @@ impl Action {
 
                 {
                     s.me_mut().buildings.push(pick);
-                    building::REGISTRY[&pick].construct(s);
+                    get_building(&pick).construct(s);
                 }
 
                 {
                     s.players.set_turn(s.players.enemy);
                     s.me_mut().buildings.push(give);
-                    building::REGISTRY[&give].construct(s);
+                    get_building(&give).construct(s);
                 }
 
                 s.players.set_turn(fallback_turn);
