@@ -519,6 +519,7 @@ pub(crate) fn over(s: &mut State, finisher: Finisher, victory: Victory) {
     });
 }
 
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Age {
     #[default]
