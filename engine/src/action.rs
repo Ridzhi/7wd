@@ -92,7 +92,7 @@ impl Action {
                     return Err(Error::ActionNotAllowed);
                 }
 
-                s.pay(PayScope::Wonders, wonder::REGISTRY[&wid].cost.clone())?;
+                s.pay(PayScope::Wonders, get_wonder(&wid).cost.clone())?;
                 s.deck.pull_building(&bid);
 
                 s.me_mut().wonders.iter_mut()
@@ -115,7 +115,7 @@ impl Action {
                         .retain(|(_, b)| !b.is_none());
                 }
 
-                wonder::REGISTRY[&wid].construct(s);
+                get_wonder(&wid).construct(s);
 
                 if s.me().progress_tokens.contains(&token::Id::Theology) {
                     s.play_again = true;
@@ -375,7 +375,7 @@ impl Setup {
     }
 
     pub fn get_random_wonders(o: &crate::Options) -> Vec<wonder::Id> {
-        wonder::REGISTRY
+        get_all_wonders()
             .iter()
             .map(|(id, _)| *id)
             .filter(|id| {

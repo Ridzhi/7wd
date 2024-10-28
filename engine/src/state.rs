@@ -393,10 +393,10 @@ fn get_score(s: &mut State) -> Score {
     let mut score = Score::default();
     let city = s.me();
 
-    for id in city.buildings.iter() {
-        let points = get_building(id).get_points(s);
+    for bid in city.buildings.iter() {
+        let points = get_building(bid).get_points(s);
 
-        match get_building(id).kind {
+        match get_building(bid).kind {
             Kind::Scientific => score.science += points,
             Kind::Civilian => score.civilian += points,
             Kind::Commercial => score.commercial += points,
@@ -405,9 +405,9 @@ fn get_score(s: &mut State) -> Score {
         };
     }
 
-    for (w, b) in city.wonders.iter() {
+    for (wid, b) in city.wonders.iter() {
         if b.is_some() {
-            score.wonders += wonder::REGISTRY[&w].get_points(s);
+            score.wonders += get_wonder(&wid).get_points(s);
         }
     }
 
@@ -445,11 +445,11 @@ fn get_buildings_price(s: &mut State) -> PriceList<building::Id> {
 fn get_wonders_price(s: &mut State) -> PriceList<wonder::Id> {
     let city = s.me();
     city.wonders.iter()
-        .filter_map(|(w, b)| {
+        .filter_map(|(wid, b)| {
             if b.is_some() {
                 None
             } else {
-                Some((*w, city.bank.get_price(PayScope::Wonders, wonder::REGISTRY[w].cost.clone())))
+                Some((*wid, city.bank.get_price(PayScope::Wonders, get_wonder(wid).cost.clone())))
             }
         })
         .collect()
