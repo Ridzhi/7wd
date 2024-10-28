@@ -421,15 +421,15 @@ impl Setup {
     }
 
     fn get_shuffle_buildings(age: Age) -> Vec<building::Id> {
-        building::REGISTRY
+        get_all_buildings()
             .iter()
             .filter(|(_, b)| b.age == age && b.kind != building::Kind::Guild)
             .map(|(id, _)| *id)
-            .choose_multiple(&mut thread_rng(), building::REGISTRY.len())
+            .choose_multiple(&mut thread_rng(), get_all_buildings().len())
     }
 
     fn get_shuffle_guilds() -> Vec<building::Id> {
-        building::REGISTRY
+        get_all_buildings()
             .iter()
             .filter(|(_, b)| b.kind == building::Kind::Guild)
             .map(|(id, _)| *id)

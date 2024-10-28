@@ -106,7 +106,7 @@ impl Deck {
     pub fn get_returned_buildings(&self) -> Vec<building::Id> {
         let age = get_building(&self.buildings[0]).age;
 
-        building::REGISTRY.values()
+        get_all_buildings().values()
             .filter_map(|item| {
                 if item.age == age && !self.buildings.contains(&item.id) {
                     Some(item.id)
