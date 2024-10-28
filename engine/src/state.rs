@@ -304,7 +304,7 @@ impl Default for Bank {
 }
 
 #[derive(Debug)]
-struct Finish {
+pub struct Finish {
     pub winner: Nickname,
     pub victory: Victory,
 }
