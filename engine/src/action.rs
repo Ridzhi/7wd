@@ -51,7 +51,7 @@ impl Action {
                 };
                 s.interactive_units.wonders = s.random_units.wonders
                     .iter()
-                    .take(WONDER_SELECTION_POOL_SIZE)
+                    .take(WONDER_SELECTION_POOL_SIZE as usize)
                     .copied()
                     .map(|id| Some(id))
                     .collect();
@@ -214,16 +214,16 @@ impl Action {
                     _ => s.players.next_turn() // normal flow, next player
                 }
 
-                match picked_count {
+                match picked_count as u8 {
                     WONDER_SELECTION_POOL_SIZE => {
                         s.interactive_units.wonders = s.random_units.wonders.iter()
-                            .skip(WONDER_SELECTION_POOL_SIZE)
+                            .skip(WONDER_SELECTION_POOL_SIZE as usize)
                             .copied()
                             .map(|id| Some(id))
                             .collect();
                     },
 
-                    8 => {
+                    WONDER_TOTAL_POOL_SIZE => {
                         s.phase = Phase::Turn;
                         s.interactive_units.wonders = vec![];
                         s.deck = Deck::new(get_layout(s.age), s.random_units.buildings[&s.age].clone());
@@ -400,7 +400,7 @@ impl Setup {
             .filter(|id| {
                 o.with_promo_wonders || !wonder::Id::PROMO.contains(id)
             })
-            .choose_multiple(&mut thread_rng(), WONDER_SELECTION_POOL_SIZE * 2)
+            .choose_multiple(&mut thread_rng(), WONDER_TOTAL_POOL_SIZE as usize)
     }
 
     pub fn get_random_tokens() -> (Vec<token::Id>, Vec<token::Id>) {
