@@ -1,5 +1,4 @@
-use std::error::Error;
-use engine::{Age, Deck, Setup};
+use engine::Setup;
 // trait Deck {
 //     fn pull(&mut self, id: u8) -> Result<(), Box<dyn Error>>;
 // }

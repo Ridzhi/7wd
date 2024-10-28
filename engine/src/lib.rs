@@ -14,66 +14,6 @@ mod rule;
 
 use prelude::*;
 
-#[derive(Debug, Default, Copy, Clone, Eq, PartialEq, Hash)]
-pub enum Age {
-    #[default]
-    I = 1,
-    II,
-    III,
-}
-
-impl Age {
-    pub const ALL: [Age;3] = [Age::I, Age::II, Age::III];
-
-    pub fn next(&mut self) {
-        *self = match self {
-            Age::I => Age::II,
-            Age::II => Age::III,
-            Age::III => Age::III,
-        }
-    }
-
-    pub fn is_last(&self) -> bool {
-        *self == Self::III
-    }
-}
-
-#[derive(Debug, Default,Eq, PartialEq, Copy, Clone)]
-pub enum Phase {
-    #[default]
-    None = 0,
-    Over,
-    WondersSelection,
-    Turn,
-    WhoBeginsTheNextAgeSelection,
-    BoardTokenSelection,
-    RandomTokenSelection,
-    DestructBuildingSelection,
-    DiscardedBuildingSelection,
-    TopLineBuildingSelection,
-    ReturnedBuildingSelection,
-}
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum ScientificSymbol {
-    Astrology = 1,
-    Wheel,
-    Sundial,
-    Mortar,
-    Compass,
-    Writing,
-    Law,
-}
-
-#[derive(Debug, Copy, Clone)]
-pub enum Victory {
-    Civilian = 1,
-    MilitarySupremacy,
-    ScienceSupremacy,
-    Resign,
-    Timeout,
-}
-
 pub trait BaseUnit {
     fn effects(&self) -> &Vec<Effect>;
 
