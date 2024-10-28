@@ -112,7 +112,7 @@ impl BaseUnit for Unit {
     }
 }
 
-pub fn filter_by_kind(source: &Vec<Id>, kind: Kind) -> Vec<Id> {
+pub fn filter_by_kind(source: &[Id], kind: Kind) -> Vec<Id> {
     source
         .iter()
         .filter(|id| get_building(id).kind == kind)

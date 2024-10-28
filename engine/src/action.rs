@@ -58,7 +58,7 @@ impl Action {
                     .iter()
                     .take(WONDER_SELECTION_POOL_SIZE as usize)
                     .copied()
-                    .map(|id| Some(id))
+                    .map(Some)
                     .collect();
             }
 
@@ -194,7 +194,7 @@ impl Action {
                             }
                         }
 
-                        return None;
+                        None
                     });
 
                 if let Some(ind) = wi {
@@ -222,7 +222,7 @@ impl Action {
                         s.interactive_units.wonders = s.random_units.wonders.iter()
                             .skip(WONDER_SELECTION_POOL_SIZE as usize)
                             .copied()
-                            .map(|id| Some(id))
+                            .map(Some)
                             .collect();
                     }
 
@@ -321,12 +321,12 @@ impl Action {
             return Err(Error::ActionNotAllowed);
         }
 
-        if !s.interactive_units.tokens.contains(&tid) {
+        if !s.interactive_units.tokens.contains(tid) {
             return Err(Error::ActionNotAllowed);
         }
 
-        s.me_mut().tokens.push(tid.clone());
-        get_token(&tid).construct(s);
+        s.me_mut().tokens.push(*tid);
+        get_token(tid).construct(s);
         let t_ind = s.tokens.iter()
             .enumerate()
             .find_map(|(ind, val)| {
@@ -338,12 +338,13 @@ impl Action {
                     };
                 }
 
-                return None;
+                None
             });
 
         *s.tokens.get_mut(t_ind.unwrap()).unwrap() = None;
 
-        Ok(after(s))
+        after(s);
+        Ok(())
     }
 }
 
