@@ -28,7 +28,7 @@ pub struct Discount {
 }
 
 impl Discount {
-    pub fn apply(&self, cost: &mut Cost, priority: &Vec<Resource>) {
+    pub fn apply(&self, cost: &mut Cost, priority: &[Resource]) {
         let mut reserve = self.count;
 
         priority.iter()

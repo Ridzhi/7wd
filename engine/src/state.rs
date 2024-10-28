@@ -338,7 +338,7 @@ pub fn after(s: &mut State) {
         return;
     }
 
-    let has_post_effects = s.post_effects.len() > 0;
+    let has_post_effects = !s.post_effects.is_empty();
     let is_over = s.age.is_last()
         && s.phase == Phase::Turn
         && s.deck.is_empty()
@@ -354,11 +354,9 @@ pub fn after(s: &mut State) {
     // we resolve turn and use this to fallback turn after post effects if needed
     s.resolve_next_turn();
 
-    if !has_post_effects {
-        if s.deck.is_empty() && !s.age.is_last() {
-            s.age.next();
-            s.deck = Deck::new(get_layout(s.age), s.random_units.buildings[&s.age].clone())
-        }
+    if !has_post_effects && s.deck.is_empty() && !s.age.is_last() {
+        s.age.next();
+        s.deck = Deck::new(get_layout(s.age), s.random_units.buildings[&s.age].clone())
     }
 
     refresh_buildings(s);
@@ -370,16 +368,14 @@ pub fn after(s: &mut State) {
         }
 
         s.post_effects.remove(0).apply(s);
-    } else {
-        if let Some(p) = s.players.fallback {
-            // if starts next age, origin turn resolve is priority
-            if s.phase != Phase::WhoBeginsTheNextAgeSelection {
-                s.phase = Phase::Turn;
-                s.players.set_turn(p);
-            }
-
-            s.players.fallback = None;
+    } else if let Some(p) = s.players.fallback {
+        // if starts next age, origin turn resolve is priority
+        if s.phase != Phase::WhoBeginsTheNextAgeSelection {
+            s.phase = Phase::Turn;
+            s.players.set_turn(p);
         }
+
+        s.players.fallback = None;
     }
 
     if s.deck.is_empty() && s.age.is_last() && s.phase == Phase::Turn {
@@ -406,7 +402,7 @@ fn get_score(s: &mut State) -> Score {
 
     for (wid, b) in city.wonders.iter() {
         if b.is_some() {
-            score.wonders += get_wonder(&wid).get_points(s);
+            score.wonders += get_wonder(wid).get_points(s);
         }
     }
 

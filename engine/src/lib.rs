@@ -57,6 +57,7 @@ mod tests {
         prelude::*,
         token::Id::*,
         wonder::Id::*,
+        state::Score,
     };
 
     #[test]
