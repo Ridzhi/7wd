@@ -411,8 +411,8 @@ fn get_score(s: &mut State) -> Score {
         }
     }
 
-    for id in city.progress_tokens.iter() {
-        score.tokens += token::REGISTRY[id].get_points(s);
+    for tid in city.progress_tokens.iter() {
+        score.tokens += get_token(tid).get_points(s);
     }
 
     score.coins = city.coins / crate::COINS_PER_POINT;

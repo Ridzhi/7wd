@@ -316,22 +316,22 @@ impl Action {
         Ok(())
     }
 
-    fn pick_token(s: &mut State, phase: Phase, token: &token::Id) -> Result<(), Error> {
+    fn pick_token(s: &mut State, phase: Phase, tid: &token::Id) -> Result<(), Error> {
         if s.phase != phase {
             return Err(Error::ActionNotAllowed);
         }
 
-        if !s.interactive_units.tokens.contains(&token) {
+        if !s.interactive_units.tokens.contains(&tid) {
             return Err(Error::ActionNotAllowed);
         }
 
-        s.me_mut().progress_tokens.push(token.clone());
-        token::REGISTRY[&token].construct(s);
+        s.me_mut().progress_tokens.push(tid.clone());
+        get_token(&tid).construct(s);
         let t_ind = s.progress_tokens.iter()
             .enumerate()
             .find_map(|(ind, val)| {
                 if let Some(id) = val {
-                    return if id == token {
+                    return if id == tid {
                         Some(ind)
                     } else {
                         None
@@ -385,10 +385,10 @@ impl Setup {
     }
 
     pub fn get_random_tokens() -> (Vec<token::Id>, Vec<token::Id>) {
-        let tokens = token::REGISTRY
+        let tokens = get_all_tokens()
             .iter()
             .map(|(id, _)| *id)
-            .choose_multiple(&mut thread_rng(), token::REGISTRY.len());
+            .choose_multiple(&mut thread_rng(), get_all_tokens().len());
 
         (
             tokens.iter().take(STARTING_TOKENS_COUNT).copied().collect(),

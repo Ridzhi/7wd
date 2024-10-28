@@ -30,7 +30,7 @@ impl BaseUnit for Unit {
     }
 }
 
-pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
+static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
     vec![
         Unit {
             id: Id::Agriculture,
@@ -100,3 +100,11 @@ pub static REGISTRY: LazyLock<HashMap<Id, Unit>> = LazyLock::new(|| {
         .map(|unit| (unit.id, unit))
         .collect::<HashMap<_,_>>()
 });
+
+pub fn get(id: &Id) -> &Unit {
+    REGISTRY.get(id).unwrap()
+}
+
+pub fn get_all() -> &'static HashMap<Id, Unit> {
+    &REGISTRY
+}
