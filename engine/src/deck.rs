@@ -161,7 +161,6 @@ impl Deck {
 
             for char in layout_line.chars() {
                 if char == '[' {
-                    // @TODO research how to insert in one expr
                     line[line_pos] = Some(buildings[building_pos]);
                     line[line_pos + 1] = Some(buildings[building_pos]);
                     building_pos += 1;
