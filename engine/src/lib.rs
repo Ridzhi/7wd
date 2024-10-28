@@ -120,7 +120,7 @@ pub trait BaseUnit {
         }
     }
 
-    fn get_points(&self, s: &State) -> u8 {
+    fn get_points(&self, s: &State) -> Points {
         let mut sum: u8 = 0;
 
         for effect in self.effects() {
