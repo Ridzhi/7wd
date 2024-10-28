@@ -236,63 +236,11 @@ impl Action {
             }
 
             Self::PickBoardToken(tid) => {
-                if s.phase != Phase::BoardTokenSelection {
-                    return Err(Error::ActionNotAllowed);
-                }
-
-                if !s.interactive_units.tokens.contains(&tid) {
-                    return Err(Error::ActionNotAllowed);
-                }
-
-                s.me_mut().progress_tokens.push(tid);
-                token::REGISTRY[&tid].construct(s);
-                let t_ind = s.progress_tokens.iter()
-                    .enumerate()
-                    .find_map(|(ind, val)| {
-                        if let Some(id) = val {
-                            return if *id == tid {
-                                Some(ind)
-                            } else {
-                                None
-                            }
-                        }
-
-                        return None;
-                    });
-
-                *s.progress_tokens.get_mut(t_ind.expect("t ind should be")).expect("s.progress_tokens get t by ind") = None;
-
-                after(s);
+                return Self::pick_token(s, Phase::BoardTokenSelection, &tid);
             }
 
             Self::PickRandomToken(tid) => {
-                if s.phase != Phase::RandomTokenSelection {
-                    return Err(Error::ActionNotAllowed);
-                }
-
-                if !s.interactive_units.tokens.contains(&tid) {
-                    return Err(Error::ActionNotAllowed);
-                }
-
-                s.me_mut().progress_tokens.push(tid);
-                token::REGISTRY[&tid].construct(s);
-                let t_ind = s.progress_tokens.iter()
-                    .enumerate()
-                    .find_map(|(ind, val)| {
-                        if let Some(id) = val {
-                            return if *id == tid {
-                                Some(ind)
-                            } else {
-                                None
-                            }
-                        }
-
-                        return None;
-                    });
-
-                *s.progress_tokens.get_mut(t_ind.expect("t ind should be")).expect("s.progress_tokens get t by ind") = None;
-
-                after(s);
+                return Self::pick_token(s, Phase::RandomTokenSelection, &tid);
             }
 
             Self::PickTopLineBuilding(bid) => {
@@ -363,6 +311,36 @@ impl Action {
             }
         }
         Ok(())
+    }
+
+    fn pick_token(s: &mut State, phase: Phase, token: &token::Id) -> Result<(), Error>{
+        if s.phase != phase {
+            return Err(Error::ActionNotAllowed);
+        }
+
+        if !s.interactive_units.tokens.contains(&token) {
+            return Err(Error::ActionNotAllowed);
+        }
+
+        s.me_mut().progress_tokens.push(token.clone());
+        token::REGISTRY[&token].construct(s);
+        let t_ind = s.progress_tokens.iter()
+            .enumerate()
+            .find_map(|(ind, val)| {
+                if let Some(id) = val {
+                    return if id == token {
+                        Some(ind)
+                    } else {
+                        None
+                    }
+                }
+
+                return None;
+            });
+
+        *s.progress_tokens.get_mut(t_ind.expect("t ind should be")).expect("s.progress_tokens get t by ind") = None;
+
+        Ok(after(s))
     }
 }
 
