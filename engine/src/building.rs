@@ -120,7 +120,7 @@ pub fn filter_by_kind(source: &[Id], kind: Kind) -> Vec<Id> {
         .collect::<Vec<_>>()
 }
 
-pub fn count_by_kind(source: &Vec<Id>, kind: Kind) -> u8 {
+pub fn count_by_kind(source: &[Id], kind: Kind) -> u8 {
     filter_by_kind(source, kind).len() as u8
 }
 
