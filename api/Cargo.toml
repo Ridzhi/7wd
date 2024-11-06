@@ -4,3 +4,30 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+axum = "0.7.7"
+config = "0.14.1"
+deadpool = "0.12.1"
+deadpool-postgres = { version = "0.14.0", features = ["serde"] }
+dotenvy = "0.15.7"
+serde = { version = "1.0.214", features = ["derive"] }
+serde_derive = "1.0.214"
+serde_json = "1.0.132"
+tokio = { version = "1.41.0", features = ["full"] }
+tokio-postgres = { version = "0.7.12", features = ["with-time-0_3", "with-serde_json-1"] }
+sea-query = { version = "0.32.0", features = ["derive", "backend-postgres", "with-time", "with-json", "attr", "thread-safe"] }
+time = { version = "0.3.36", features = ["serde"] }
+futures = "0.3.30"
+anyhow = "1.0.86"
+thiserror = "2.0.0"
+pwhash = "1.0.0"
+mockall = "0.13.0"
+auto_impl = "1.2.0"
+axum-macros = "0.4.1"
+uuid = { version = "1.10.0", features = ["serde", "v4"] }
+jsonwebtoken = "9.3.0"
+redis = { version = "0.27.5", features = ["json", "tokio-comp"] }
+duration-str = "0.11.2"
+axum-extra = { version = "0.9.3", features = ["cookie"] }
+tower = { version = "0.5.1", features = ["util"] }
+tower-http = { version = "0.6.1", features = ["full"] }
+redis-macros = "0.4.0"
