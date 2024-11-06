@@ -1,0 +1,31 @@
+services:
+  pg_dev:
+    container_name: swd_pg_dev
+    image: postgres
+    restart: always
+    volumes:
+      - swd_pgdata:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: ${SWD_PG_USER}
+      POSTGRES_PASSWORD: ${SWD_PG_PASSWORD}
+      POSTGRES_DB: ${SWD_PG_DBNAME}
+    ports:
+      - "${SWD_PG_PORT}:5432"
+
+  redis_dev:
+    container_name: swd_redis_dev
+    image: redis/redis-stack:6.2.6-v15
+    restart: always
+    environment:
+      - REDIS_ARGS=--requirepass ${SWD_REDIS_PASSWORD}
+    ports:
+      - "${SWD_REDIS_PORT}:6379"
+
+networks:
+  default:
+    name: swd_network
+    external: true
+
+volumes:
+  swd_pgdata:
+    name: swd_pgdata
