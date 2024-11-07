@@ -1,4 +1,4 @@
-use crate::app::AppError;
+use crate::prelude::*;
 use super::*;
 
 #[derive(Deserialize)]
@@ -13,11 +13,11 @@ pub async fn handler(State(state): State<Arc<AppState>>, Json(req): Json<Request
     let mut o = UserOptions::default();
 
     if state.user_repo().find(o.with_email(req.email.clone())).await.is_ok() {
-        return AppError::from(Fail::EmailAlreadyInUse).into_response();
+        return AppError::from(ErrorKind::EmailAlreadyInUse).into_response();
     };
 
     if state.user_repo().find(o.with_nickname(req.nickname.clone())).await.is_ok() {
-        return AppError::from(Fail::NicknameAlreadyInUse).into_response();
+        return AppError::from(ErrorKind::NicknameAlreadyInUse).into_response();
     };
 
     let password = match state.passwd().hash(req.password) {

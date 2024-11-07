@@ -1,13 +1,15 @@
+use crate::{
+    prelude::*,
+    account::{
+        model::*
+    }
+};
+
 use std::sync::Arc;
 use anyhow::{bail, Result};
 use deadpool_postgres::Pool;
 use sea_query::*;
 use tokio_postgres::Row;
-use crate::app::UtcDateTime;
-use crate::{
-    account::model::*,
-    app::Fail,
-};
 
 #[enum_def(table_name = "user")]
 struct Record {
@@ -110,7 +112,7 @@ impl UserRepoImpl {
         let users = self.find_many(o).await?;
 
         if users.len() == 0 {
-            return bail!(Fail::UserNotFound);
+            return bail!(ErrorKind::UserNotFound);
         }
 
         Ok(users.first().unwrap().clone())

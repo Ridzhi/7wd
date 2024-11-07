@@ -1,6 +1,5 @@
-// use deadpool_postgres;
-// use config;
 use serde_derive::{Deserialize};
+
 #[derive(Clone, Deserialize)]
 pub struct Config {
     pub env: String,

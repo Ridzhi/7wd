@@ -1,6 +1,7 @@
 mod state;
 mod app;
 mod account;
+mod prelude;
 
 use std::sync::Arc;
 

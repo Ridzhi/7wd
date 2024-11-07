@@ -2,9 +2,9 @@ pub mod config;
 mod password;
 mod user_repo;
 
+use self::{config::Config, password::Password, user_repo::UserRepoImpl};
 use std::sync::{Arc, OnceLock};
 use deadpool::Runtime;
-use self::{config::Config, password::Password, user_repo::UserRepoImpl};
 use deadpool_postgres::Pool;
 use redis::Client as RedisClient;
 

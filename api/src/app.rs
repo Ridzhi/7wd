@@ -3,15 +3,10 @@ use axum::response::{IntoResponse, Response};
 use time::PrimitiveDateTime;
 use thiserror::Error;
 use serde_derive::{Deserialize, Serialize};
-pub use crate::{
-    state::{
-        AppState as AppState,
-        config::{Config}
-    }
-};
+
 
 #[derive(Debug, Error, PartialEq)]
-pub enum Fail {
+pub enum ErrorKind {
     #[error("user not found")]
     UserNotFound,
     #[error("email already in use")]
