@@ -111,7 +111,7 @@ impl UserRepoImpl {
     pub async fn find(&self, o: &UserOptions) -> Result<User> {
         let users = self.find_many(o).await?;
 
-        if users.len() == 0 {
+        if users.is_empty() {
             return bail!(ErrorKind::UserNotFound);
         }
 
