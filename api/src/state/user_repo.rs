@@ -23,7 +23,7 @@ struct Record {
 
 impl Record {
     pub fn values_skip_id(self) -> Vec<SimpleExpr> {
-        return self.values().into_iter().skip(1).collect();
+        self.values().into_iter().skip(1).collect()
     }
 
     pub fn values(self) -> Vec<SimpleExpr> {

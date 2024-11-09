@@ -22,7 +22,7 @@ pub async fn handler(State(state): State<Arc<AppState>>, Json(req): Json<Request
 
     let password = match state.passwd().hash(req.password) {
         Ok(v) => v,
-        Err(e) => return AppError::from(e).into_response()
+        Err(e) => return e.into_response()
     };
 
     let u = User {
