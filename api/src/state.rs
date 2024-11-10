@@ -1,8 +1,8 @@
 pub mod config;
 mod password;
-mod user_repo;
+mod store;
 
-use self::{config::Config, password::Password, user_repo::UserRepoImpl};
+use self::{config::Config, password::Password, store::UserStore};
 use std::sync::{Arc, OnceLock};
 use deadpool::Runtime;
 use deadpool_postgres::Pool;
@@ -14,7 +14,7 @@ pub struct AppState {
     pg: Factory<Arc<Pool>>,
     redis: Factory<Arc<RedisClient>>,
     passwd: Factory<Arc<Password>>,
-    user_repo: Factory<Arc<UserRepoImpl>>,
+    user_repo: Factory<Arc<UserStore>>,
 }
 
 impl AppState {
@@ -34,7 +34,7 @@ impl AppState {
         self.resolve(&self.passwd)
     }
 
-    pub fn user_repo(&self) -> Arc<UserRepoImpl> {
+    pub fn user_repo(&self) -> Arc<UserStore> {
         self.resolve(&self.user_repo)
     }
 }
@@ -60,7 +60,7 @@ impl Default for AppState {
                 Arc::new(RedisClient::open(dsn).unwrap())
             }),
             passwd: Factory::once(|_state| Arc::new(Password)),
-            user_repo: Factory::once(|state| Arc::new(UserRepoImpl::new(state.pg()))),
+            user_repo: Factory::once(|state| Arc::new(UserStore::new(state.pg()))),
         }
     }
 }

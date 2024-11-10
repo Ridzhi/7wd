@@ -12,7 +12,7 @@ use sea_query::*;
 use tokio_postgres::Row;
 
 #[enum_def(table_name = "user")]
-struct Record {
+struct UserRecord {
     pub id: i32,
     pub nickname: String,
     pub rating: i16,
@@ -22,7 +22,7 @@ struct Record {
     pub created_at: time::PrimitiveDateTime,
 }
 
-impl Record {
+impl UserRecord {
     pub fn values_skip_id(self) -> Vec<SimpleExpr> {
         self.values().into_iter().skip(1).collect()
     }
@@ -40,9 +40,9 @@ impl Record {
     }
 }
 
-impl From<User> for Record {
+impl From<User> for UserRecord {
     fn from(value: User) -> Self {
-        Record {
+        UserRecord {
             id: value.id as i32,
             nickname: value.nickname,
             rating:  value.rating as i16,
@@ -58,27 +58,27 @@ impl From<Row> for User {
     fn from(value: Row) -> Self {
         Self {
             id: {
-                let id: i32 = value.get(RecordIden::Id.as_str());
+                let id: i32 = value.get(UserRecordIden::Id.as_str());
                 id as u32
             },
-            nickname: value.get(RecordIden::Nickname.as_str()),
+            nickname: value.get(UserRecordIden::Nickname.as_str()),
             rating:  {
-                let rating: i16 = value.get(RecordIden::Rating.as_str());
+                let rating: i16 = value.get(UserRecordIden::Rating.as_str());
                 rating as u16
             },
-            email: value.get(RecordIden::Email.as_str()),
-            password: value.get(RecordIden::Password.as_str()),
-            settings: serde_json::from_value(value.get(RecordIden::Settings.as_str())).unwrap(),
-            created_at: UtcDateTime(value.get(RecordIden::CreatedAt.as_str())),
+            email: value.get(UserRecordIden::Email.as_str()),
+            password: value.get(UserRecordIden::Password.as_str()),
+            settings: serde_json::from_value(value.get(UserRecordIden::Settings.as_str())).unwrap(),
+            created_at: UtcDateTime(value.get(UserRecordIden::CreatedAt.as_str())),
         }
     }
 }
 
-pub struct UserRepoImpl {
+pub struct UserStore {
     pg: Arc<Pool>,
 }
 
-impl UserRepoImpl {
+impl UserStore {
     pub fn new(pg: Arc<Pool>) -> Self {
         Self {
             pg,
@@ -87,16 +87,16 @@ impl UserRepoImpl {
 
     pub async fn save(&self, u: User) -> Result<User> {
         let q = Query::insert()
-            .into_table(RecordIden::Table)
+            .into_table(UserRecordIden::Table)
             .columns([
-                RecordIden::Nickname,
-                RecordIden::Rating,
-                RecordIden::Email,
-                RecordIden::Password,
-                RecordIden::Settings,
-                RecordIden::CreatedAt,
+                UserRecordIden::Nickname,
+                UserRecordIden::Rating,
+                UserRecordIden::Email,
+                UserRecordIden::Password,
+                UserRecordIden::Settings,
+                UserRecordIden::CreatedAt,
             ])
-            .values(Record::from(u).values_skip_id())?
+            .values(UserRecord::from(u).values_skip_id())?
             // .values_panic(Record::from(u).values_skip_id())
             .returning_all()
             .to_owned();
@@ -118,28 +118,28 @@ impl UserRepoImpl {
 
     pub async fn find_many(&self, o: &UserOptions) -> Result<Vec<User>> {
         let mut q = Query::select()
-            .from(RecordIden::Table)
+            .from(UserRecordIden::Table)
             .columns([
-                RecordIden::Id,
-                RecordIden::Nickname,
-                RecordIden::Rating,
-                RecordIden::Email,
-                RecordIden::Password,
-                RecordIden::Settings,
-                RecordIden::CreatedAt,
+                UserRecordIden::Id,
+                UserRecordIden::Nickname,
+                UserRecordIden::Rating,
+                UserRecordIden::Email,
+                UserRecordIden::Password,
+                UserRecordIden::Settings,
+                UserRecordIden::CreatedAt,
             ])
             .to_owned();
 
         if let Some(id) = o.id.as_ref() {
-            q.and_where(Expr::col(RecordIden::Id).eq(*id as i64));
+            q.and_where(Expr::col(UserRecordIden::Id).eq(*id as i64));
         }
 
         if let Some(email) = o.email.as_ref() {
-            q.and_where(Expr::col(RecordIden::Email).eq(email.as_str()));
+            q.and_where(Expr::col(UserRecordIden::Email).eq(email.as_str()));
         }
 
         if let Some(nickname) = o.nickname.as_ref() {
-            q.and_where(Expr::col(RecordIden::Nickname).eq(nickname.as_str()));
+            q.and_where(Expr::col(UserRecordIden::Nickname).eq(nickname.as_str()));
         }
 
         let sql = q.to_string(PostgresQueryBuilder);
