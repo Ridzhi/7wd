@@ -6,7 +6,7 @@ use crate::{
 };
 
 use std::sync::Arc;
-use anyhow::{bail, Result};
+use anyhow::{Result};
 use deadpool_postgres::Pool;
 use sea_query::*;
 use tokio_postgres::Row;

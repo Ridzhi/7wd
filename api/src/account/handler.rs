@@ -112,7 +112,7 @@ pub async fn get_new_session(state: Arc<AppState>, user: &User, client_id: Uuid)
 
     headers.insert(
         SET_COOKIE,
-        cookie.to_string().parse().unwrap()
+        cookie.to_string().parse()?
     );
 
     Ok(headers)
