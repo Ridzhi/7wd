@@ -3,6 +3,7 @@ use std::fmt::Formatter;
 use serde::{de, Deserialize, Deserializer, Serialize};
 use serde::de::Error;
 
+pub const SESSION_TTL_DAYS: u8 = 90;
 pub const STARTING_RATING: Rating = 1500;
 
 pub enum Login{

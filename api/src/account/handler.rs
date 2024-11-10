@@ -61,7 +61,7 @@ async fn auth(State(state): State<Arc<AppState>>, mut req: Request, next: Next) 
     let jar = CookieJar::from_headers(req.headers());
 
     let sid = if let Some(v ) = jar.get("sid") {
-        v.value().to_owned()
+        v.value()
     } else {
         return Err(StatusCode::UNAUTHORIZED)
     };
@@ -72,7 +72,7 @@ async fn auth(State(state): State<Arc<AppState>>, mut req: Request, next: Next) 
         return Err(StatusCode::UNAUTHORIZED)
     };
 
-    let session: Session = if let Ok(v) = rds.json_get(format!("session:{}", sid), "$").await {
+    let session: Session = if let Ok(v) = rds.json_get(get_session_key(sid), "$").await {
         v
     } else {
         return Err(StatusCode::UNAUTHORIZED)
@@ -94,12 +94,12 @@ pub async fn get_new_session(state: Arc<AppState>, user: &User, client_id: Uuid)
         created_at: OffsetDateTime::now_utc().unix_timestamp()
     };
 
-    let key = format!("session:{}", &session.session_id);
+    let key = get_session_key(&session.session_id.to_string());
 
     let mut rds = state.rds().get_multiplexed_async_connection().await?;
 
     rds.json_set(&key, "$", &session).await?;
-    rds.expire(&key, Duration::days(90).as_seconds_f64() as i64).await?;
+    rds.expire(&key, Duration::days(SESSION_TTL_DAYS as i64).as_seconds_f64() as i64).await?;
 
     let cookie = Cookie::build(("sid", session.session_id.to_string()))
         .domain(state.config().host.clone())
@@ -116,4 +116,8 @@ pub async fn get_new_session(state: Arc<AppState>, user: &User, client_id: Uuid)
     );
 
     Ok(headers)
+}
+
+fn get_session_key(id: &str) -> String {
+    format!("session:{}", id)
 }
