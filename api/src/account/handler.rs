@@ -94,12 +94,12 @@ pub async fn get_new_session(state: Arc<AppState>, user: &User, client_id: Uuid)
         created_at: OffsetDateTime::now_utc().unix_timestamp()
     };
 
-    let key = format!("session:{}", session.session_id.clone());
+    let key = format!("session:{}", &session.session_id);
 
     let mut rds = state.rds().get_multiplexed_async_connection().await?;
 
-    rds.json_set(key.clone(), "$", &session).await?;
-    rds.expire(key.clone(), Duration::days(90).as_seconds_f64() as i64).await?;
+    rds.json_set(&key, "$", &session).await?;
+    rds.expire(&key, Duration::days(90).as_seconds_f64() as i64).await?;
 
     let cookie = Cookie::build(("sid", session.session_id.to_string()))
         .domain(state.config().host.clone())
