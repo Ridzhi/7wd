@@ -5,7 +5,7 @@ use super::*;
 pub struct Request {
     #[validate(custom(function = "validate_login"))]
     pub login: Login,
-    #[validate(length(min = 8, max = 128))]
+    #[validate(custom(function = "validate_password"))]
     pub password: String,
     pub client_id: Uuid,
 }

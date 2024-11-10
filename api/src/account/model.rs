@@ -128,22 +128,42 @@ pub type Rating = u16;
 pub fn validate_login(login: &Login) -> Result<(), ValidationError> {
     match login {
         Login::Nickname(v) => {
-            if !v.validate_length(Some(3), Some(15), None) {
-                return Err(ValidationError::new("invalid nickname length"));
-            }
-
-            if !v.validate_regex(Regex::new(r"^[a-zA-Z]+[a-zA-Z0-9]*$").unwrap()) {
-                return Err(ValidationError::new("nickname should starts from letter and contains letters/numbers"));
-            }
-
-            Ok(())
+            validate_nickname(v)
         },
         Login::Email(v) => {
-            if !v.validate_email() {
-                return Err(ValidationError::new("invalid email format"));
-            }
-
-            Ok(())
+            validate_email(v)
         },
     }
+}
+
+pub fn validate_nickname(nickname: &Nickname) -> Result<(), ValidationError> {
+    if !nickname.validate_length(Some(3), Some(15), None) {
+        return Err(ValidationError::new("invalid nickname length"));
+    }
+
+    if !nickname.validate_regex(Regex::new(r"^[a-zA-Z]+[a-zA-Z0-9]*$").unwrap()) {
+        return Err(ValidationError::new("nickname should starts from letter and contains letters/numbers"));
+    }
+
+    Ok(())
+}
+
+pub fn validate_email(email: &Email) -> Result<(), ValidationError> {
+    if !email.validate_email() {
+        return Err(ValidationError::new("invalid email format"));
+    }
+
+    if !email.validate_length(None, Some(32), None) {
+        return Err(ValidationError::new("invalid email length(32 max)"));
+    }
+    
+    Ok(())
+}
+
+pub fn validate_password(password: &String) -> Result<(), ValidationError> {
+    if !password.validate_length(Some(8), Some(128), None) {
+        return Err(ValidationError::new("invalid password length"));
+    }
+    
+    Ok(())
 }

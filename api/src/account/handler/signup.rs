@@ -1,10 +1,13 @@
 use crate::prelude::*;
 use super::*;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Validate)]
 pub struct Request {
+    #[validate(custom(function = "validate_email"))]
     pub email: Email,
+    #[validate(custom(function = "validate_nickname"))]
     pub nickname: Nickname,
+    #[validate(custom(function = "validate_password"))]
     pub password: String,
     pub client_id: Uuid,
 }
