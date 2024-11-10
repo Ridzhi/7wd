@@ -1,7 +1,10 @@
 use crate::prelude::*;
 use std::fmt::Formatter;
+use regex::Regex;
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use serde::de::Error;
+use validator::{ValidateEmail, ValidateLength, ValidateRegex, ValidationError};
+
 pub const STARTING_RATING: Rating = 1500;
 
 pub enum Login{
@@ -121,3 +124,26 @@ impl Default for Settings {
 }
 
 pub type Rating = u16;
+
+pub fn validate_login(login: &Login) -> Result<(), ValidationError> {
+    match login {
+        Login::Nickname(v) => {
+            if !v.validate_length(Some(3), Some(15), None) {
+                return Err(ValidationError::new("invalid nickname length"));
+            }
+
+            if !v.validate_regex(Regex::new(r"^[a-zA-Z]+[a-zA-Z0-9]*$").unwrap()) {
+                return Err(ValidationError::new("nickname should starts from letter and contains letters/numbers"));
+            }
+
+            Ok(())
+        },
+        Login::Email(v) => {
+            if !v.validate_email() {
+                return Err(ValidationError::new("invalid email format"));
+            }
+
+            Ok(())
+        },
+    }
+}
