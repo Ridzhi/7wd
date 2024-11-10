@@ -38,10 +38,24 @@ pub fn build(state: Arc<AppState>) -> Router {
     Router::new()
         .route("/secret", get(secret::handler))
         .layer(ServiceBuilder::new().layer(middleware::from_fn_with_state(state.clone(), auth)))
+        .route("/cook", get(cook))
         .route("/signup", post(signup::handler))
         .route("/ping", get(ping::handler))
         .route("/signin", post(signin::handler))
         .with_state(state)
+}
+
+async fn cook() -> Response {
+    let mut headers = HeaderMap::new();
+    let cookie = Cookie::build(("secret", "love"))
+        // .domain(state.config().host.clone())
+        // .path("/")
+        // .http_only(true)
+        // .secure(true)
+        .build();
+    
+    headers.insert(SET_COOKIE, cookie.to_string().parse().unwrap());
+    (headers, StatusCode::OK).into_response()
 }
 
 #[derive(Serialize, Deserialize, FromRedisValue, ToRedisArgs, Clone)]
@@ -116,7 +130,8 @@ pub async fn create_session(
         .domain(state.config().host.clone())
         .path("/")
         .http_only(true)
-        .secure(true)
+        // @TODO fix with rapid api resolving
+        // .secure(true)
         .build();
 
     let mut headers = HeaderMap::new();
