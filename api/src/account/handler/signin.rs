@@ -38,7 +38,7 @@ pub async fn handler(State(state): State<Arc<AppState>>, Json(req): Json<Request
         return AppError::from(ErrorKind::InvalidCredentials).into_response();
     }
 
-    let headers = match get_new_session(state.clone(), &user, req.client_id).await {
+    let headers = match create_session(state.clone(), &user, req.client_id).await {
         Ok(v) => v,
         Err(e) => return e.into_response()
     };

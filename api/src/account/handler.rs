@@ -87,7 +87,7 @@ async fn auth(
     Ok(next.run(req).await)
 }
 
-pub async fn get_new_session(
+pub async fn create_session(
     state: Arc<AppState>,
     user: &User,
     client_id: Uuid,
