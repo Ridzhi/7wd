@@ -56,16 +56,20 @@ impl From<User> for Record {
 
 impl From<Row> for User {
     fn from(value: Row) -> Self {
-        let id: i32 = value.get(RecordIden::Id.to_string().as_str());
-        let rating: i16 = value.get(RecordIden::Rating.to_string().as_str());
         Self {
-            id: id as u32,
-            nickname: value.get(RecordIden::Nickname.to_string().as_str()),
-            rating:  rating as u16,
-            email: value.get(RecordIden::Email.to_string().as_str()),
-            password: value.get(RecordIden::Password.to_string().as_str()),
-            settings: serde_json::from_value(value.get(RecordIden::Settings.to_string().as_str())).unwrap(),
-            created_at: UtcDateTime(value.get(RecordIden::CreatedAt.to_string().as_str())),
+            id: {
+                let id: i32 = value.get(RecordIden::Id.as_str());
+                id as u32
+            },
+            nickname: value.get(RecordIden::Nickname.as_str()),
+            rating:  {
+                let rating: i16 = value.get(RecordIden::Rating.as_str());
+                rating as u16
+            },
+            email: value.get(RecordIden::Email.as_str()),
+            password: value.get(RecordIden::Password.as_str()),
+            settings: serde_json::from_value(value.get(RecordIden::Settings.as_str())).unwrap(),
+            created_at: UtcDateTime(value.get(RecordIden::CreatedAt.as_str())),
         }
     }
 }
