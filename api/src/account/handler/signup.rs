@@ -12,11 +12,11 @@ pub struct Request {
 pub async fn handler(State(state): State<Arc<AppState>>, Json(req): Json<Request>) -> Response {
     let mut o = UserOptions::default();
 
-    if state.user_repo().find(o.with_email(req.email.clone())).await.is_ok() {
+    if state.user_repo().find_with(o.with_email(req.email.clone())).await.is_ok() {
         return AppError::from(ErrorKind::EmailAlreadyInUse).into_response();
     };
 
-    if state.user_repo().find(o.with_nickname(req.nickname.clone())).await.is_ok() {
+    if state.user_repo().find_with(o.with_nickname(req.nickname.clone())).await.is_ok() {
         return AppError::from(ErrorKind::NicknameAlreadyInUse).into_response();
     };
 

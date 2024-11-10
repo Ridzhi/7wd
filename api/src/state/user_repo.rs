@@ -108,15 +108,12 @@ impl UserRepoImpl {
         Ok(conn.query_one(&sql, &[]).await?.into())
     }
 
-    pub async fn find(&self, o: &UserOptions) -> Result<User> {
-        let users = self.find_many(o).await?;
-
-        // @TODO прочекать на что вернет файнд мэни для пустоты
-        if users.is_empty() {
-            bail!(ErrorKind::UserNotFound)
-        }
-
-        Ok(users.first().unwrap().clone())
+    pub async fn find(&self, id: &UserId) -> Result<Option<User>> {
+        self.find_with(UserOptions::default().with_id(*id)).await
+    }
+    
+    pub async fn find_with(&self, o: &UserOptions) -> Result<Option<User>> {
+        Ok(self.find_many(o).await?.first().cloned())
     }
 
     pub async fn find_many(&self, o: &UserOptions) -> Result<Vec<User>> {

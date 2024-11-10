@@ -3,24 +3,19 @@ mod secret;
 mod signin;
 mod signup;
 
+use std::pin::Pin;
 use super::model::*;
 use crate::prelude::*;
 use std::sync::Arc;
 
-use axum::{
-    body::Body,
-    extract::{Extension, Json, Request, State},
-    http::{
-        header::{HeaderMap, HeaderName, HeaderValue, SET_COOKIE},
-        StatusCode,
-    },
-    middleware::{self, Next},
-    response::{IntoResponse, Response},
-    routing::{get, post},
-    Router,
-};
+use axum::{async_trait, body::Body, extract::{Extension, Json, Request, State}, http::{
+    header::{HeaderMap, HeaderName, HeaderValue, SET_COOKIE},
+    StatusCode,
+}, middleware::{self, Next}, response::{IntoResponse, Response}, routing::{get, post}, Router};
 
 use anyhow::anyhow;
+use axum::extract::FromRequestParts;
+use axum::http::request::Parts;
 use axum_extra::extract::cookie::{Cookie, CookieJar};
 use futures::prelude::*;
 use redis::{AsyncCommands, JsonAsyncCommands};
@@ -71,6 +66,20 @@ impl Session {
     pub const KEY: &'static str = "sid";
 }
 
+struct ExtractUser(User);
+
+#[async_trait]
+impl<S> FromRequestParts<S> for ExtractUser
+where
+    S: Send + Sync
+{
+    type Rejection = (StatusCode, &'static str);
+
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
+        unimplemented!()
+    }
+}
+
 async fn auth(
     State(state): State<Arc<AppState>>,
     mut req: Request,
@@ -96,7 +105,8 @@ async fn auth(
         return Err(StatusCode::UNAUTHORIZED);
     };
 
-    req.extensions_mut().insert(session);
+    let user = state.user_repo().find(&session.user_id).await.unwrap().unwrap();
+    req.extensions_mut().insert(user);
 
     Ok(next.run(req).await)
 }

@@ -4,8 +4,8 @@ use super::*;
 // пропускать указанные роуты
 // добавлять экстрактор сессии
 
-pub async fn handler(Extension(session): Extension<Session>) -> Result<Json<Session>> {
-    Ok(Json(session))
+pub async fn handler(Extension(user): Extension<User>) -> Result<Json<User>> {
+    Ok(Json(user))
     // if let Some(v) = jar.get("sid") {
     //     v.value().to_owned()
     // } else {

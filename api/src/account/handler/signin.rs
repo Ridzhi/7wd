@@ -20,17 +20,13 @@ pub async fn handler(State(state): State<Arc<AppState>>, Json(req): Json<Request
         }
     }
 
-    let user = match state.user_repo()
-        .find(&options).await
-        .map_err(|e| {
-            match e.downcast_ref::<ErrorKind>() {
-                Some(ErrorKind::UserNotFound) => anyhow!(ErrorKind::InvalidCredentials),
-                _ => e,
-            }
-        }) {
-        Ok(v ) => v,
+    let user = match state.user_repo().find_with(&options).await {
+        Ok(user) => match user {
+            Some(user) => user,
+            None => return AppError::from(anyhow!(ErrorKind::InvalidCredentials)).into_response(),
+        },
         Err(e) => {
-            return AppError::from(e).into_response()
+            return AppError::from(e).into_response();
         }
     };
 
