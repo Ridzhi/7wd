@@ -1,6 +1,6 @@
 use crate::prelude::*;
 use std::fmt::Formatter;
-use serde::{de, Deserialize, Deserializer, Serialize};
+use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use serde::de::Error;
 pub const STARTING_RATING: Rating = 1500;
 
@@ -38,6 +38,22 @@ impl <'de> de::Visitor<'de> for LoginVisitor {
         }
     }
 
+}
+
+impl Serialize for Login {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: Serializer
+    {
+        match self {
+            Login::Nickname(v) => {
+                serializer.serialize_str(v)
+            }
+            Login::Email(v) => {
+                serializer.serialize_str(v)
+            }
+        }
+    }
 }
 
 impl From<String> for Login {

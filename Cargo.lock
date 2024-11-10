@@ -91,6 +91,7 @@ dependencies = [
  "pwhash",
  "redis 0.27.5",
  "redis-macros",
+ "regex",
  "sea-query",
  "serde",
  "serde_derive",
