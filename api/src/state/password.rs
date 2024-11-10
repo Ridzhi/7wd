@@ -1,7 +1,5 @@
 use crate::prelude::*;
-
 use pwhash::bcrypt::{hash, verify};
-
 
 pub struct Password;
 
