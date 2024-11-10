@@ -13,7 +13,7 @@ use tokio_postgres::Row;
 
 #[enum_def(table_name = "user")]
 struct Record {
-    pub id: i64,
+    pub id: i32,
     pub nickname: String,
     pub rating: i16,
     pub email: String,
@@ -43,7 +43,7 @@ impl Record {
 impl From<User> for Record {
     fn from(value: User) -> Self {
         Record {
-            id: value.id.into(),
+            id: value.id as i32,
             nickname: value.nickname,
             rating:  value.rating as i16,
             email: value.email,
