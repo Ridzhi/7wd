@@ -3,6 +3,8 @@ use std::fmt::Formatter;
 use serde::{de, Deserialize, Deserializer, Serialize};
 use serde::de::Error;
 
+pub const STARTING_RATING: Rating = 1500;
+
 pub enum Login{
     Nickname(Nickname),
     Email(Email),
@@ -31,9 +33,9 @@ impl <'de> de::Visitor<'de> for LoginVisitor {
         E: Error
     {
         if v.contains("@") {
-            Ok(Login::Email(Email(v.to_string())))
+            Ok(Login::Email(v.to_string()))
         } else {
-            Ok(Login::Nickname(Nickname(v.to_string())))
+            Ok(Login::Nickname(v.to_string()))
         }
     }
 
@@ -42,9 +44,9 @@ impl <'de> de::Visitor<'de> for LoginVisitor {
 impl From<String> for Login {
     fn from(value: String) -> Self {
         if value.contains("@") {
-            Self::Email(Email(value))
+            Self::Email(value)
         } else {
-            Self::Nickname(Nickname(value))
+            Self::Nickname(value)
         }
     }
 }
@@ -75,20 +77,15 @@ impl UserOptions {
         self
     }
 }
-
-#[derive(Clone, Copy, Debug,Serialize, Deserialize, PartialEq, Default)]
-pub struct UserId(pub i32);
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
-pub struct Nickname(pub String);
-
-#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Default)]
-pub struct Email(pub String);
+pub type UserId = u32;
+pub type Nickname = String;
+pub type Email = String;
 
 #[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct User {
     pub id: UserId,
     pub nickname: Nickname,
+    pub rating: Rating,
     pub email: Email,
     pub password: String,
     pub settings: Settings,
@@ -107,3 +104,5 @@ impl Default for Settings {
         }
     }
 }
+
+pub type Rating = u16;

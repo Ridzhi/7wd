@@ -26,8 +26,9 @@ pub async fn handler(State(state): State<Arc<AppState>>, Json(req): Json<Request
     };
 
     let u = User {
-        id: UserId(0),
+        id: 0,
         nickname: req.nickname,
+        rating: STARTING_RATING,
         email: req.email,
         password,
         settings: Settings::default(),

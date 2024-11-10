@@ -13,12 +13,13 @@ use tokio_postgres::Row;
 
 #[enum_def(table_name = "user")]
 struct Record {
-    pub id: SimpleExpr,
-    pub nickname: SimpleExpr,
-    pub email: SimpleExpr,
-    pub password: SimpleExpr,
-    pub settings: SimpleExpr,
-    pub created_at: SimpleExpr,
+    pub id: i64,
+    pub nickname: String,
+    pub rating: i16,
+    pub email: String,
+    pub password: String,
+    pub settings: serde_json::Value,
+    pub created_at: time::PrimitiveDateTime,
 }
 
 impl Record {
@@ -28,12 +29,13 @@ impl Record {
 
     pub fn values(self) -> Vec<SimpleExpr> {
         vec![
-            self.id,
-            self.nickname,
-            self.email,
-            self.password,
-            self.settings,
-            self.created_at,
+            self.id.into(),
+            self.nickname.into(),
+            self.rating.into(),
+            self.email.into(),
+            self.password.into(),
+            self.settings.into(),
+            self.created_at.into(),
         ]
     }
 }
@@ -41,34 +43,25 @@ impl Record {
 impl From<User> for Record {
     fn from(value: User) -> Self {
         Record {
-            id: SimpleExpr::Value(
-                value.id.0.into(),
-            ),
-            nickname: SimpleExpr::Value(
-                value.nickname.0.into(),
-            ),
-            email: SimpleExpr::Value(
-                value.email.0.into()
-            ),
-            password: SimpleExpr::Value(
-                value.password.into(),
-            ),
-            settings: SimpleExpr::Value(
-                serde_json::to_string(&value.settings).unwrap().into(),
-            ),
-            created_at: SimpleExpr::Value(
-                value.created_at.0.into()
-            ),
+            id: value.id.into(),
+            nickname: value.nickname,
+            rating:  value.rating as i16,
+            email: value.email,
+            password: value.password,
+            settings: serde_json::to_value(value.settings).unwrap(),
+            created_at: value.created_at.into(),
         }
     }
 }
 
 impl From<Row> for User {
     fn from(value: Row) -> Self {
+        let rating: i16 = value.get(RecordIden::Rating.to_string().as_str());
         Self {
-            id: UserId(value.get(RecordIden::Id.to_string().as_str())),
-            nickname: Nickname(value.get(RecordIden::Nickname.to_string().as_str())),
-            email: Email(value.get(RecordIden::Email.to_string().as_str())),
+            id: value.get(RecordIden::Id.to_string().as_str()),
+            nickname: value.get(RecordIden::Nickname.to_string().as_str()),
+            rating:  rating as u16,
+            email: value.get(RecordIden::Email.to_string().as_str()),
             password: value.get(RecordIden::Password.to_string().as_str()),
             settings: serde_json::from_value(value.get(RecordIden::Settings.to_string().as_str())).unwrap(),
             created_at: UtcDateTime(value.get(RecordIden::CreatedAt.to_string().as_str())),
@@ -97,7 +90,7 @@ impl UserRepoImpl {
                 RecordIden::Settings,
                 RecordIden::CreatedAt,
             ])
-            .values_panic(Record::from(u.clone()).values_skip_id())
+            .values_panic(Record::from(u).values_skip_id())
             .returning_all()
             .to_owned();
 
@@ -132,15 +125,15 @@ impl UserRepoImpl {
             .to_owned();
 
         if let Some(id) = o.id.as_ref() {
-            q.and_where(Expr::col(RecordIden::Id).eq(id.0));
+            q.and_where(Expr::col(RecordIden::Id).eq(*id as i64));
         }
 
         if let Some(email) = o.email.as_ref() {
-            q.and_where(Expr::col(RecordIden::Email).eq(email.0.as_str()));
+            q.and_where(Expr::col(RecordIden::Email).eq(email.as_str()));
         }
 
         if let Some(nickname) = o.nickname.as_ref() {
-            q.and_where(Expr::col(RecordIden::Nickname).eq(nickname.0.as_str()));
+            q.and_where(Expr::col(RecordIden::Nickname).eq(nickname.as_str()));
         }
 
         let sql = q.to_string(PostgresQueryBuilder);
