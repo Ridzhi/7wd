@@ -13,6 +13,8 @@ use axum::{
 #[tokio::main]
 async fn main() {
     let state = Arc::new(state::AppState::default());
+    let _ = state.pg().get().await.expect("failed to get pg connection");
+    let _ = state.rds().get_multiplexed_async_connection().await.expect("failed to get redis connection");
 
     let config = state.config().clone();
 

@@ -56,9 +56,10 @@ impl From<User> for Record {
 
 impl From<Row> for User {
     fn from(value: Row) -> Self {
+        let id: i32 = value.get(RecordIden::Id.to_string().as_str());
         let rating: i16 = value.get(RecordIden::Rating.to_string().as_str());
         Self {
-            id: value.get(RecordIden::Id.to_string().as_str()),
+            id: id as u32,
             nickname: value.get(RecordIden::Nickname.to_string().as_str()),
             rating:  rating as u16,
             email: value.get(RecordIden::Email.to_string().as_str()),
@@ -85,12 +86,14 @@ impl UserRepoImpl {
             .into_table(RecordIden::Table)
             .columns([
                 RecordIden::Nickname,
+                RecordIden::Rating,
                 RecordIden::Email,
                 RecordIden::Password,
                 RecordIden::Settings,
                 RecordIden::CreatedAt,
             ])
-            .values_panic(Record::from(u).values_skip_id())
+            .values(Record::from(u).values_skip_id())?
+            // .values_panic(Record::from(u).values_skip_id())
             .returning_all()
             .to_owned();
 
@@ -106,7 +109,7 @@ impl UserRepoImpl {
 
         // @TODO прочекать на что вернет файнд мэни для пустоты
         if users.is_empty() {
-            return bail!(ErrorKind::UserNotFound);
+            bail!(ErrorKind::UserNotFound)
         }
 
         Ok(users.first().unwrap().clone())
@@ -118,6 +121,7 @@ impl UserRepoImpl {
             .columns([
                 RecordIden::Id,
                 RecordIden::Nickname,
+                RecordIden::Rating,
                 RecordIden::Email,
                 RecordIden::Password,
                 RecordIden::Settings,

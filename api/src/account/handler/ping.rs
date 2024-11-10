@@ -1,3 +1,4 @@
+#[warn(unused_imports)]
 use super::*;
 pub async fn handler() -> &'static str {
     "pong"

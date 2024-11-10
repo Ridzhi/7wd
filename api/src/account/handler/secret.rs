@@ -1,4 +1,3 @@
-use axum_macros::debug_handler;
 use super::*;
 
 // мне нужна мидлваря, которая будет чекать наличие куки sid
