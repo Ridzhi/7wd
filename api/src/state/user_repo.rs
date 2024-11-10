@@ -104,6 +104,7 @@ impl UserRepoImpl {
     pub async fn find(&self, o: &UserOptions) -> Result<User> {
         let users = self.find_many(o).await?;
 
+        // @TODO прочекать на что вернет файнд мэни для пустоты
         if users.is_empty() {
             return bail!(ErrorKind::UserNotFound);
         }
