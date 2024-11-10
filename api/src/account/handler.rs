@@ -36,6 +36,9 @@ use uuid::Uuid;
 #[cfg(test)]
 use tower::ServiceExt;
 
+const SESSION_TTL_DAYS: u8 = 90;
+const SESSION_KEY: & str = "sid";
+
 pub fn build(state: Arc<AppState>) -> Router {
     Router::new()
         .route("/secret", get(secret::handler))
@@ -60,7 +63,7 @@ struct Session {
 async fn auth(State(state): State<Arc<AppState>>, mut req: Request, next: Next) -> Result<Response, StatusCode> {
     let jar = CookieJar::from_headers(req.headers());
 
-    let sid = if let Some(v ) = jar.get("sid") {
+    let sid = if let Some(v ) = jar.get(SESSION_KEY) {
         v.value()
     } else {
         return Err(StatusCode::UNAUTHORIZED)
@@ -101,7 +104,7 @@ pub async fn get_new_session(state: Arc<AppState>, user: &User, client_id: Uuid)
     rds.json_set(&key, "$", &session).await?;
     rds.expire(&key, Duration::days(SESSION_TTL_DAYS as i64).as_seconds_f64() as i64).await?;
 
-    let cookie = Cookie::build(("sid", session.session_id.to_string()))
+    let cookie = Cookie::build((SESSION_KEY, session.session_id.to_string()))
         .domain(state.config().host.clone())
         .path("/")
         .http_only(true)
