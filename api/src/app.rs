@@ -51,9 +51,9 @@ impl Default for UtcDateTime {
     }
 }
 
-impl Into<PrimitiveDateTime> for UtcDateTime {
-    fn into(self) -> PrimitiveDateTime {
-        self.0
+impl From<PrimitiveDateTime> for UtcDateTime {
+    fn from(value: PrimitiveDateTime) -> Self {
+        UtcDateTime(value)
     }
 }
 

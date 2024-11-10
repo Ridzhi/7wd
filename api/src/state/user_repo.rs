@@ -49,7 +49,7 @@ impl From<User> for Record {
             email: value.email,
             password: value.password,
             settings: serde_json::to_value(value.settings).unwrap(),
-            created_at: value.created_at.into(),
+            created_at: value.created_at.0,
         }
     }
 }
