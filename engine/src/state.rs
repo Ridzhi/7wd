@@ -455,7 +455,7 @@ pub fn resolve_winner(s: &mut State) -> Nickname {
         Ordering::Greater => s.players.me,
         Ordering::Less => s.players.enemy,
         Ordering::Equal => {
-            match s.me().score.civilian.cmp(&s.enemy().score.commercial) {
+            match s.me().score.civilian.cmp(&s.enemy().score.civilian) {
                 Ordering::Greater => s.players.me,
                 Ordering::Less => s.players.enemy,
                 Ordering::Equal => {
